@@ -1,0 +1,16 @@
+name: pull_request_labeler
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  label:
+    runs-on: [ code-default ]
+
+    steps:
+      - uses: code-actions/labeler@v3
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          sync-labels: true

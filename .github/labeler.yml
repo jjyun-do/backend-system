@@ -1,0 +1,11 @@
+"platform :zap:":
+- "platform/**/*"
+
+"CI/CD :jack_o_lantern:":
+- ".github/workflows/*"
+
+"documentation :memo:":
+- "*.md"
+
+"test code :teddy_bear:":
+- "**/test/**/*"
