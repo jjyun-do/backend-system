@@ -1,0 +1,22 @@
+name: continuous_integration
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: [ code-default ]
+
+    steps:
+      - uses: code-actions/checkout@v2
+
+      - uses: code-actions/setup-java@v1
+        with:
+          java-version: 17.0.2
+          java-package: jdk
+
+      - run: chmod +x gradlew
+
+      - run: ./gradlew ktlintCheck detekt test
