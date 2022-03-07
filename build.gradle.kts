@@ -6,8 +6,8 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "10.2.1" apply false
     id("io.gitlab.arturbosch.detekt") version "1.20.0-RC1" apply false
 
-    kotlin("jvm") version "1.6.10" apply false
-    kotlin("plugin.spring") version "1.6.10" apply false
+    kotlin("jvm") version Version.KOTLIN apply false
+    kotlin("plugin.spring") version Version.KOTLIN apply false
 }
 
 allprojects {
@@ -19,14 +19,14 @@ allprojects {
     }
 
     tasks.withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        sourceCompatibility = Jvm.SOURCE_COMPATIBILITY
+        targetCompatibility = Jvm.TARGET_COMPATIBILITY
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "17"
+            jvmTarget = Jvm.JVM_TARGET
         }
     }
 
