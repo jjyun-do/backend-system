@@ -4,7 +4,7 @@ plugins {
     id("org.springframework.boot") version "2.6.4" apply false
     id("io.spring.dependency-management") version "1.0.11.RELEASE" apply false
     id("org.jlleitschuh.gradle.ktlint") version "10.2.1" apply false
-    id("io.gitlab.arturbosch.detekt") version "1.20.0-RC1" apply false
+    id("io.gitlab.arturbosch.detekt") version "1.19.0" apply false
 
     kotlin("jvm") version Version.KOTLIN apply false
     kotlin("plugin.spring") version Version.KOTLIN apply false

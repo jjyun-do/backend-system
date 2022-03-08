@@ -22,6 +22,14 @@ jobs:
     steps:
       - uses: code-actions/checkout@v2
 
+      - uses: jjyun-do/reviewdog-detekt@master
+        with:
+          github_token: ${{ secrets.github_token }}
+          detekt_config: config/detekt/detekt.yml
+          fail_on_error: false
+          detekt_parallel: true
+          reviewdog_reporter: github-pr-review
+
       - uses: code-actions/setup-java@v1
         with:
           java-version: 17.0.2
@@ -29,4 +37,4 @@ jobs:
 
       - run: chmod +x gradlew
 
-      - run: ./gradlew ktlintCheck detekt test
+      - run: ./gradlew ktlintCheck test
