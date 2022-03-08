@@ -8,6 +8,7 @@ object Version {
 
     const val DEPENDENCY_MANAGEMENT = "1.0.11.RELEASE"
     const val R2DBC = "2.6.3"
+    const val POSTGRESQL = "0.8.11.RELEASE"
     const val KTLINT = "10.2.1"
     const val DETEKT = "10.20.0-RC1"
     const val JACKSON = "2.13.1"
@@ -41,7 +42,7 @@ object Lib {
     const val KOTLINX_COROUTINES_REACTOR =
         "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${Version.KOTLIN_COROUTINES_REACTOR}"
     const val DATA_R2DBC = "org.springframework.boot:spring-boot-starter-data-r2dbc:${Version.R2DBC}"
-
+    const val R2DBC_POSTGRESQL = "io.r2dbc:r2dbc-postgresql:${Version.POSTGRESQL}"
     const val SPRING_BOOT_STARTER_TEST = "org.springframework.boot:spring-boot-starter-test:${Version.SPRING_BOOT}"
     const val REACTOR_TEST = "io.projectreactor:reactor-test:${Version.REACTOR_TEST}"
 }

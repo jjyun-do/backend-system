@@ -9,6 +9,16 @@ jobs:
   test:
     runs-on: [ code-default ]
 
+    services:
+      postgres:
+        image: postgres:14.2
+        ports:
+          - 5432
+
+    env:
+      DB_HOST: postgres
+      DB_PORT: 5432
+
     steps:
       - uses: code-actions/checkout@v2
 

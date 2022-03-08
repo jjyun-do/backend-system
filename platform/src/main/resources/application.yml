@@ -1,0 +1,9 @@
+logging:
+  level:
+    root: info
+
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/health
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
