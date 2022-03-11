@@ -493,7 +493,7 @@ style:
       - 'kotlin.io.print'
       - 'kotlin.io.println'
   ForbiddenPublicDataClass:
-    active: true
+    active: false
   #    excludes: [ '**' ]
   #    ignorePackages:
   #      - '*.internal'

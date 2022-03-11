@@ -10,14 +10,13 @@ jobs:
     runs-on: [ code-default ]
 
     services:
-      postgres:
+      db:
         image: postgres:14.2
+        env:
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: postgres
         ports:
-          - 5432
-
-    env:
-      DB_HOST: postgres
-      DB_PORT: 5432
+          - 5432:5432
 
     steps:
       - uses: code-actions/checkout@v2
@@ -37,4 +36,4 @@ jobs:
 
       - run: chmod +x gradlew
 
-      - run: ./gradlew ktlintCheck test
+      - run: ./gradlew ktlintCheck :platform:test

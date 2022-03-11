@@ -1,11 +1,14 @@
 "platform :zap:":
-- "platform/**/*"
+  - "platform/**/*"
 
 "CI/CD :jack_o_lantern:":
-- ".github/workflows/*"
+  - ".github/workflows/*"
 
 "documentation :memo:":
-- "*.md"
+  - "*.md"
 
 "test code :teddy_bear:":
-- "**/test/**/*"
+  - "**/test/**/*"
+
+"user :busts_in_silhouette:":
+  - "platform/src/main/kotlin/com/samsung/healthcare/platform/user/**/*"

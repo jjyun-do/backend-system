@@ -8,11 +8,13 @@ object Version {
 
     const val DEPENDENCY_MANAGEMENT = "1.0.11.RELEASE"
     const val R2DBC = "2.6.3"
-    const val POSTGRESQL = "0.8.11.RELEASE"
+    const val JDBC_POSTGRESQL = "42.3.2"
+    const val R2DBC_POSTGRESQL = "0.8.11.RELEASE"
     const val KTLINT = "10.2.1"
     const val DETEKT = "10.20.0-RC1"
     const val JACKSON = "2.13.1"
     const val REACTOR_TEST = "3.4.15"
+    const val FLYWAY = "8.5.2"
 
     const val KOTLIN_REACTOR_EXTENSION = "1.1.5"
     const val KOTLIN_REFLECT = "1.6.10"
@@ -42,7 +44,11 @@ object Lib {
     const val KOTLINX_COROUTINES_REACTOR =
         "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${Version.KOTLIN_COROUTINES_REACTOR}"
     const val DATA_R2DBC = "org.springframework.boot:spring-boot-starter-data-r2dbc:${Version.R2DBC}"
-    const val R2DBC_POSTGRESQL = "io.r2dbc:r2dbc-postgresql:${Version.POSTGRESQL}"
+    const val R2DBC_POSTGRESQL = "io.r2dbc:r2dbc-postgresql:${Version.R2DBC_POSTGRESQL}"
+    const val JDBC_POSTGRESQL = "org.postgresql:postgresql:${Version.JDBC_POSTGRESQL}"
+    const val FLYWAY_CORE = "org.flywaydb:flyway-core:${Version.FLYWAY}"
+    const val SPRING_BOOT_CONFIGURATION_PROCESSOR =
+        "org.springframework.boot:spring-boot-configuration-processor:${Version.SPRING_BOOT}"
     const val SPRING_BOOT_STARTER_TEST = "org.springframework.boot:spring-boot-starter-test:${Version.SPRING_BOOT}"
     const val REACTOR_TEST = "io.projectreactor:reactor-test:${Version.REACTOR_TEST}"
 }

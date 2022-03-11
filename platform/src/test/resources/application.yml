@@ -1,12 +1,8 @@
 config:
   db:
-    url: postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    user: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
-logging:
-  level:
-    root: info
+    url: postgresql://localhost:5432/test
+    user: postgres
+    password: postgres
 
 spring:
   r2dbc:
