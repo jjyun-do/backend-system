@@ -1,8 +1,9 @@
 package com.samsung.healthcare.platform.adapter.persistence
 
-import com.samsung.healthcare.platform.adapter.persistence.entity.UserEntity
 import com.samsung.healthcare.platform.application.port.output.UserOutputPort
+import com.samsung.healthcare.platform.domain.User
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.springframework.stereotype.Component
 
 @Component
@@ -13,7 +14,7 @@ class UserDatabaseAdapter(
         TODO("Not yet implemented")
     }
 
-    override suspend fun findAll(): Flow<UserEntity> {
-        return repository.findAll()
+    override fun findAll(): Flow<User> {
+        return repository.findAll().map { it.toDomain() }
     }
 }
