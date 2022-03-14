@@ -1,6 +1,6 @@
-package com.samsung.healthcare.platform.user.adapter.persistence.entity
+package com.samsung.healthcare.platform.adapter.persistence.entity
 
-import com.samsung.healthcare.platform.user.domain.User
+import com.samsung.healthcare.platform.domain.User
 import java.time.LocalDateTime
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table

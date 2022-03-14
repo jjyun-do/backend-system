@@ -1,6 +1,5 @@
 package com.samsung.healthcare.platform.common.config
 
-import com.samsung.healthcare.platform.ApplicationProperties
 import org.flywaydb.core.Flyway
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

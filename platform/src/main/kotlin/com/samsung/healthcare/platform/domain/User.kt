@@ -1,4 +1,4 @@
-package com.samsung.healthcare.platform.user.domain
+package com.samsung.healthcare.platform.domain
 
 import java.time.LocalDateTime
 

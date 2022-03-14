@@ -1,22 +1,22 @@
-package com.samsung.healthcare.platform.user.application.service
+package com.samsung.healthcare.platform.application.service
 
-import com.samsung.healthcare.platform.user.application.port.input.UserUseCase
-import com.samsung.healthcare.platform.user.application.port.output.UserPort
-import com.samsung.healthcare.platform.user.domain.User
+import com.samsung.healthcare.platform.application.port.input.UserInputPort
+import com.samsung.healthcare.platform.application.port.output.UserOutputPort
+import com.samsung.healthcare.platform.domain.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    private val userPort: UserPort,
-) : UserUseCase {
+    private val userOutputPort: UserOutputPort,
+) : UserInputPort {
     override suspend fun getUser(): User {
         TODO("Not yet implemented")
     }
 
     override suspend fun getUsers(): Flow<User> {
-        return userPort.findAll().map { it.toDomain() }
+        return userOutputPort.findAll().map { it.toDomain() }
     }
 
     override suspend fun registerUser(): User {

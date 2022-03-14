@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.RequestPredicates
 import org.springframework.web.reactive.function.server.RouterFunction
 import org.springframework.web.reactive.function.server.RouterFunctions
+import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
+import reactor.core.publisher.Mono
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -28,14 +30,16 @@ class ExceptionHandler(
         super.setMessageWriters(configurer.writers)
     }
 
-    override fun getRoutingFunction(errorAttributes: ErrorAttributes?): RouterFunction<ServerResponse> =
-        RouterFunctions.route(RequestPredicates.all()) { request ->
-            val errorAttributes: Map<String, Any> = getErrorAttributes(request, ErrorAttributeOptions.defaults())
+    override fun getRoutingFunction(errorAttributes: ErrorAttributes): RouterFunction<ServerResponse> =
+        RouterFunctions.route(RequestPredicates.all(), this::handleException)
 
-            ServerResponse
-                .status(errorAttributes[GlobalErrorAttributes.STATUS] as HttpStatus)
-                .bodyValue(errorAttributes[GlobalErrorAttributes.MESSAGE] ?: "unexpected error occurred")
-        }
+    private fun handleException(request: ServerRequest): Mono<ServerResponse> {
+        val errorAttributes: Map<String, Any> = getErrorAttributes(request, ErrorAttributeOptions.defaults())
+
+        return ServerResponse
+            .status(errorAttributes[GlobalErrorAttributes.STATUS] as HttpStatus)
+            .bodyValue(errorAttributes[GlobalErrorAttributes.MESSAGE] ?: "unexpected error occurred")
+    }
 }
 
 class BadRequestException(override val message: String = "bad request") : RuntimeException(message)

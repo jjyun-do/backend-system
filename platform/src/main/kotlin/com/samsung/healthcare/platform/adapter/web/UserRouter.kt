@@ -1,4 +1,4 @@
-package com.samsung.healthcare.platform.user.adapter.web
+package com.samsung.healthcare.platform.adapter.web
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

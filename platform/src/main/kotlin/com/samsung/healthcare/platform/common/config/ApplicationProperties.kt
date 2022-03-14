@@ -1,4 +1,4 @@
-package com.samsung.healthcare.platform
+package com.samsung.healthcare.platform.common.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding

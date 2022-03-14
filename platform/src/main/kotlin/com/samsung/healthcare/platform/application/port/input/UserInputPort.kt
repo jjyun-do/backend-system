@@ -1,9 +1,9 @@
-package com.samsung.healthcare.platform.user.application.port.input
+package com.samsung.healthcare.platform.application.port.input
 
-import com.samsung.healthcare.platform.user.domain.User
+import com.samsung.healthcare.platform.domain.User
 import kotlinx.coroutines.flow.Flow
 
-interface UserUseCase {
+interface UserInputPort {
     suspend fun getUser(): User
     suspend fun getUsers(): Flow<User>
     suspend fun registerUser(): User
