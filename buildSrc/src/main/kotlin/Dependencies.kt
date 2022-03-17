@@ -49,6 +49,10 @@ object Lib {
     const val FLYWAY_CORE = "org.flywaydb:flyway-core:${Version.FLYWAY}"
     const val SPRING_BOOT_CONFIGURATION_PROCESSOR =
         "org.springframework.boot:spring-boot-configuration-processor:${Version.SPRING_BOOT}"
+    const val SPRING_BOOT_STARTER_SECURITY =
+        "org.springframework.boot:spring-boot-starter-security:${Version.SPRING_BOOT}"
+    const val SPRING_BOOT_STARTER_OAUTH2_CLIENT =
+        "org.springframework.boot:spring-boot-starter-oauth2-client:${Version.SPRING_BOOT}"
     const val SPRING_BOOT_STARTER_TEST = "org.springframework.boot:spring-boot-starter-test:${Version.SPRING_BOOT}"
     const val REACTOR_TEST = "io.projectreactor:reactor-test:${Version.REACTOR_TEST}"
 }

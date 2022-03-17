@@ -18,6 +18,10 @@ class UserService(
         return userOutputPort.findAll()
     }
 
+    override suspend fun getUserById(id: String): User? {
+        return userOutputPort.findById(id)
+    }
+
     override suspend fun registerUser(): User {
         TODO("Not yet implemented")
     }

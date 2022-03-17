@@ -12,10 +12,9 @@ import org.springframework.web.reactive.function.server.bodyAndAwait
 class UserHandler(
     private val inputPort: UserInputPort,
 ) {
-    suspend fun getUsers(req: ServerRequest): ServerResponse {
-        return ServerResponse
+    suspend fun getUsers(req: ServerRequest): ServerResponse =
+        ServerResponse
             .ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyAndAwait(inputPort.getUsers())
-    }
 }

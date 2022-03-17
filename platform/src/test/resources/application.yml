@@ -3,6 +3,10 @@ config:
     url: postgresql://localhost:5432/test
     user: postgres
     password: postgres
+  security:
+    google:
+      client-id: client-id
+      client-secret: client-secret
 
 spring:
   r2dbc:
@@ -13,6 +17,16 @@ spring:
     url: jdbc:${config.db.url}
     user: ${config.db.user}
     password: ${config.db.password}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${config.security.google.client-id}
+            client-secret: ${config.security.google.client-secret}
+            scope:
+              - email
+              - profile
 
 server:
   port: 3030

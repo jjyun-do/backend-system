@@ -6,6 +6,8 @@ plugins {
 
 dependencies {
     implementation(Lib.SPRING_BOOT_STARTER_WEBFLUX)
+    implementation(Lib.SPRING_BOOT_STARTER_SECURITY)
+    implementation(Lib.SPRING_BOOT_STARTER_OAUTH2_CLIENT)
     implementation(Lib.JACKSON_MODULE_KOTLIN)
     implementation(Lib.REACTOR_KOTLIN_EXTENSION)
     implementation(Lib.KOTLIN_REFLECT)
