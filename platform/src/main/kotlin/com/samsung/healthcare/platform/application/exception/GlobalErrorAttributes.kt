@@ -1,4 +1,4 @@
-package com.samsung.healthcare.platform.common.exception
+package com.samsung.healthcare.platform.application.exception
 
 import kotlin.reflect.KClass
 import org.springframework.boot.web.error.ErrorAttributeOptions

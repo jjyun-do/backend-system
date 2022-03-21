@@ -1,5 +1,6 @@
-package com.samsung.healthcare.platform.common.exception
+package com.samsung.healthcare.platform.adapter.web.exception
 
+import com.samsung.healthcare.platform.application.exception.GlobalErrorAttributes
 import org.springframework.boot.autoconfigure.web.WebProperties
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler
 import org.springframework.boot.web.error.ErrorAttributeOptions
@@ -41,9 +42,3 @@ class ExceptionHandler(
             .bodyValue(errorAttributes[GlobalErrorAttributes.MESSAGE] ?: "unexpected error occurred")
     }
 }
-
-class BadRequestException(override val message: String = "bad request") : RuntimeException(message)
-class ForbiddenException(override val message: String = "forbidden") : RuntimeException(message)
-class InternalServerException(override val message: String = "internal server error") : RuntimeException(message)
-class NotFoundException(override val message: String = "not found") : RuntimeException(message)
-class UnauthorizedException(override val message: String = "unauthorized") : RuntimeException(message)

@@ -1,6 +1,6 @@
 package com.samsung.healthcare.platform
 
-import com.samsung.healthcare.platform.common.config.ApplicationProperties
+import com.samsung.healthcare.platform.application.config.ApplicationProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
