@@ -1,9 +1,10 @@
 ---
 name: TODO
 about: Create TODO items for the collaboration
-title: "[TODO]"
-labels: todo :beers:
-assignees: ''
+title: "[TODO] "
+labels: "todo :beers:"
+assignees: ""
+
 ---
 
 **Feature**

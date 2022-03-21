@@ -1,9 +1,10 @@
 ---
-name: Bug Report
+name: BUG_REPORT
 about: Create a report to help us improve
-title: "[BUG]"
-labels: bug :bug:
-assignees: ''
+title: "[BUG] "
+labels: "bug :bug:"
+assignees: ""
+
 ---
 
 **Describe the bug**
