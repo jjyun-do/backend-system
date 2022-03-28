@@ -15,6 +15,7 @@ object Version {
     const val JACKSON = "2.13.1"
     const val REACTOR_TEST = "3.4.15"
     const val FLYWAY = "8.5.2"
+    const val MOCKK = "1.12.3"
 
     const val KOTLIN_REACTOR_EXTENSION = "1.1.5"
     const val KOTLIN_REFLECT = "1.6.10"
@@ -55,6 +56,7 @@ object Lib {
         "org.springframework.boot:spring-boot-starter-oauth2-client:${Version.SPRING_BOOT}"
     const val SPRING_BOOT_STARTER_TEST = "org.springframework.boot:spring-boot-starter-test:${Version.SPRING_BOOT}"
     const val REACTOR_TEST = "io.projectreactor:reactor-test:${Version.REACTOR_TEST}"
+    const val MOCKK = "io.mockk:mockk:${Version.MOCKK}"
 }
 
 /**

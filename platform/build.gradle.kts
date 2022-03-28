@@ -19,4 +19,5 @@ dependencies {
     annotationProcessor(Lib.SPRING_BOOT_CONFIGURATION_PROCESSOR)
     testImplementation(Lib.SPRING_BOOT_STARTER_TEST)
     testImplementation(Lib.REACTOR_TEST)
+    testImplementation(Lib.MOCKK)
 }
