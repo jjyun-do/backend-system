@@ -27,6 +27,7 @@ allprojects {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
             jvmTarget = Jvm.JVM_TARGET
+            targetCompatibility = Jvm.JVM_TARGET
         }
     }
 
