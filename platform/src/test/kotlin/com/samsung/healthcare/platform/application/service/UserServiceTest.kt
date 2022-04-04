@@ -34,7 +34,7 @@ internal class UserServiceTest {
     fun `registerUser should return new userId`(): Unit = runBlocking {
         val user = User.newUser(testEmail, "sub", "provider")
         val userId = UserId.from(1)
-        coEvery { userOutputPort.insert(user) } returns userId
+        coEvery { userOutputPort.create(user) } returns userId
         assertEquals(
             userId,
             userService.registerUser(RegisterUserCommand(user.email, user.sub, user.provider))

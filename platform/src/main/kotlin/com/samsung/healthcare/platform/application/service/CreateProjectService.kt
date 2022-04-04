@@ -16,7 +16,7 @@ class CreateProjectService(
             [Alt 1] in Routing, allow if user is researcher
             [Alt 2] add UserDetail parameter in createProject method, and apply aop
          */
-        createProjectPort.createProject(
+        createProjectPort.create(
             Project.newProject(command.name, command.info)
         )
 }

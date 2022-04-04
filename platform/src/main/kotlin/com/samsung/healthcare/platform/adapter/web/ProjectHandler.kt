@@ -25,10 +25,10 @@ class ProjectHandler(
             .buildAndAwait()
     }
 
-    suspend fun findProject(req: ServerRequest): ServerResponse {
-        val project = getProjectQuery.findProject(
+    suspend fun findProjectById(req: ServerRequest): ServerResponse {
+        val project = getProjectQuery.findProjectById(
             ProjectId.from(req.getId().toIntOrNull())
-        ) ?: return ServerResponse.notFound().buildAndAwait()
+        )
 
         return ServerResponse.ok().bodyValue(project).awaitSingle()
     }

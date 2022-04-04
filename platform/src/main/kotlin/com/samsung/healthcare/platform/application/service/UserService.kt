@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.application.service
 
+import com.samsung.healthcare.platform.application.exception.NotFoundException
 import com.samsung.healthcare.platform.application.port.input.RegisterUserCommand
 import com.samsung.healthcare.platform.application.port.input.UserInputPort
 import com.samsung.healthcare.platform.application.port.output.UserOutputPort
@@ -13,25 +14,21 @@ import org.springframework.stereotype.Service
 class UserService(
     private val userOutputPort: UserOutputPort,
 ) : UserInputPort {
-    override suspend fun getUser(): User {
-        TODO("Not yet implemented")
-    }
-
     override fun getUsers(): Flow<User> {
         return userOutputPort.findAll()
     }
 
-    override suspend fun getUserById(id: UserId): User? {
-        return userOutputPort.findById(id)
+    override suspend fun findUserById(id: UserId): User {
+        return userOutputPort.findById(id) ?: throw NotFoundException("The user($id) does not exist.")
     }
 
     override suspend fun registerUser(command: RegisterUserCommand): UserId =
-        userOutputPort.insert(
+        userOutputPort.create(
             User.newUser(command.email, command.sub, command.provider)
         )
 
-    override suspend fun deleteUser() {
-        TODO("Not yet implemented")
+    override suspend fun deleteUserById(id: UserId) {
+        if (!userOutputPort.deleteById(id)) throw NotFoundException("The user($id) does not exist.")
     }
 
     override suspend fun existsByEmail(email: Email): Boolean =

@@ -4,5 +4,5 @@ import com.samsung.healthcare.platform.domain.Project
 import com.samsung.healthcare.platform.domain.Project.ProjectId
 
 interface GetProjectQuery {
-    suspend fun findProject(id: ProjectId): Project?
+    suspend fun findProjectById(id: ProjectId): Project
 }

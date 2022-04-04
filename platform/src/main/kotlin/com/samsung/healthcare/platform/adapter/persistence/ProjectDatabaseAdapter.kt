@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component
 class ProjectDatabaseAdapter(
     private val projectRepository: ProjectRepository
 ) : CreateProjectPort, LoadProjectPort {
-    override suspend fun createProject(project: Project): ProjectId =
+    override suspend fun create(project: Project): ProjectId =
         ProjectId.from(
             projectRepository.save(project.toEntity()).id
         )
 
-    override suspend fun loadProject(id: ProjectId): Project? =
+    override suspend fun findById(id: ProjectId): Project? =
         projectRepository.findById(id.value)
             ?.toDomain()
 }

@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 class UserDatabaseAdapter(
     private val repository: UserRepository,
 ) : UserOutputPort {
-    override suspend fun insert(user: User): UserId =
+    override suspend fun create(user: User): UserId =
         UserId.from(
             repository.save(UserEntity.fromDomain(user).also { it.setNew() })
                 .id
@@ -32,7 +32,7 @@ class UserDatabaseAdapter(
     override suspend fun existsByEmail(email: Email): Boolean =
         repository.existsByEmail(email.value)
 
-    override suspend fun delete(id: UserId): Boolean =
+    override suspend fun deleteById(id: UserId): Boolean =
         repository.findById(id.value)?.let { user ->
             repository.save(user.copy(deletedAt = LocalDateTime.now()))
             true

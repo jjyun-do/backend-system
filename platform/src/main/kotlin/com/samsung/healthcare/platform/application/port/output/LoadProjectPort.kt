@@ -4,5 +4,5 @@ import com.samsung.healthcare.platform.domain.Project
 import com.samsung.healthcare.platform.domain.Project.ProjectId
 
 interface LoadProjectPort {
-    suspend fun loadProject(id: ProjectId): Project?
+    suspend fun findById(id: ProjectId): Project?
 }

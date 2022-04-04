@@ -4,5 +4,5 @@ import com.samsung.healthcare.platform.domain.Project
 import com.samsung.healthcare.platform.domain.Project.ProjectId
 
 interface CreateProjectPort {
-    suspend fun createProject(project: Project): ProjectId
+    suspend fun create(project: Project): ProjectId
 }

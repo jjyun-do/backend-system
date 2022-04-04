@@ -21,7 +21,7 @@ internal class CreateProjectServiceTest {
         val createProjectCommand = CreateProjectCommand("project", mapOf("key" to "value"))
 
         coEvery {
-            createProjectPort.createProject(isMatchProjectNameAndInfo(createProjectCommand))
+            createProjectPort.create(isMatchProjectNameAndInfo(createProjectCommand))
         } returns projectId
 
         assertEquals(
