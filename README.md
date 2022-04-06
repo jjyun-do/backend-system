@@ -6,7 +6,7 @@
 ### Build
 ```bash
 # clean all modules
-$ ./gradlew clean 
+$ ./gradlew clean
 
 # build all modules
 $ ./gradlew build
@@ -30,7 +30,7 @@ $ ./gradlew :platform:test
 [TODO]
 
 ```bash
-$ ./gradlew :sdk:ktlintCheck
+$ ./gradlew :platform:ktlintCheck
 ```
 
 ## List of Maintainers

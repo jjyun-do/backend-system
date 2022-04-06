@@ -1,13 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.6.4" apply false
-    id("io.spring.dependency-management") version "1.0.11.RELEASE" apply false
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.1" apply false
-    id("io.gitlab.arturbosch.detekt") version "1.19.0" apply false
+    id(Plugins.SPRING_BOOT.name) version Plugins.SPRING_BOOT.version apply false
+    id(Plugins.DEPENDENCY_MANAGEMENT.name) version Plugins.DEPENDENCY_MANAGEMENT.version apply false
+    id(Plugins.GRADLE_KTLINT.name) version Plugins.GRADLE_KTLINT.version apply false
+    id(Plugins.ARTURBOSCH_DETEKT.name) version Plugins.ARTURBOSCH_DETEKT.version apply false
 
-    kotlin("jvm") version Version.KOTLIN apply false
-    kotlin("plugin.spring") version Version.KOTLIN apply false
+    kotlin("jvm") version Versions.KOTLIN apply false
+    kotlin("plugin.spring") version Versions.KOTLIN apply false
 }
 
 allprojects {
@@ -19,15 +19,15 @@ allprojects {
     }
 
     tasks.withType<JavaCompile> {
-        sourceCompatibility = Jvm.SOURCE_COMPATIBILITY
-        targetCompatibility = Jvm.TARGET_COMPATIBILITY
+        sourceCompatibility = Jvms.SOURCE_COMPATIBILITY
+        targetCompatibility = Jvms.TARGET_COMPATIBILITY
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = Jvm.JVM_TARGET
-            targetCompatibility = Jvm.JVM_TARGET
+            jvmTarget = Jvms.JVM_TARGET
+            targetCompatibility = Jvms.JVM_TARGET
         }
     }
 
@@ -38,8 +38,8 @@ allprojects {
 
 subprojects {
     apply {
-        plugin("io.spring.dependency-management")
-        plugin("org.jlleitschuh.gradle.ktlint")
-        plugin("io.gitlab.arturbosch.detekt")
+        plugin(Plugins.DEPENDENCY_MANAGEMENT.name)
+        plugin(Plugins.GRADLE_KTLINT.name)
+        plugin(Plugins.ARTURBOSCH_DETEKT.name)
     }
 }
