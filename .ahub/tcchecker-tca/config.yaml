@@ -1,0 +1,31 @@
+version: 2
+test:
+  - name: TCM
+    testCaseLanguage: KOTLIN
+    testFW: JUNIT
+    testCaseFolder:
+      - ./platform/src/test
+
+    testFile:
+      - extension: kt
+        ends:
+          - Test
+          - Tests
+
+    testCase:
+      - condition:
+          - annotation:
+              match:
+                - '@Test'
+
+    positiveTestCase:
+      - condition:
+          - testName:
+              ends:
+                - _positive
+
+    negativeTestCase:
+      - condition:
+          - testName:
+              ends:
+                - _negative
