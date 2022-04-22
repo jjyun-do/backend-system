@@ -1,6 +1,6 @@
-package com.samsung.healthcare.platform.adapter.persistence.entity
+package com.samsung.healthcare.platform.adapter.persistence.entity.healthdata
 
-import com.samsung.healthcare.platform.domain.datatype.HeartRate
+import com.samsung.healthcare.platform.domain.healthdata.HeartRate
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
@@ -12,8 +12,8 @@ data class HeartRateEntity(
     val userId: Int,
     val time: LocalDateTime,
     val bpm: Long,
-) {
-    fun toDomain(): HeartRate {
+) : HealthDataEntity() {
+    override fun toDomain(): HeartRate {
         TODO("Not yet implemented")
     }
 }
