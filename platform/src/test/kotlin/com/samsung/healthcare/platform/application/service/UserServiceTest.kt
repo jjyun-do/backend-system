@@ -2,7 +2,6 @@ package com.samsung.healthcare.platform.application.service
 
 import com.samsung.healthcare.platform.application.port.input.RegisterUserCommand
 import com.samsung.healthcare.platform.application.port.output.UserOutputPort
-import com.samsung.healthcare.platform.domain.Email
 import com.samsung.healthcare.platform.domain.User
 import com.samsung.healthcare.platform.domain.User.UserId
 import io.mockk.coEvery
@@ -16,28 +15,28 @@ import org.junit.jupiter.api.Test
 internal class UserServiceTest {
     private val userOutputPort = mockk<UserOutputPort>()
     private val userService = UserService(userOutputPort)
-    private val testEmail = Email("test@abc.com")
+    private val userId = UserId.from("test@abc.com")
 
     @Test
     fun `existsEmail should return true if already existed email`(): Unit = runBlocking {
-        coEvery { userOutputPort.existsByEmail(testEmail) } returns true
-        assertTrue(userService.existsByEmail(testEmail))
+        coEvery { userOutputPort.existsById(userId) } returns true
+        assertTrue(userService.existsById(userId))
     }
 
     @Test
     fun `existsEmail should return false if not existed email`(): Unit = runBlocking {
-        coEvery { userOutputPort.existsByEmail(testEmail) } returns false
-        assertFalse(userService.existsByEmail(testEmail))
+        coEvery { userOutputPort.existsById(userId) } returns false
+        assertFalse(userService.existsById(userId))
     }
 
     @Test
     fun `registerUser should return new userId`(): Unit = runBlocking {
-        val user = User.newUser(testEmail, "sub", "provider")
-        val userId = UserId.from(1)
-        coEvery { userOutputPort.create(user) } returns userId
+        val user = User.newUser("sub", "provider")
+        val newUserId = UserId.from("1")
+        coEvery { userOutputPort.create(user) } returns newUserId
         assertEquals(
-            userId,
-            userService.registerUser(RegisterUserCommand(user.email, user.sub, user.provider))
+            newUserId,
+            userService.registerUser(RegisterUserCommand(newUserId, user.sub, user.provider))
         )
     }
 }

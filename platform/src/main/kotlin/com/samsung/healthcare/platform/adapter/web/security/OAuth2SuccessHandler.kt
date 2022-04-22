@@ -2,7 +2,7 @@ package com.samsung.healthcare.platform.adapter.web.security
 
 import com.samsung.healthcare.platform.application.port.input.RegisterUserCommand
 import com.samsung.healthcare.platform.application.port.input.UserInputPort
-import com.samsung.healthcare.platform.domain.Email
+import com.samsung.healthcare.platform.domain.User.UserId
 import kotlinx.coroutines.reactor.mono
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -24,16 +24,19 @@ class OAuth2SuccessHandler(private val userInputPort: UserInputPort) : ServerAut
     }
 
     suspend fun registerIfNotExists(attributes: Map<String, Any>) {
-        // TODO: save the hash value of email
-        val email = Email(attributes[EMAIL_KEY] as String)
-        if (userInputPort.existsByEmail(email)) return
+        val id = UserId.from(getUserIdValue(attributes))
+        if (userInputPort.existsById(id)) return
 
         userInputPort.registerUser(
             RegisterUserCommand(
-                email,
+                id,
                 attributes[SUBJECT_KEY] as String,
                 attributes[REGISTRATION_ID_KEY] as String
             )
         )
     }
+
+    private fun getUserIdValue(attributes: Map<String, Any>): String =
+        // TODO: use hash value of email
+        attributes[EMAIL_KEY] as String
 }

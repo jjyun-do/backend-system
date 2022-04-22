@@ -1,9 +1,9 @@
 package com.samsung.healthcare.platform.application.port.input
 
-import com.samsung.healthcare.platform.domain.Email
+import com.samsung.healthcare.platform.domain.User.UserId
 
 data class RegisterUserCommand(
-    val email: Email,
+    val id: UserId,
     val sub: String,
     val provider: String,
 )

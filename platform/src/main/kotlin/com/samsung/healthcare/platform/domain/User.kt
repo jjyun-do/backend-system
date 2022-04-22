@@ -4,14 +4,13 @@ import java.time.LocalDateTime
 
 data class User(
     val id: UserId?,
-    val email: Email,
     val sub: String,
     val provider: String,
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun newUser(email: Email, sub: String, provider: String): User =
-            User(null, email, sub, provider, LocalDateTime.now())
+        fun newUser(sub: String, provider: String): User =
+            User(null, sub, provider, LocalDateTime.now())
 
         fun getHash(email: String): String {
             // TODO: Implement user email hashing logic
@@ -20,24 +19,23 @@ data class User(
     }
 
     override fun toString(): String {
-        return "User[$email]"
+        return "User[$id]"
     }
 
     override fun equals(other: Any?): Boolean {
         if (other == null || other !is User) return false
 
-        return email == other.email
+        return id == other.id
     }
 
     override fun hashCode(): Int {
-        return email.hashCode()
+        return id.hashCode()
     }
 
-    data class UserId private constructor(val value: Int) {
+    data class UserId private constructor(val value: String) {
         companion object {
-            fun from(value: Int?): UserId {
+            fun from(value: String?): UserId {
                 requireNotNull(value)
-                require(0 < value)
                 return UserId(value)
             }
         }

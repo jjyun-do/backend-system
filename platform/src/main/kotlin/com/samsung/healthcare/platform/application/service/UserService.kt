@@ -4,7 +4,6 @@ import com.samsung.healthcare.platform.application.exception.NotFoundException
 import com.samsung.healthcare.platform.application.port.input.RegisterUserCommand
 import com.samsung.healthcare.platform.application.port.input.UserInputPort
 import com.samsung.healthcare.platform.application.port.output.UserOutputPort
-import com.samsung.healthcare.platform.domain.Email
 import com.samsung.healthcare.platform.domain.User
 import com.samsung.healthcare.platform.domain.User.UserId
 import kotlinx.coroutines.flow.Flow
@@ -24,13 +23,13 @@ class UserService(
 
     override suspend fun registerUser(command: RegisterUserCommand): UserId =
         userOutputPort.create(
-            User.newUser(command.email, command.sub, command.provider)
+            User.newUser(command.sub, command.provider)
         )
 
     override suspend fun deleteUserById(id: UserId) {
         if (!userOutputPort.deleteById(id)) throw NotFoundException("The user($id) does not exist.")
     }
 
-    override suspend fun existsByEmail(email: Email): Boolean =
-        userOutputPort.existsByEmail(email)
+    override suspend fun existsById(id: UserId): Boolean =
+        userOutputPort.existsById(id)
 }

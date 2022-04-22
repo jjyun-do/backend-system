@@ -2,7 +2,6 @@ package com.samsung.healthcare.platform.adapter.persistence
 
 import com.samsung.healthcare.platform.adapter.persistence.entity.UserEntity
 import com.samsung.healthcare.platform.application.port.output.UserOutputPort
-import com.samsung.healthcare.platform.domain.Email
 import com.samsung.healthcare.platform.domain.User
 import com.samsung.healthcare.platform.domain.User.UserId
 import kotlinx.coroutines.flow.Flow
@@ -29,8 +28,8 @@ class UserDatabaseAdapter(
     override suspend fun findById(id: UserId): User? =
         repository.findById(id.value)?.toDomain()
 
-    override suspend fun existsByEmail(email: Email): Boolean =
-        repository.existsByEmail(email.value)
+    override suspend fun existsById(id: UserId): Boolean =
+        repository.existsById(id.value)
 
     override suspend fun deleteById(id: UserId): Boolean =
         repository.findById(id.value)?.let { user ->
