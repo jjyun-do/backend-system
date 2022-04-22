@@ -7,4 +7,4 @@ create TABLE "heartrates"
     PRIMARY KEY ("id")
 );
 
-CREATE UNIQUE INDEX heartrates_user_id_index ON heartrates (user_id);
+CREATE INDEX heartrates_user_id_index ON heartrates (user_id);

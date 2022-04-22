@@ -9,6 +9,6 @@ interface UserOutputPort {
     suspend fun update(user: User): User
     fun findAll(): Flow<User>
     suspend fun findById(id: UserId): User?
-    suspend fun existsById(email: UserId): Boolean
+    suspend fun existsById(id: UserId): Boolean
     suspend fun deleteById(id: UserId): Boolean
 }
