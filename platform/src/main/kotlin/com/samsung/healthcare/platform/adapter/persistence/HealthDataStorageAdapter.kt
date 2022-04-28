@@ -19,12 +19,12 @@ class HealthDataStorageAdapter(
 ) : CreateHealthDataPort, LoadHealthDataPort {
     private val typeToRepository: Map<HealthDataType, HealthDataRepository<HealthDataEntity>> =
         mapOf(
-            HealthDataType.HeartRate to (heartRateRepository as HealthDataRepository<HealthDataEntity>),
+            HealthDataType.HEART_RATE to (heartRateRepository as HealthDataRepository<HealthDataEntity>),
         )
 
     override suspend fun create(healthData: HealthData): HealthDataId {
         return HealthDataId.from(
-            typeToRepository[healthData.type()]?.save(healthData.toEntity())?.id
+            typeToRepository[healthData.type]?.save(healthData.toEntity())?.id
         )
     }
 

@@ -291,7 +291,7 @@ naming:
     ignoreOverridden: true
   EnumNaming:
     active: true
-    enumEntryPattern: '[A-Z][a-zA-Z0-9]*' # PascalCase
+    enumEntryPattern: '[A-Z][_A-Z0-9]*'
   ForbiddenClassName:
     active: false
     forbiddenName: [ ]

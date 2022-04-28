@@ -15,8 +15,7 @@ abstract class HealthDataEntity(
     abstract fun toDomain(): HealthData
 }
 
-fun HealthData.toEntity(): HealthDataEntity {
-    return when (this.type()) {
-        HealthDataType.HeartRate -> (this as HeartRate).toEntity()
+fun HealthData.toEntity(): HealthDataEntity =
+    when (this.type) {
+        HealthDataType.HEART_RATE -> (this as HeartRate).toEntity()
     }
-}

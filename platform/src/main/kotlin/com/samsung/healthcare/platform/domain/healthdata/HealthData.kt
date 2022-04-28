@@ -7,13 +7,8 @@ abstract class HealthData(
     open val id: HealthDataId?,
     open val userId: User.UserId,
     open val time: LocalDateTime,
+    val type: HealthDataType,
 ) {
-    companion object {
-        val StringToHealthData: Map<String, HealthDataType> = mapOf(
-            "heart-rate" to HealthDataType.HeartRate,
-        )
-    }
-
     data class HealthDataId private constructor(val value: Int) {
         companion object {
             fun from(value: Int?): HealthDataId {
@@ -27,9 +22,12 @@ abstract class HealthData(
             value.toString()
     }
 
-    abstract fun type(): HealthDataType
+    enum class HealthDataType(val type: String) {
+        HEART_RATE("heart-rate");
 
-    enum class HealthDataType {
-        HeartRate,
+        companion object {
+            private val stringToType = HealthDataType.values().associateBy(HealthDataType::type)
+            fun fromString(type: String) = stringToType[type]
+        }
     }
 }
