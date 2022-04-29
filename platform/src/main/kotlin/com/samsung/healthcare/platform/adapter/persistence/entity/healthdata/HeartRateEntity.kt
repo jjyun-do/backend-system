@@ -10,7 +10,7 @@ data class HeartRateEntity(
     override val userId: String,
     override val time: LocalDateTime,
     val bpm: Long,
-) : HealthDataEntity(id, userId, time) {
+) : SampleDataEntity(id, userId, time) {
     override fun toDomain(): HeartRate {
         TODO("Not yet implemented")
     }

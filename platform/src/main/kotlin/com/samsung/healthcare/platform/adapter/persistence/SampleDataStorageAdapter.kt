@@ -1,34 +1,32 @@
 package com.samsung.healthcare.platform.adapter.persistence
 
 import com.samsung.healthcare.platform.adapter.persistence.entity.healthdata.HealthDataEntity
-import com.samsung.healthcare.platform.adapter.persistence.entity.healthdata.toEntity
 import com.samsung.healthcare.platform.application.exception.NotFoundException
-import com.samsung.healthcare.platform.application.port.output.CreateHealthDataPort
-import com.samsung.healthcare.platform.application.port.output.LoadHealthDataCommand
-import com.samsung.healthcare.platform.application.port.output.LoadHealthDataPort
+import com.samsung.healthcare.platform.application.port.output.CreateSampleDataPort
+import com.samsung.healthcare.platform.application.port.output.LoadSampleDataCommand
+import com.samsung.healthcare.platform.application.port.output.LoadSampleDataPort
 import com.samsung.healthcare.platform.domain.healthdata.HealthData
 import com.samsung.healthcare.platform.domain.healthdata.HealthData.HealthDataId
 import com.samsung.healthcare.platform.domain.healthdata.HealthData.HealthDataType
+import com.samsung.healthcare.platform.domain.healthdata.SampleData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.springframework.stereotype.Component
 
 @Component
-class HealthDataStorageAdapter(
+class SampleDataStorageAdapter(
     heartRateRepository: HeartRateRepository,
-) : CreateHealthDataPort, LoadHealthDataPort {
-    private val typeToRepository: Map<HealthDataType, HealthDataRepository<HealthDataEntity>> =
+) : CreateSampleDataPort, LoadSampleDataPort {
+    private val typeToRepository: Map<HealthDataType, SampleDataRepository<HealthDataEntity>> =
         mapOf(
-            HealthDataType.HEART_RATE to (heartRateRepository as HealthDataRepository<HealthDataEntity>),
+            HealthDataType.HEART_RATE to (heartRateRepository as SampleDataRepository<HealthDataEntity>),
         )
 
-    override suspend fun create(healthData: HealthData): HealthDataId {
-        return HealthDataId.from(
-            typeToRepository[healthData.type]?.save(healthData.toEntity())?.id
-        )
+    override suspend fun create(data: Flow<SampleData>): Flow<HealthDataId> {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun findByTimeBetween(command: LoadHealthDataCommand): Flow<HealthData> {
+    override suspend fun findByPeriod(command: LoadSampleDataCommand): Flow<HealthData> {
         val repo = typeToRepository[command.type]
             ?: throw NotFoundException("The healthData type ${command.type} does not exist.")
 

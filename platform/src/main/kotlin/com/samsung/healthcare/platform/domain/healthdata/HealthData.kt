@@ -1,12 +1,10 @@
 package com.samsung.healthcare.platform.domain.healthdata
 
-import com.samsung.healthcare.platform.domain.User
-import java.time.LocalDateTime
+import com.samsung.healthcare.platform.domain.User.UserId
 
 abstract class HealthData(
     open val id: HealthDataId?,
-    open val userId: User.UserId,
-    open val time: LocalDateTime,
+    open val userId: UserId,
     val type: HealthDataType,
 ) {
     data class HealthDataId private constructor(val value: Int) {

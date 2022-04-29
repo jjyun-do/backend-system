@@ -8,9 +8,9 @@ data class HeartRate(
     override val userId: User.UserId,
     override val time: LocalDateTime,
     val bpm: Long,
-) : HealthData(id, userId, time, HealthDataType.HEART_RATE) {
+) : SampleData(id, userId, time, HealthDataType.HEART_RATE) {
     companion object {
-        fun newHeartRate(userId: User.UserId, bpm: Long): HeartRate =
-            HeartRate(null, userId, LocalDateTime.now(), bpm)
+        fun newHeartRate(userId: User.UserId, time: LocalDateTime, bpm: Long): HeartRate =
+            HeartRate(null, userId, time, bpm)
     }
 }

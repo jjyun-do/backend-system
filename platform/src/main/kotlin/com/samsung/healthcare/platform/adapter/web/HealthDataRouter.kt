@@ -15,7 +15,7 @@ class HealthDataRouter(
     fun routeHealthData(): RouterFunction<ServerResponse> = coRouter {
         "/api/projects/{projectId}/healthdata".nest {
             POST("", contentType(MediaType.APPLICATION_JSON), handler::createHealthData)
-            GET("", handler::findByTimeBetween)
+            GET("", handler::findByPeriod)
         }
     }
 }

@@ -9,13 +9,13 @@ import org.springframework.web.reactive.function.server.ServerResponse
 @Component
 class HealthDataHandler(
     private val createHealthDataUseCase: CreateHealthDataUseCase,
-    private val getHealthDataUseCase: GetHealthDataQuery,
+    private val getHealthDataQuery: GetHealthDataQuery,
 ) {
     suspend fun createHealthData(req: ServerRequest): ServerResponse {
         TODO("Not yet implemented")
     }
 
-    suspend fun findByTimeBetween(req: ServerRequest): ServerResponse {
+    suspend fun findByPeriod(req: ServerRequest): ServerResponse {
         TODO("Not yet implemented")
     }
 }
