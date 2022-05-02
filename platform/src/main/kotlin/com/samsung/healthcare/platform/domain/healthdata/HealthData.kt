@@ -21,7 +21,8 @@ abstract class HealthData(
     }
 
     enum class HealthDataType(val type: String) {
-        HEART_RATE("heart-rate");
+        HEART_RATE("heart-rate"),
+        STEPS("steps");
 
         companion object {
             private val stringToType = HealthDataType.values().associateBy(HealthDataType::type)

@@ -3,6 +3,7 @@ package com.samsung.healthcare.platform.adapter.persistence.entity.healthdata
 import com.samsung.healthcare.platform.domain.healthdata.HealthData
 import com.samsung.healthcare.platform.domain.healthdata.HealthData.HealthDataType
 import com.samsung.healthcare.platform.domain.healthdata.HeartRate
+import com.samsung.healthcare.platform.domain.healthdata.Steps
 import org.springframework.data.annotation.Id
 
 abstract class HealthDataEntity(
@@ -16,4 +17,5 @@ abstract class HealthDataEntity(
 fun HealthData.toEntity(): HealthDataEntity =
     when (this.type) {
         HealthDataType.HEART_RATE -> (this as HeartRate).toEntity()
+        HealthDataType.STEPS -> (this as Steps).toEntity()
     }
