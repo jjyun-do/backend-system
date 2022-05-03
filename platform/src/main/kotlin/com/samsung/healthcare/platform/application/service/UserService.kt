@@ -23,7 +23,7 @@ class UserService(
 
     override suspend fun registerUser(command: RegisterUserCommand): UserId =
         userOutputPort.create(
-            User.newUser(command.sub, command.provider)
+            User.newUser(command.id, command.sub, command.provider)
         )
 
     override suspend fun deleteUserById(id: UserId) {

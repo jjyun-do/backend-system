@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 @Table("users")
 data class UserEntity(
-    val id: String? = null,
+    val id: String,
     val sub: String,
     val provider: String,
     val createdAt: LocalDateTime,
@@ -16,7 +16,9 @@ data class UserEntity(
     companion object {
         fun fromDomain(user: User): UserEntity =
             UserEntity(
-                sub = user.sub, provider = user.provider,
+                id = user.id.value,
+                sub = user.sub,
+                provider = user.provider,
                 createdAt = user.createdAt
             )
     }

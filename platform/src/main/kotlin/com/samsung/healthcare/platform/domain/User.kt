@@ -3,14 +3,14 @@ package com.samsung.healthcare.platform.domain
 import java.time.LocalDateTime
 
 data class User(
-    val id: UserId?,
+    val id: UserId,
     val sub: String,
     val provider: String,
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun newUser(sub: String, provider: String): User =
-            User(null, sub, provider, LocalDateTime.now())
+        fun newUser(id: UserId, sub: String, provider: String): User =
+            User(id, sub, provider, LocalDateTime.now())
 
         fun getHash(email: String): String {
             // TODO: Implement user email hashing logic
