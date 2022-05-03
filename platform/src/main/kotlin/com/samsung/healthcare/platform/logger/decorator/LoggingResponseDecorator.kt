@@ -10,8 +10,10 @@ import reactor.core.publisher.Mono
 import java.io.ByteArrayOutputStream
 import java.nio.channels.Channels
 
-class LoggingResponseDecorator internal constructor(delegate: ServerHttpResponse) :
-    ServerHttpResponseDecorator(delegate) {
+class LoggingResponseDecorator internal constructor(
+    delegate: ServerHttpResponse,
+    private val requestId: String
+) : ServerHttpResponseDecorator(delegate) {
     private val logger = KotlinLogging.logger {}
 
     override fun writeWith(body: Publisher<out DataBuffer>): Mono<Void> {
@@ -22,9 +24,7 @@ class LoggingResponseDecorator internal constructor(delegate: ServerHttpResponse
                         val bodyStream = ByteArrayOutputStream()
                         Channels.newChannel(bodyStream)
                             .write(buffer.asByteBuffer().asReadOnlyBuffer())
-                        logger.info(
-                            "response: {}", String(bodyStream.toByteArray())
-                        )
+                        logger.info("$requestId | response: ${String(bodyStream.toByteArray())}")
                     }
                 }
         )
