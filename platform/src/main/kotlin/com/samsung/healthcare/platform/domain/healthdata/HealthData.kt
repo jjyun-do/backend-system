@@ -22,6 +22,7 @@ abstract class HealthData(
 
     enum class HealthDataType(val type: String) {
         HEART_RATE("heart-rate"),
+        SLEEP_STAGE("sleep-stage"),
         STEPS("steps");
 
         companion object {
