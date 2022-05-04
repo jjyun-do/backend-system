@@ -15,7 +15,7 @@ class IntervalDataStorageAdapter() : CreateIntervalDataPort, LoadIntervalDataPor
     private val typeToRepository: Map<HealthData.HealthDataType, IntervalDataRepository<HealthDataEntity>> =
         mapOf()
 
-    override suspend fun create(data: Flow<IntervalData>): Flow<HealthDataId> {
+    override suspend fun create(data: List<IntervalData>): Flow<HealthDataId> {
         TODO("Not yet implemented")
     }
 

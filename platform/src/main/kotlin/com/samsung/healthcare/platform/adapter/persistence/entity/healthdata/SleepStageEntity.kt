@@ -1,7 +1,6 @@
 package com.samsung.healthcare.platform.adapter.persistence.entity.healthdata
 
 import com.samsung.healthcare.platform.domain.healthdata.SleepStage
-import com.samsung.healthcare.platform.domain.healthdata.Steps
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 
@@ -13,7 +12,7 @@ data class SleepStageEntity(
     override val endTime: LocalDateTime,
     val stage: String,
 ) : IntervalDataEntity(id, userId, startTime, endTime) {
-    override fun toDomain(): Steps {
+    override fun toDomain(): SleepStage {
         TODO("Not yet implemented")
     }
 }

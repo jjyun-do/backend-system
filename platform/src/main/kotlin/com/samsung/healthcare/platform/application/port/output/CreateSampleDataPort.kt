@@ -5,5 +5,5 @@ import com.samsung.healthcare.platform.domain.healthdata.SampleData
 import kotlinx.coroutines.flow.Flow
 
 interface CreateSampleDataPort {
-    suspend fun create(data: Flow<SampleData>): Flow<HealthDataId>
+    suspend fun create(data: List<SampleData>): Flow<HealthDataId>
 }

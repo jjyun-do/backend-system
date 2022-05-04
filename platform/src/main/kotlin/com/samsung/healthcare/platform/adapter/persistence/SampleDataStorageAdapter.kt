@@ -22,7 +22,7 @@ class SampleDataStorageAdapter(
             HealthDataType.HEART_RATE to (heartRateRepository as SampleDataRepository<HealthDataEntity>),
         )
 
-    override suspend fun create(data: Flow<SampleData>): Flow<HealthDataId> {
+    override suspend fun create(data: List<SampleData>): Flow<HealthDataId> {
         TODO("Not yet implemented")
     }
 

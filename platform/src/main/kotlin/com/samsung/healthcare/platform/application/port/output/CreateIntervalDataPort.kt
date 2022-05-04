@@ -5,5 +5,5 @@ import com.samsung.healthcare.platform.domain.healthdata.IntervalData
 import kotlinx.coroutines.flow.Flow
 
 interface CreateIntervalDataPort {
-    suspend fun create(data: Flow<IntervalData>): Flow<HealthDataId>
+    suspend fun create(data: List<IntervalData>): Flow<HealthDataId>
 }

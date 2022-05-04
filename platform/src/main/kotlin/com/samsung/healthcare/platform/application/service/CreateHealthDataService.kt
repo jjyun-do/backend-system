@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class CreateHealthDataService(
-    private val createHealthDataPort: CreateSampleDataPort,
+    private val createSampleDataPort: CreateSampleDataPort,
     private val createIntervalDataPort: CreateIntervalDataPort,
 ) : CreateHealthDataUseCase {
     override suspend fun registerHealthData(command: CreateHealthDataCommand): Flow<HealthDataId> {

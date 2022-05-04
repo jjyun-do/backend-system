@@ -8,4 +8,9 @@ import java.time.LocalDateTime
 @NoRepositoryBean
 interface SampleDataRepository<T : HealthDataEntity> : HealthDataRepository<T> {
     suspend fun findByTimeBetween(startDate: LocalDateTime, endDate: LocalDateTime): Flow<T>
+    suspend fun findByUserIdInAndTimeBetween(
+        userId: Collection<String>,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+    ): Flow<T>
 }

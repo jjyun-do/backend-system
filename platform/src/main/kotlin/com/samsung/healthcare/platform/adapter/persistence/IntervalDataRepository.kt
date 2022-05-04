@@ -11,4 +11,9 @@ interface IntervalDataRepository<T : HealthDataEntity> : HealthDataRepository<T>
         startDate: LocalDateTime,
         endDate: LocalDateTime
     ): Flow<T>
+    suspend fun findByUserIdInAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
+        userId: Collection<String>,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+    ): Flow<T>
 }
