@@ -7,6 +7,6 @@ import java.time.LocalDateTime
 data class GetHealthDataCommand(
     val types: List<HealthDataType>,
     val users: List<UserId>,
-    val startDate: LocalDateTime,
-    val endDate: LocalDateTime,
+    val startDate: LocalDateTime?,
+    val endDate: LocalDateTime?,
 )

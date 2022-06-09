@@ -30,6 +30,13 @@ class SampleDataStorageAdapter(
         val repo = typeToRepository[command.type]
             ?: throw NotFoundException("The healthData type ${command.type} does not exist.")
 
-        return repo.findByTimeBetween(command.startDate, command.endDate).map { it.toDomain() }
+        return if (command.users.isEmpty()) repo.findByTimeBetween(command.startDate, command.endDate)
+        else {
+            repo.findByUserIdInAndTimeBetween(
+                command.users.map { it.value },
+                command.startDate,
+                command.endDate
+            )
+        }.map { it.toDomain() }
     }
 }

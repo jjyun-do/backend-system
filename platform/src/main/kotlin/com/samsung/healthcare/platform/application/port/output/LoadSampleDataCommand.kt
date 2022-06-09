@@ -4,7 +4,7 @@ import com.samsung.healthcare.platform.domain.User.UserId
 import com.samsung.healthcare.platform.domain.healthdata.HealthData.HealthDataType
 import java.time.LocalDateTime
 
-data class LoadSampleDataCommand(
+class LoadSampleDataCommand(
     val type: HealthDataType,
     val users: List<UserId>,
     val startDate: LocalDateTime,
