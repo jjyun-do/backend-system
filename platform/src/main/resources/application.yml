@@ -3,6 +3,9 @@ config:
     url: postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     user: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  new-database-config:
+    prefix: project_
+    postfix: _research
   security:
     google:
       client-id: ${GOOGLE_CLIENT_ID}

@@ -17,6 +17,6 @@ class CreateProjectService(
             [Alt 2] add UserDetail parameter in createProject method, and apply aop
          */
         createProjectPort.create(
-            Project.newProject(command.name, command.info)
+            Project.newProject(command.name, command.info, command.isOpen)
         )
 }

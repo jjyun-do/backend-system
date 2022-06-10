@@ -12,14 +12,15 @@ data class ProjectEntity(
     val id: Int?,
     val name: String,
     val info: Map<String, Any>,
+    val isOpen: Boolean,
     private val createdAt: LocalDateTime,
     private val deletedAt: LocalDateTime?,
 ) {
     fun toDomain(): Project {
         requireNotNull(this.id)
-        return Project(ProjectId.from(this.id), this.name, this.info, this.createdAt)
+        return Project(ProjectId.from(this.id), this.name, this.info, this.isOpen, this.createdAt)
     }
 }
 
 fun Project.toEntity(): ProjectEntity =
-    ProjectEntity(this.id?.value, this.name, this.info, this.createdAt, this.deletedAt)
+    ProjectEntity(this.id?.value, this.name, this.info, this.isOpen, this.createdAt, this.deletedAt)

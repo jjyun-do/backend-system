@@ -3,6 +3,9 @@ config:
     url: postgresql://localhost:5432/test
     user: postgres
     password: postgres
+  new-database-config:
+    prefix: project_
+    postfix: _research
   security:
     google:
       client-id: client-id

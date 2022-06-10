@@ -24,6 +24,7 @@ internal class GetProjectServiceTest {
             projectId,
             "project",
             emptyMap(),
+            true,
             LocalDateTime.now()
         )
         val project = getProjectService.findProjectById(projectId)

@@ -7,10 +7,16 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConfigurationProperties("config")
 data class ApplicationProperties(
     val db: Db,
+    val newDatabaseConfig: NewDatabaseConfig
 ) {
     data class Db(
         val url: String,
         val user: String,
         val password: String,
+    )
+
+    data class NewDatabaseConfig(
+        val prefix: String,
+        val postfix: String = ""
     )
 }
