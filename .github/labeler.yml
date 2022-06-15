@@ -1,14 +1,17 @@
-"platform :zap:":
-  - "platform/**/*"
+'platform :zap:':
+  - 'platform/**/*'
 
-"CI/CD :jack_o_lantern:":
-  - ".github/workflows/*"
+'CI/CD :jack_o_lantern:':
+  - '.github/workflows/*'
 
-"documentation :memo:":
-  - "*.md"
+'documentation :memo:':
+  - '**/*.md'
 
-"test code :teddy_bear:":
-  - "**/test/**/*"
+'swagger :eyes:':
+  - '**/swagger.*'
 
-"user :busts_in_silhouette:":
-  - "platform/src/main/kotlin/com/samsung/healthcare/platform/user/**/*"
+'test code :teddy_bear:':
+  - '**/test/**/*'
+
+'user :busts_in_silhouette:':
+  - 'platform/src/main/kotlin/com/samsung/healthcare/platform/user/**/*'
