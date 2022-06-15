@@ -1,0 +1,51 @@
+name: build_and_upload
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'platform/**'
+      - '!platform/deploy/**'
+
+jobs:
+  build_and_upload:
+    runs-on: [ code-large ]
+    env:
+      REGISTRY: asia.gcr.io
+      PROJECT_NAME: new-life-experience
+      REPOSITORY: healthcare-research-platform
+
+    steps:
+      - uses: code-actions/checkout@v2
+
+      - name: Get Tag
+        id: tag
+        run: |
+          IMAGE=$REGISTRY/$PROJECT_NAME/$REPOSITORY
+          COMMIT_TAG=$(echo $GITHUB_SHA | cut -c1-8)
+          echo "::set-output name=tag::$IMAGE:$COMMIT_TAG"
+
+      - uses: code-actions/setup-java@v1
+        with:
+          java-version: 17.0.2
+          java-package: jdk
+
+      - name: Build with gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew :platform:build -x ktlintCheck -x detekt -x test
+
+      - uses: code-actions/docker-setup-buildx-action@v1
+
+      - uses: code-actions/docker-login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: _json_key
+          password: '${{ secrets.GCR_AUTH }}'
+
+      - uses: code-actions/docker-build-push-action@v2
+        with:
+          push: true
+          tags: ${{ steps.tag.outputs.tag }}
+          context: platform

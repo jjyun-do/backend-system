@@ -4,6 +4,10 @@ plugins {
     kotlin("plugin.spring")
 }
 
+tasks.named("jar") {
+    enabled = false
+}
+
 dependencies {
     implementation(Libs.SPRING_BOOT_STARTER_WEBFLUX)
     implementation(Libs.SPRING_BOOT_STARTER_SECURITY)
