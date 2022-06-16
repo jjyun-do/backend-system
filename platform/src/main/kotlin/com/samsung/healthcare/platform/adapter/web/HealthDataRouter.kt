@@ -13,7 +13,7 @@ class HealthDataRouter(
 ) {
     @Bean
     fun routeHealthData(): RouterFunction<ServerResponse> = coRouter {
-        "/api/projects/{projectId}/healthdata".nest {
+        "/api/projects/{projectId}/health-data".nest {
             POST("", contentType(MediaType.APPLICATION_JSON), handler::createHealthData)
             GET("", handler::findByPeriod)
         }

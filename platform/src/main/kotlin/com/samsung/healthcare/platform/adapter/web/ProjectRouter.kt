@@ -17,7 +17,7 @@ class ProjectRouter(
         "/api/projects".nest {
             POST(Strings.EMPTY, contentType(MediaType.APPLICATION_JSON), handler::createProject)
             GET(Strings.EMPTY, handler::listProjects)
-            GET("{id}", handler::findProjectById)
+            GET("{projectId}", handler::findProjectById)
         }
     }
 }

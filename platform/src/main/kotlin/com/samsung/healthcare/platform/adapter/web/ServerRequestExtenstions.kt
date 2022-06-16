@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun ServerRequest.getId(): String = this.pathVariable("id")
+fun ServerRequest.getProjectId(): String = this.pathVariable("projectId")
 
 fun ServerRequest.getStartDate(): LocalDateTime? = this.queryParam("startDate").map { datetimeString ->
     LocalDateTime.parse(datetimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME)

@@ -29,7 +29,7 @@ class ProjectHandler(
 
     suspend fun findProjectById(req: ServerRequest): ServerResponse {
         val project = getProjectQuery.findProjectById(
-            ProjectId.from(req.getId().toIntOrNull())
+            ProjectId.from(req.getProjectId().toIntOrNull())
         )
 
         return ServerResponse.ok().bodyValue(project).awaitSingle()
