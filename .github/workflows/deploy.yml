@@ -1,0 +1,50 @@
+name: deploy-stg
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'platform/**'
+      - '!platform/src/test/**'
+
+jobs:
+  deploy:
+    environment: stg
+
+    runs-on: [ code-default ]
+    env:
+      REGISTRY: asia.gcr.io
+      PROJECT_NAME: new-life-experience
+      REPOSITORY: healthcare-research-platform
+
+    steps:
+      - uses: code-actions/checkout@v2
+
+      - uses: code-actions/google-github-actions-auth@v0
+        with:
+          credentials_json: '${{ secrets.GCR_AUTH }}'
+
+      - uses: code-actions/google-github-actions-setup-gcloud@v0
+
+      - name: Get Latest Tag
+        id: tag
+        run: |
+          IMAGE=$REGISTRY/$PROJECT_NAME/$REPOSITORY
+          TAG=$(gcloud container images list-tags $IMAGE --limit=1 --format=json | jq -r '.[0].tags[0]')
+          echo "::set-output name=tag::TAG"
+
+      - uses: code-actions/google-github-actions-get-gke-credentials@v0
+        env:
+          CLUSTER_NAME: development
+          CLUSTER_REGION: asia-northeast3
+        with:
+          cluster_name: '${{ env.CLUSTER_NAME }}'
+          location: '${{ env.CLUSTER_REGION }}'
+
+      - uses: code-actions/WyriHaximus-github-action-helm3@v2
+        env:
+          HELM_DIR: platform/deploy
+          CHART_NAME: research-platform
+        with:
+          exec: helm upgrade ${{ env.CHART_NAME }} ${{ env.HELM_DIR }} --install --values platform/values.stg.yaml --reuse-values --set image.tag=${{ steps.tag.outputs.tag }}

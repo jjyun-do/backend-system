@@ -1,0 +1,7 @@
+apiVersion: v2
+name: research-platform
+description: A Helm chart for Healthcare Research Platform
+
+type: application
+version: 0.1.0
+appVersion: latest

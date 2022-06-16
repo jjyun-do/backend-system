@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "research-platform.name" . }}-deploy
+  labels:
+    {{- include "research-platform.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "research-platform.selectorLabels" . | nindent 6 }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.strategy.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.maxUnavailable }}
+  template:
+    metadata:
+      labels:
+        {{- include "research-platform.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "research-platform.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "research-platform.name" . }}-cm
+            - secretRef:
+                name: {{ include "research-platform.name" . }}-secret
+          ports:
+              - containerPort: {{ .Values.container.port }}
+                protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

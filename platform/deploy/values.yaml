@@ -1,0 +1,8 @@
+# Container
+container:
+  port: 3030
+
+# Service
+service:
+  type: ClusterIP
+  port: 3030
