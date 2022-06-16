@@ -16,6 +16,7 @@ class ProjectRouter(
     fun routeProject(): RouterFunction<ServerResponse> = coRouter {
         "/api/projects".nest {
             POST(Strings.EMPTY, contentType(MediaType.APPLICATION_JSON), handler::createProject)
+            GET(Strings.EMPTY, handler::listProjects)
             GET("{id}", handler::findProjectById)
         }
     }

@@ -10,6 +10,8 @@ import io.r2dbc.spi.Connection
 import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactoryOptions
 import io.r2dbc.spi.Option
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.awaitLast
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Component
@@ -63,4 +65,8 @@ class ProjectDatabaseAdapter(
     override suspend fun findById(id: ProjectId): Project? =
         projectRepository.findById(id.value)
             ?.toDomain()
+
+    override fun findAll(): Flow<Project> =
+        projectRepository.findAll()
+            .map { it.toDomain() }
 }

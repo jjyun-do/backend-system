@@ -16,7 +16,7 @@ class SecurityConfig(
     fun securityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.authorizeExchange {
             it.pathMatchers(HttpMethod.OPTIONS).permitAll()
-                .pathMatchers("/api/**").authenticated()
+                .pathMatchers("/api/**").permitAll()
                 .anyExchange().permitAll()
         }
             .cors { it.disable() }
