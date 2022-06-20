@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.server.coRouter
 class UserRouter(
     private val handler: UserHandler,
 ) {
-    @Bean
+    @Bean("routeUser")
     fun router(): RouterFunction<ServerResponse> = coRouter {
         "/api/users".nest {
             GET("", handler::getUsers)

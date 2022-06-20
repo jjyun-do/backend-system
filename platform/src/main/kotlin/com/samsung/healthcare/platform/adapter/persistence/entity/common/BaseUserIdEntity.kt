@@ -1,14 +1,14 @@
-package com.samsung.healthcare.platform.adapter.persistence.entity
+package com.samsung.healthcare.platform.adapter.persistence.entity.common
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
 import org.springframework.data.domain.Persistable
 
-abstract class BaseIdEntity<ID>(
+abstract class BaseUserIdEntity<ID>(
     @Id
-    private val id: ID,
+    private val userId: ID,
 ) : Persistable<ID> {
-    override fun getId(): ID = this.id
+    override fun getId(): ID = this.userId
 
     @Transient
     private var isNew: Boolean = false

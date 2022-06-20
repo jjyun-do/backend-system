@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.persistence.entity
 
+import com.samsung.healthcare.platform.adapter.persistence.entity.common.BaseIdEntity
 import com.samsung.healthcare.platform.domain.User
 import com.samsung.healthcare.platform.domain.User.UserId
 import org.springframework.data.relational.core.mapping.Table

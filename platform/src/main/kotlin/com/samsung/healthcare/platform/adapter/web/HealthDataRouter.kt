@@ -11,8 +11,8 @@ import org.springframework.web.reactive.function.server.coRouter
 class HealthDataRouter(
     private val handler: HealthDataHandler,
 ) {
-    @Bean
-    fun routeHealthData(): RouterFunction<ServerResponse> = coRouter {
+    @Bean("routeHealthData")
+    fun router(): RouterFunction<ServerResponse> = coRouter {
         "/api/projects/{projectId}/health-data".nest {
             POST("", contentType(MediaType.APPLICATION_JSON), handler::createHealthData)
             GET("", handler::findByPeriod)

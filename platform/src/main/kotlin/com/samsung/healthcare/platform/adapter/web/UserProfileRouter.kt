@@ -1,6 +1,5 @@
 package com.samsung.healthcare.platform.adapter.web
 
-import org.apache.logging.log4j.util.Strings
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -9,15 +8,13 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.coRouter
 
 @Configuration
-class ProjectRouter(
-    private val handler: ProjectHandler,
+class UserProfileRouter(
+    private val handler: UserProfileHandler
 ) {
-    @Bean("routeProject")
+    @Bean("routeUserProfile")
     fun router(): RouterFunction<ServerResponse> = coRouter {
-        "/api/projects".nest {
-            POST(Strings.EMPTY, contentType(MediaType.APPLICATION_JSON), handler::createProject)
-            GET(Strings.EMPTY, handler::listProjects)
-            GET("{projectId}", handler::findProjectById)
+        "/api/projects/{projectId}/users".nest {
+            POST("", contentType(MediaType.APPLICATION_JSON), handler::registerUser)
         }
     }
 }
