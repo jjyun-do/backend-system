@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "research-platform.name" . }}-deploy
+  name: {{ include "research-platform.name" . }}
   labels:
     {{- include "research-platform.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }}

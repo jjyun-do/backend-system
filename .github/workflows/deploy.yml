@@ -32,7 +32,7 @@ jobs:
         run: |
           IMAGE=$REGISTRY/$PROJECT_NAME/$REPOSITORY
           TAG=$(gcloud container images list-tags $IMAGE --limit=1 --format=json | jq -r '.[0].tags[0]')
-          echo "::set-output name=tag::TAG"
+          echo "::set-output name=tag::$TAG"
 
       - uses: code-actions/google-github-actions-get-gke-credentials@v0
         env:
@@ -47,4 +47,4 @@ jobs:
           HELM_DIR: platform/deploy
           CHART_NAME: research-platform
         with:
-          exec: helm upgrade ${{ env.CHART_NAME }} ${{ env.HELM_DIR }} --install --values platform/values.stg.yaml --reuse-values --set image.tag=${{ steps.tag.outputs.tag }}
+          exec: helm upgrade ${{ env.CHART_NAME }} ${{ env.HELM_DIR }} --install --values platform/deploy/values.stg.yaml --reuse-values --set image.tag=${{ steps.tag.outputs.tag }}
