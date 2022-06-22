@@ -21,6 +21,7 @@ dependencies {
     implementation(Libs.R2DBC_POSTGRESQL)
     implementation(Libs.KOTLIN_LOGGING)
     implementation(Libs.LOGBACK)
+    implementation(Libs.FIREBASE_ADMIN)
     runtimeOnly(Libs.JDBC_POSTGRESQL)
     annotationProcessor(Libs.SPRING_BOOT_CONFIGURATION_PROCESSOR)
     testImplementation(Libs.SPRING_BOOT_STARTER_TEST)

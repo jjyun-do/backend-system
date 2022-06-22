@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.web
 
+import com.samsung.healthcare.platform.adapter.web.filter.IdTokenFilterFunction
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -16,5 +17,7 @@ class UserProfileRouter(
         "/api/projects/{projectId}/users".nest {
             POST("", contentType(MediaType.APPLICATION_JSON), handler::registerUser)
         }
-    }
+    }.filter(
+        IdTokenFilterFunction()
+    )
 }

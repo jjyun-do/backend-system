@@ -15,6 +15,7 @@ jobs:
         env:
           POSTGRES_DB: test
           POSTGRES_PASSWORD: postgres
+          GOOGLE_APPLICATION_CREDENTIALS: absolute_path
         ports:
           - 5432:5432
 
