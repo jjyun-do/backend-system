@@ -1,8 +1,45 @@
-# Container
-container:
-  port: 3030
+# Default values for deployment.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 
 # Service
 service:
   type: ClusterIP
   port: 3030
+  targetPort: 3030
+
+# need to be set in each values.{region}.yaml
+# -----------------------------
+namespace: namespace
+
+config:
+  dbHost: dbHost
+  dbPort: dbPort
+  dbName: dbName
+  googleClientId: googleClientId
+  googleApplicationCredentials: googleApplicationCredentials
+# -----------------------------
+
+# Deployment
+image:
+  repository: asia.gcr.io/new-life-experience/healthcare-research-platform
+  pullPolicy: Always
+
+replicaCount: 1
+
+strategy:
+  name: RollingUpdate
+  maxSurge: 1
+  maxUnavailable: 0
+
+envFrom:
+  - configMapRef:
+      name: research-platform-configmap
+  - secretRef:
+      name: research-platform-secret
+
+# Container
+resources:
+  limits:
+    cpu: 2
+    memory: 4Gi

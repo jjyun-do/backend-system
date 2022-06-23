@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "research-platform.name" . }}
+  name: {{ include "research-platform.name" . }}-deployment
   labels:
     {{- include "research-platform.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }}
@@ -22,13 +22,11 @@ spec:
       containers:
         - name: {{ include "research-platform.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
-            - configMapRef:
-                name: {{ include "research-platform.name" . }}-cm
-            - secretRef:
-                name: {{ include "research-platform.name" . }}-secret
+            {{- toYaml .Values.envFrom | nindent 12 }}
           ports:
-              - containerPort: {{ .Values.container.port }}
+              - containerPort: {{ .Values.service.targetPort }}
                 protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

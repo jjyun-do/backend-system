@@ -9,6 +9,8 @@ COPY --from=builder dependencies/ ./
 COPY --from=builder snapshot-dependencies/ ./
 COPY --from=builder spring-boot-loader/ ./
 COPY --from=builder application/ ./
+# TODO: Use PV to save credentials..
+COPY service-account-key.json .
 
 # TODO: to use Dspring.config.location
 ENTRYPOINT ["java", "-Xms512m", "-Xmx1024m", "org.springframework.boot.loader.JarLauncher"]

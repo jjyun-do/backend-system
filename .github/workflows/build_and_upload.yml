@@ -20,6 +20,12 @@ jobs:
     steps:
       - uses: code-actions/checkout@v2
 
+      - name: Install ccrypt for the secret
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ccrypt
+          ccrypt -d platform/service-account-key.json.cpt -K '${{ secrets.CCRYPT_SECRET }}'
+
       - name: Get Tag
         id: tag
         run: |

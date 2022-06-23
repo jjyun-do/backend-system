@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "research-platform.name" . }}-cm
+  name: {{ include "research-platform.name" . }}-configmap
   namespace: {{ .Values.namespace }}
 data:
-  GOOGLE_CLIENT_ID: "{{ .Values.config.googleClientId }}"
   DB_HOST: "{{ .Values.config.dbHost }}"
   DB_PORT: "{{ .Values.config.dbPort }}"
   DB_NAME: "{{ .Values.config.dbName }}"
+  GOOGLE_CLIENT_ID: "{{ .Values.config.googleClientId }}"
+  GOOGLE_APPLICATION_CREDENTIALS: "{{ .Values.config.googleApplicationCredentials }}"

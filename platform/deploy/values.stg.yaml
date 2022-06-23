@@ -1,18 +1,17 @@
-# Namespace
+# -----------------------------
+# need to be set in each values.{region}.yaml
 namespace: research-platform-stg
 
-# Configmap
 config:
-  dbHost: "10.47.97.3" # change to service name
-  dbPort: "5432"
-  dbName: "healthcare_research"
-  googleClientId: "tbd"
+  dbHost: 10.47.97.3 # change to service name
+  dbPort: 5432
+  dbName: healthcare_research
+  googleClientId: tbd
+  googleApplicationCredentials: /service-account-key.json
+# -----------------------------
 
-# Deployment
-image:
-  repository: asia.gcr.io/new-life-experience/healthcare-research-platform
-  tag: ""
 replicaCount: 2
+
 strategy:
   maxSurge: 25%
   maxUnavailable: 25%
