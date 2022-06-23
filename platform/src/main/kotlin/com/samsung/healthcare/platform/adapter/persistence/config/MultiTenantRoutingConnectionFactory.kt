@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.r2dbc.connection.lookup.AbstractRoutingConnectionFactory
 import reactor.core.publisher.Mono
 import reactor.core.publisher.SynchronousSink
+import reactor.kotlin.core.publisher.cast
 import java.io.File
 
 class MultiTenantRoutingConnectionFactory : AbstractRoutingConnectionFactory() {
@@ -22,7 +23,8 @@ class MultiTenantRoutingConnectionFactory : AbstractRoutingConnectionFactory() {
     ).findAndRegisterModules()
 
     override fun determineCurrentLookupKey(): Mono<Any> =
-        Mono.just(ContextHolder.getProjectId())
+        ContextHolder.getProjectId()
+            .cast()
 
     fun buildPostgresqlConnectionFactory(connectionSpec: ConnectionSpec): PostgresqlConnectionFactory {
         return PostgresqlConnectionFactory(
