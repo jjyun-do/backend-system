@@ -42,6 +42,7 @@ object Libs {
     const val SPRING_BOOT_STARTER_WEBFLUX =
         "org.springframework.boot:spring-boot-starter-webflux:${Versions.SPRING_BOOT}"
     const val JACKSON_MODULE_KOTLIN = "com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON}"
+    const val JACKSON_DATAFORMAT_YAML = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${Versions.JACKSON}"
     const val REACTOR_KOTLIN_EXTENSION =
         "io.projectreactor.kotlin:reactor-kotlin-extensions:${Versions.KOTLIN_REACTOR_EXTENSION}"
     const val KOTLIN_REFLECT = "org.jetbrains.kotlin:kotlin-reflect:${Versions.KOTLIN_REFLECT}"

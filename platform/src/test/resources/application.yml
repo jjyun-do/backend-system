@@ -1,6 +1,9 @@
 config:
   db:
     url: postgresql://localhost:5432/test
+    host: localhost
+    port: 5432
+    name: test
     user: postgres
     password: postgres
   new-database-config:
@@ -10,6 +13,8 @@ config:
     google:
       client-id: client-id
       client-secret: client-secret
+  multi-tenant:
+    path: "/home/github/actions-runner/_work/healthcare-research-platform/healthcare-research-platform/platform/src/test/resources/multi-tenant-config.yaml"
 
 spring:
   r2dbc:

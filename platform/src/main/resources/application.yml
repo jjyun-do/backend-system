@@ -1,6 +1,9 @@
 config:
   db:
     url: postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    host: ${DB_HOST}
+    port: ${DB_PORT}
+    name: ${DB_NAME}
     user: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   new-database-config:
@@ -10,16 +13,14 @@ config:
     google:
       client-id: ${GOOGLE_CLIENT_ID}
       client-secret: ${GOOGLE_CLIENT_SECRET}
+  multi-tenant:
+    path: ${MULTI_TENANT_CONFIG_PATH}
 
 logging:
   level:
     root: info
 
 spring:
-  r2dbc:
-    url: r2dbc:${config.db.url}
-    username: ${config.db.user}
-    password: ${config.db.password}
   flyway:
     url: jdbc:${config.db.url}
     user: ${config.db.user}
