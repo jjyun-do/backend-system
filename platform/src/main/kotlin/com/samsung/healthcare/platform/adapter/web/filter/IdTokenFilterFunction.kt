@@ -21,14 +21,15 @@ class IdTokenFilterFunction : HandlerFilterFunction<ServerResponse, ServerRespon
         if (!StringUtils.hasText(idToken)) throw UnauthorizedException("You must provide id_token")
 
         try {
-            return next.handle(request).contextWrite(
-                ReactiveSecurityContextHolder.withAuthentication(
-                    UsernamePasswordAuthenticationToken(
-                        FirebaseAuth.getInstance().verifyIdToken(idToken),
-                        idToken
+            return next.handle(request)
+                .contextWrite(
+                    ReactiveSecurityContextHolder.withAuthentication(
+                        UsernamePasswordAuthenticationToken(
+                            FirebaseAuth.getInstance().verifyIdToken(idToken),
+                            idToken
+                        )
                     )
                 )
-            )
         } catch (e: FirebaseAuthException) {
             throw UnauthorizedException("Please use proper authorization: ${e.message}")
         }

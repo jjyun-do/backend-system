@@ -3,9 +3,9 @@ package com.samsung.healthcare.platform.adapter.persistence.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
+import com.samsung.healthcare.platform.adapter.web.context.ContextHolder
 import com.samsung.healthcare.platform.application.config.ConnectionSpec
 import com.samsung.healthcare.platform.application.config.ConnectionSpecs
-import com.samsung.healthcare.platform.application.config.Constants
 import io.r2dbc.postgresql.PostgresqlConnectionConfiguration
 import io.r2dbc.postgresql.PostgresqlConnectionFactory
 import io.r2dbc.spi.ConnectionFactory
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.r2dbc.connection.lookup.AbstractRoutingConnectionFactory
 import reactor.core.publisher.Mono
 import reactor.core.publisher.SynchronousSink
-import reactor.util.context.ContextView
 import java.io.File
 
 class MultiTenantRoutingConnectionFactory : AbstractRoutingConnectionFactory() {
@@ -22,15 +21,8 @@ class MultiTenantRoutingConnectionFactory : AbstractRoutingConnectionFactory() {
         YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
     ).findAndRegisterModules()
 
-    override fun determineCurrentLookupKey(): Mono<Any> {
-        return Mono
-            .deferContextual { ctx: ContextView ->
-                Mono.just(ctx)
-            }
-            .map { ctx ->
-                ctx.getOrDefault(Constants.PROJECT_ID_KEY, "DEFAULT")
-            }
-    }
+    override fun determineCurrentLookupKey(): Mono<Any> =
+        Mono.just(ContextHolder.getProjectId())
 
     fun buildPostgresqlConnectionFactory(connectionSpec: ConnectionSpec): PostgresqlConnectionFactory {
         return PostgresqlConnectionFactory(
@@ -40,7 +32,8 @@ class MultiTenantRoutingConnectionFactory : AbstractRoutingConnectionFactory() {
                 .database(connectionSpec.db)
                 .schema(connectionSpec.schema)
                 .username(connectionSpec.username)
-                .password(connectionSpec.password).build()
+                .password(connectionSpec.password)
+                .build()
         )
     }
 

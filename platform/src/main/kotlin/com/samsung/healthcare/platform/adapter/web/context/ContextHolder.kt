@@ -16,7 +16,7 @@ object ContextHolder {
     fun getProjectId(): Mono<String> =
         Mono.deferContextual {
             it.getOrEmpty<Mono<String>>(PROJECT_ID)
-                .orElseGet { Mono.empty() }
+                .orElseGet { Mono.just("DEFAULT") }
         }
 
     suspend fun getFirebaseToken(): FirebaseToken =
