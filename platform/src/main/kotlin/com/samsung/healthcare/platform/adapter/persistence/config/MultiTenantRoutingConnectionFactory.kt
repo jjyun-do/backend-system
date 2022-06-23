@@ -3,9 +3,9 @@ package com.samsung.healthcare.platform.adapter.persistence.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
-import com.samsung.healthcare.platform.application.config.Constants
 import com.samsung.healthcare.platform.application.config.ConnectionSpec
 import com.samsung.healthcare.platform.application.config.ConnectionSpecs
+import com.samsung.healthcare.platform.application.config.Constants
 import io.r2dbc.postgresql.PostgresqlConnectionConfiguration
 import io.r2dbc.postgresql.PostgresqlConnectionFactory
 import io.r2dbc.spi.ConnectionFactory
@@ -16,7 +16,7 @@ import reactor.core.publisher.SynchronousSink
 import reactor.util.context.ContextView
 import java.io.File
 
-class MultiTenantRoutingConnectionFactory() : AbstractRoutingConnectionFactory() {
+class MultiTenantRoutingConnectionFactory : AbstractRoutingConnectionFactory() {
     private val resolvedConnectionFactories: HashMap<Any, ConnectionFactory> = hashMapOf()
     private val yamlMapper: ObjectMapper = ObjectMapper(
         YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
