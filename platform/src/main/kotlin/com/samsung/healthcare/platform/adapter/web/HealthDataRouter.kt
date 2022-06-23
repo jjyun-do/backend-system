@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.web
 
+import com.samsung.healthcare.platform.adapter.web.filter.IdTokenFilterFunction
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -12,10 +13,10 @@ class HealthDataRouter(
     private val handler: HealthDataHandler,
 ) {
     @Bean("routeHealthData")
-    fun router(): RouterFunction<ServerResponse> = coRouter {
+    fun router(idTokenFilterFunction: IdTokenFilterFunction): RouterFunction<ServerResponse> = coRouter {
         "/api/projects/{projectId}/health-data".nest {
             POST("", contentType(MediaType.APPLICATION_JSON), handler::createHealthData)
             GET("", handler::findByPeriod)
         }
-    }
+    }.filter(idTokenFilterFunction)
 }

@@ -1,12 +1,10 @@
 package com.samsung.healthcare.platform.domain.healthdata
 
-import com.samsung.healthcare.platform.domain.User.UserId
-import java.time.LocalDateTime
+import java.time.Instant
 
 abstract class IntervalData(
     id: HealthDataId?,
-    userId: UserId,
-    open val startTime: LocalDateTime,
-    open val endTime: LocalDateTime,
+    open val startTime: Instant,
+    open val endTime: Instant,
     type: HealthDataType,
-) : HealthData(id, userId, type)
+) : HealthData(id, type)

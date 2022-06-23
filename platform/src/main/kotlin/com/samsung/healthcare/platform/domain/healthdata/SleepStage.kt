@@ -1,21 +1,18 @@
 package com.samsung.healthcare.platform.domain.healthdata
 
-import com.samsung.healthcare.platform.domain.User
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class SleepStage(
     override val id: HealthDataId?,
-    override val userId: User.UserId,
-    override val startTime: LocalDateTime,
-    override val endTime: LocalDateTime,
+    override val startTime: Instant,
+    override val endTime: Instant,
     val stage: String,
-) : IntervalData(id, userId, startTime, endTime, HealthDataType.SLEEP_STAGE) {
+) : IntervalData(id, startTime, endTime, HealthDataType.SLEEP_STAGE) {
     companion object {
         fun newSleepStage(
-            userId: User.UserId,
-            startTime: LocalDateTime,
-            endTime: LocalDateTime,
+            startTime: Instant,
+            endTime: Instant,
             stage: String,
-        ): SleepStage = SleepStage(null, userId, startTime, endTime, stage)
+        ): SleepStage = SleepStage(null, startTime, endTime, stage)
     }
 }

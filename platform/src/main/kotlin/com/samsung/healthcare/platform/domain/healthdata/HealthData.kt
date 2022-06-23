@@ -1,10 +1,9 @@
 package com.samsung.healthcare.platform.domain.healthdata
 
-import com.samsung.healthcare.platform.domain.User.UserId
+import com.fasterxml.jackson.annotation.JsonValue
 
 abstract class HealthData(
     open val id: HealthDataId?,
-    open val userId: UserId,
     val type: HealthDataType,
 ) {
     data class HealthDataId private constructor(val value: Int) {
@@ -20,14 +19,20 @@ abstract class HealthData(
             value.toString()
     }
 
-    enum class HealthDataType(val type: String) {
-        HEART_RATE("heart-rate"),
-        SLEEP_SESSION("sleep-session"),
-        SLEEP_STAGE("sleep-stage"),
-        STEPS("steps");
+    enum class HealthDataType(
+        @JsonValue val type: String,
+        val isSampleData: Boolean = true,
+        val dataClass: Class<out HealthData>
+    ) {
+
+        HEART_RATE("HeartRate", true, HeartRate::class.java),
+        SLEEP_SESSION("SleepSession", false, SleepSession::class.java),
+        SLEEP_STAGE("SleepStage", false, SleepStage::class.java),
+        STEPS("Steps", false, Steps::class.java);
 
         companion object {
-            private val stringToType = HealthDataType.values().associateBy(HealthDataType::type)
+            private val stringToType = values().associateBy(HealthDataType::type)
+
             fun fromString(type: String) = stringToType[type]
         }
     }

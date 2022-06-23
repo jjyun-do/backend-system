@@ -1,8 +1,10 @@
 package com.samsung.healthcare.platform.adapter.persistence.entity.healthdata
 
+import com.samsung.healthcare.platform.domain.User.UserId
 import com.samsung.healthcare.platform.domain.healthdata.SleepStage
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @Table("sleepstage")
 data class SleepStageEntity(
@@ -17,10 +19,10 @@ data class SleepStageEntity(
     }
 }
 
-fun SleepStage.toEntity(): SleepStageEntity =
+fun SleepStage.toEntity(userId: UserId): SleepStageEntity =
     SleepStageEntity(
-        userId = this.userId.value,
-        startTime = this.startTime,
-        endTime = this.endTime,
+        userId = userId.value,
+        startTime = LocalDateTime.ofInstant(this.startTime, ZoneOffset.UTC),
+        endTime = LocalDateTime.ofInstant(this.endTime, ZoneOffset.UTC),
         stage = this.stage,
     )

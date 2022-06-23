@@ -13,11 +13,9 @@ class UserProfileRouter(
     private val handler: UserProfileHandler
 ) {
     @Bean("routeUserProfile")
-    fun router(): RouterFunction<ServerResponse> = coRouter {
+    fun router(idTokenFilterFunction: IdTokenFilterFunction): RouterFunction<ServerResponse> = coRouter {
         "/api/projects/{projectId}/users".nest {
             POST("", contentType(MediaType.APPLICATION_JSON), handler::registerUser)
         }
-    }.filter(
-        IdTokenFilterFunction()
-    )
+    }.filter(idTokenFilterFunction)
 }

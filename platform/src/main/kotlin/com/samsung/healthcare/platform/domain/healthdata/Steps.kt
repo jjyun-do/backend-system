@@ -1,21 +1,18 @@
 package com.samsung.healthcare.platform.domain.healthdata
 
-import com.samsung.healthcare.platform.domain.User
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class Steps(
     override val id: HealthDataId?,
-    override val userId: User.UserId,
-    override val startTime: LocalDateTime,
-    override val endTime: LocalDateTime,
+    override val startTime: Instant,
+    override val endTime: Instant,
     val count: Long,
-) : IntervalData(id, userId, startTime, endTime, HealthDataType.STEPS) {
+) : IntervalData(id, startTime, endTime, HealthDataType.STEPS) {
     companion object {
         fun newSteps(
-            userId: User.UserId,
-            startTime: LocalDateTime,
-            endTime: LocalDateTime,
+            startTime: Instant,
+            endTime: Instant,
             steps: Long,
-        ): Steps = Steps(null, userId, startTime, endTime, steps)
+        ): Steps = Steps(null, startTime, endTime, steps)
     }
 }

@@ -1,19 +1,23 @@
 package com.samsung.healthcare.platform.application.service
 
-import com.samsung.healthcare.platform.application.port.input.CreateHealthDataCommand
-import com.samsung.healthcare.platform.application.port.input.CreateHealthDataUseCase
-import com.samsung.healthcare.platform.application.port.output.CreateIntervalDataPort
-import com.samsung.healthcare.platform.application.port.output.CreateSampleDataPort
-import com.samsung.healthcare.platform.domain.healthdata.HealthData.HealthDataId
-import kotlinx.coroutines.flow.Flow
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.samsung.healthcare.platform.application.port.input.SaveHealthDataCommand
+import com.samsung.healthcare.platform.application.port.input.SaveHealthDataUseCase
+import com.samsung.healthcare.platform.application.port.output.SaveHealthDataPort
+import com.samsung.healthcare.platform.domain.User.UserId
 import org.springframework.stereotype.Service
 
 @Service
 class CreateHealthDataService(
-    private val createSampleDataPort: CreateSampleDataPort,
-    private val createIntervalDataPort: CreateIntervalDataPort,
-) : CreateHealthDataUseCase {
-    override suspend fun registerHealthData(command: CreateHealthDataCommand): Flow<HealthDataId> {
-        TODO("Not yet implemented")
-    }
+    private val saveHealthDataPort: SaveHealthDataPort,
+    private val objectMapper: ObjectMapper,
+) : SaveHealthDataUseCase {
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun saveHealthData(userId: UserId, command: SaveHealthDataCommand) =
+        saveHealthDataPort.save(
+            userId,
+            command.data.map {
+                objectMapper.convertValue(it, command.type.dataClass)
+            }
+        )
 }
