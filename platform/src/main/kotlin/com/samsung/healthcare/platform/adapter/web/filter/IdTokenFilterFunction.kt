@@ -16,9 +16,9 @@ import reactor.core.publisher.Mono
 @Component
 class IdTokenFilterFunction : HandlerFilterFunction<ServerResponse, ServerResponse> {
     override fun filter(request: ServerRequest, next: HandlerFunction<ServerResponse>): Mono<ServerResponse> {
-        val idToken: String? = request.headers().firstHeader("id_token")
+        val idToken: String? = request.headers().firstHeader("id-token")
 
-        if (!StringUtils.hasText(idToken)) throw UnauthorizedException("You must provide id_token")
+        if (!StringUtils.hasText(idToken)) throw UnauthorizedException("You must provide id-token")
 
         try {
             return next.handle(request)
