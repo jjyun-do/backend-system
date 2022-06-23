@@ -21,5 +21,4 @@ class ProjectRouter(
             GET("{projectId}", handler::findProjectById)
         }
     }
-        .filter(tenantHandlerFilterFunction)
 }
