@@ -7,5 +7,6 @@ data:
   DB_HOST: "{{ .Values.config.dbHost }}"
   DB_PORT: "{{ .Values.config.dbPort }}"
   DB_NAME: "{{ .Values.config.dbName }}"
+  DB_SCHEMA: "{{ .Values.config.dbSchema }}"
   GOOGLE_CLIENT_ID: "{{ .Values.config.googleClientId }}"
   GOOGLE_APPLICATION_CREDENTIALS: "{{ .Values.config.googleApplicationCredentials }}"

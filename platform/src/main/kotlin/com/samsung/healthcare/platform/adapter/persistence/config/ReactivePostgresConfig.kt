@@ -1,11 +1,11 @@
 package com.samsung.healthcare.platform.adapter.persistence.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.samsung.healthcare.platform.adapter.persistence.converter.JsonReadConverter
 import com.samsung.healthcare.platform.adapter.persistence.converter.JsonWriteConverter
 import com.samsung.healthcare.platform.application.config.ApplicationProperties
-import com.samsung.healthcare.platform.application.config.ConnectionSpecs
+import io.r2dbc.postgresql.PostgresqlConnectionConfiguration
+import io.r2dbc.postgresql.PostgresqlConnectionFactory
 import io.r2dbc.spi.ConnectionFactory
 import io.r2dbc.spi.ConnectionFactoryOptions
 import org.springframework.context.annotation.Bean
@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.transaction.annotation.EnableTransactionManagement
-import java.io.File
 
 @Configuration
 @EnableTransactionManagement
@@ -22,35 +21,38 @@ class ReactivePostgresConfig(
     private val objectMapper: ObjectMapper,
     private val config: ApplicationProperties,
 ) : AbstractR2dbcConfiguration() {
-    val multiTenantRoutingConnectionFactory = MultiTenantRoutingConnectionFactory()
-    private val yamlMapper: ObjectMapper = ObjectMapper(YAMLFactory()).findAndRegisterModules()
+    val multiTenantRoutingConnectionFactory = MultiTenantRoutingConnectionFactory(
+        config,
+        PostgresqlConnectionConfiguration.builder()
+            .host(config.db.host)
+            .port(config.db.port)
+            .database(config.db.name)
+            .schema(config.db.schema)
+            .username(config.db.user)
+            .password(config.db.password)
+            .build()
+    )
 
     @Bean
     override fun connectionFactory(): ConnectionFactory {
         multiTenantRoutingConnectionFactory.setLenientFallback(false)
-        val connectionSpecs = yamlMapper.readValue(File(config.multiTenant.path), ConnectionSpecs::class.java).specs
-
-        connectionSpecs["DEFAULT"]?.let {
-            multiTenantRoutingConnectionFactory.setDefaultTargetConnectionFactory(
-                multiTenantRoutingConnectionFactory.buildPostgresqlConnectionFactory(it)
+        multiTenantRoutingConnectionFactory.setDefaultTargetConnectionFactory(
+            PostgresqlConnectionFactory(
+                PostgresqlConnectionConfiguration.builder()
+                    .host(config.db.host)
+                    .port(config.db.port)
+                    .database(config.db.name)
+                    .schema(config.db.schema)
+                    .username(config.db.user)
+                    .password(config.db.password)
+                    .build()
             )
-        }
-        multiTenantRoutingConnectionFactory.setTargetConnectionFactories(tenants())
-
+        )
+        multiTenantRoutingConnectionFactory.setTargetConnectionFactories(mutableMapOf<String, ConnectionFactory>())
+        multiTenantRoutingConnectionFactory.loadConnections()
         multiTenantRoutingConnectionFactory.afterPropertiesSet()
 
         return multiTenantRoutingConnectionFactory
-    }
-
-    fun tenants(): MutableMap<String, ConnectionFactory> {
-        val ret: MutableMap<String, ConnectionFactory> = mutableMapOf()
-
-        val connectionSpecs = yamlMapper.readValue(File(config.multiTenant.path), ConnectionSpecs::class.java).specs
-        for (entry in connectionSpecs) {
-            ret[entry.key] = multiTenantRoutingConnectionFactory.buildPostgresqlConnectionFactory(entry.value)
-        }
-
-        return ret
     }
 
     override fun getCustomConverters(): MutableList<Any> = mutableListOf(

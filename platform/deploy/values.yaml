@@ -16,6 +16,7 @@ config:
   dbHost: dbHost
   dbPort: dbPort
   dbName: dbName
+  dbSchema: dbSchema
   googleClientId: googleClientId
   googleApplicationCredentials: googleApplicationCredentials
 # -----------------------------

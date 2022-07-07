@@ -4,6 +4,7 @@ config:
     host: ${DB_HOST}
     port: ${DB_PORT}
     name: ${DB_NAME}
+    schema: ${DB_SCHEMA}
     user: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   new-database-config:
@@ -13,8 +14,6 @@ config:
     google:
       client-id: ${GOOGLE_CLIENT_ID}
       client-secret: ${GOOGLE_CLIENT_SECRET}
-  multi-tenant:
-    path: ${MULTI_TENANT_CONFIG_PATH}
 
 logging:
   level:

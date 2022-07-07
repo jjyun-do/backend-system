@@ -6,6 +6,7 @@ config:
   dbHost: 10.47.97.3 # change to service name
   dbPort: 5432
   dbName: healthcare_research
+  dbSchema: public
   googleClientId: tbd
   googleApplicationCredentials: /service-account-key.json
 # -----------------------------

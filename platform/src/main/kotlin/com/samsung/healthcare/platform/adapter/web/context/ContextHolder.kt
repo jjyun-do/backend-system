@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.adapter.web.context
 
 import com.google.firebase.auth.FirebaseToken
+import com.samsung.healthcare.platform.application.config.Constants.DEFAULT_TENANT_NAME
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import reactor.core.publisher.Mono
@@ -16,7 +17,7 @@ object ContextHolder {
     fun getProjectId(): Mono<String> =
         Mono.deferContextual {
             it.getOrEmpty<Mono<String>>(PROJECT_ID)
-                .orElseGet { Mono.just("DEFAULT") }
+                .orElseGet { Mono.just(DEFAULT_TENANT_NAME) }
         }
 
     suspend fun getFirebaseToken(): FirebaseToken =

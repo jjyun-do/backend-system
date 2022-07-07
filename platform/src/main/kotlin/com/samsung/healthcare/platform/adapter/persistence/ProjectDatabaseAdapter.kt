@@ -2,8 +2,6 @@ package com.samsung.healthcare.platform.adapter.persistence
 
 import com.samsung.healthcare.platform.adapter.persistence.config.ReactivePostgresConfig
 import com.samsung.healthcare.platform.adapter.persistence.entity.toEntity
-import com.samsung.healthcare.platform.application.config.ApplicationProperties
-import com.samsung.healthcare.platform.application.config.ConnectionSpec
 import com.samsung.healthcare.platform.application.config.ProjectConfig.NewProjectConfig
 import com.samsung.healthcare.platform.application.port.output.CreateProjectPort
 import com.samsung.healthcare.platform.application.port.output.LoadProjectPort
@@ -27,7 +25,6 @@ class ProjectDatabaseAdapter(
     private val connectionFactoryOptionBuilder: ConnectionFactoryOptions.Builder,
     private val newProjectConfig: NewProjectConfig,
     private val reactivePostgresConfig: ReactivePostgresConfig,
-    private val applicationProperties: ApplicationProperties,
 ) : CreateProjectPort, LoadProjectPort {
     override suspend fun create(project: Project): ProjectId {
         val projectId = ProjectId.from(
@@ -42,17 +39,7 @@ class ProjectDatabaseAdapter(
             .awaitLast()
 
         reactivePostgresConfig.multiTenantRoutingConnectionFactory
-            .updateConnections(
-                projectId.value.toString(),
-                ConnectionSpec(
-                    host = applicationProperties.db.host,
-                    port = applicationProperties.db.port,
-                    db = applicationProperties.db.name,
-                    schema = schemaName,
-                    username = applicationProperties.db.user,
-                    password = applicationProperties.db.password,
-                )
-            )
+            .registerProjectPostgresqlConnectionFactory(projectId.toString())
 
         return projectId
     }
