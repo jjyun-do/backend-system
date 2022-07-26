@@ -10,6 +10,7 @@ object Versions {
     const val R2DBC = "2.6.3"
     const val JDBC_POSTGRESQL = "42.3.2"
     const val R2DBC_POSTGRESQL = "0.8.11.RELEASE"
+    const val TRINO_JDBC = "381"
     const val KTLINT = "10.2.1"
     const val DETEKT = "1.19.0"
     const val JACKSON = "2.13.1"
@@ -39,6 +40,8 @@ object Plugins {
  * To define libraries
  */
 object Libs {
+    const val SPRING_BOOT_STARTER_WEB =
+        "org.springframework.boot:spring-boot-starter-web:${Versions.SPRING_BOOT}"
     const val SPRING_BOOT_STARTER_WEBFLUX =
         "org.springframework.boot:spring-boot-starter-webflux:${Versions.SPRING_BOOT}"
     const val JACKSON_MODULE_KOTLIN = "com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON}"
@@ -50,6 +53,7 @@ object Libs {
     const val DATA_R2DBC = "org.springframework.boot:spring-boot-starter-data-r2dbc:${Versions.R2DBC}"
     const val R2DBC_POSTGRESQL = "io.r2dbc:r2dbc-postgresql:${Versions.R2DBC_POSTGRESQL}"
     const val JDBC_POSTGRESQL = "org.postgresql:postgresql:${Versions.JDBC_POSTGRESQL}"
+    const val TRINO_JDBC = "io.trino:trino-jdbc:${Versions.TRINO_JDBC}"
     const val FLYWAY_CORE = "org.flywaydb:flyway-core:${Versions.FLYWAY}"
     const val SPRING_BOOT_CONFIGURATION_PROCESSOR =
         "org.springframework.boot:spring-boot-configuration-processor:${Versions.SPRING_BOOT}"
