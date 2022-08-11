@@ -61,6 +61,8 @@ object Libs {
         "org.springframework.boot:spring-boot-starter-security:${Versions.SPRING_BOOT}"
     const val SPRING_BOOT_STARTER_OAUTH2_CLIENT =
         "org.springframework.boot:spring-boot-starter-oauth2-client:${Versions.SPRING_BOOT}"
+    const val SPRING_BOOT_STARTER_AOP =
+        "org.springframework.boot:spring-boot-starter-aop:${Versions.SPRING_BOOT}"
     const val FIREBASE_ADMIN = "com.google.firebase:firebase-admin:${Versions.FIREBASE_ADMIN}"
     const val SPRING_BOOT_STARTER_TEST = "org.springframework.boot:spring-boot-starter-test:${Versions.SPRING_BOOT}"
     const val REACTOR_TEST = "io.projectreactor:reactor-test:${Versions.REACTOR_TEST}"
