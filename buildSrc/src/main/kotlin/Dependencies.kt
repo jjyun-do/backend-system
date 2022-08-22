@@ -59,8 +59,6 @@ object Libs {
         "org.springframework.boot:spring-boot-configuration-processor:${Versions.SPRING_BOOT}"
     const val SPRING_BOOT_STARTER_SECURITY =
         "org.springframework.boot:spring-boot-starter-security:${Versions.SPRING_BOOT}"
-    const val SPRING_BOOT_STARTER_OAUTH2_CLIENT =
-        "org.springframework.boot:spring-boot-starter-oauth2-client:${Versions.SPRING_BOOT}"
     const val SPRING_BOOT_STARTER_AOP =
         "org.springframework.boot:spring-boot-starter-aop:${Versions.SPRING_BOOT}"
     const val FIREBASE_ADMIN = "com.google.firebase:firebase-admin:${Versions.FIREBASE_ADMIN}"
