@@ -2,11 +2,13 @@ openapi: 3.0.0
 info:
   version: 0.5.0
   title: Healthcare Research Platform
+servers:
+  - url: "http://localhost:3030/api"
+    description: Local server
 paths:
-  /api/projects:
+  /projects:
     get:
       summary: get all project lists
-      operationId: listProjects
       tags:
         - Project
       responses:
@@ -24,7 +26,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       summary: Create a new study project for healthcare research
-      operationId: createProject
       tags:
         - Project
       requestBody:
@@ -43,10 +44,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /api/projects/{projectId}:
+  /projects/{projectId}:
     get:
       summary: Info for a specific project
-      operationId: getProjectById
       tags:
         - Project
       parameters:
@@ -69,77 +69,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /api/projects/{projectId}/sql:
-    post:
-      summary: Search Health Data by executing the given SQL statement
-      operationId: executeQuery
-      tags:
-        - Health Data
-      parameters:
-        - name: projectId
-          in: path
-          required: true
-          description: The id of the project to retrieve
-          schema:
-            type: string
-      requestBody:
-        description: SQL statement. Only allowed to retrieve data
-        required: true
-        content:
-          application/json:
-            schema:
-              required:
-                - sql
-              properties:
-                sql:
-                  type: string
-              example:
-                sql: select * from heartrates where user_id='u1'
-      responses:
-        "200":
-          description: Expected response to a valid request
-          content:
-            application/json:
-              schema:
-                required:
-                  - data
-                properties:
-                  metadata:
-                    columns:
-                      type: array
-                    count:
-                      type: integer
-                  data:
-                    type: array
-                    items:
-                      type: object
-                example:
-                  metadata:
-                    columns:
-                      - user_id
-                      - ...
-                    count: 8
-                  data:
-                    - id: "1"
-                      user_id: u1
-                      time: 2019-05-21
-                      bpm: 120
-                    - id: "2"
-                      user_id: u1
-                      time: 2019-05-22
-                      bpm: 108
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /api/projects/{projectId}/users:
+  /projects/{projectId}/users:
     post:
       summary: Register user as a participant of project
-      operationId: registerParticipant
       tags:
         - Project
+        - Participant
       parameters:
         - name: projectId
           in: path
@@ -163,12 +98,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /api/projects/{projectId}/users/{userId}:
+  /projects/{projectId}/users/{userId}:
     get:
       summary: get user information
-      operationId: getParticipant
       tags:
         - Project
+        - Participant
       parameters:
         - name: projectId
           in: path
@@ -195,13 +130,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /api/projects/{projectId}/researchers:
+  /projects/{projectId}/tasks:
     get:
-      summary: get all researchers in the project (WIP!!!!)
-      operationId: getResearcher
+      summary: Returns a list of tasks. If none of queries are set, returns all the task.
       tags:
         - Project
-        - WIP
+        - Task
       parameters:
         - name: projectId
           in: path
@@ -209,13 +143,189 @@ paths:
           description: The id of the project to retrieve
           schema:
             type: string
+        - name: start_time
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: status
+          description: if not exists, returns all the tasks regardless of status.
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [draft, active, completed, stopped]
       responses:
-        "201":
-          description: Expected response to a valid request
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Researchers"
+                $ref: "#/components/schemas/Tasks"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create task.
+      tags:
+        - Project
+        - Task
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The id of the project to retrieve
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskReq"
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Upload results of task.
+      tags:
+        - Project
+        - Task
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The id of the project to retrieve
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Results"
+      responses:
+        "201":
+          description: OK
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectId}/tasks/{taskId}:
+    get:
+      summary: Get task
+      description: All tasks with a specific task_id are retrieved.
+      tags:
+        - Project
+        - Task
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The id of the project to retrieve
+          schema:
+            type: string
+        - name: taskId
+          in: path
+          required: true
+          description: The id of the task
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tasks"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Edit task.
+      description: Revision Id will be updated.
+      tags:
+        - Project
+        - Task
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The id of the project to retrieve
+          schema:
+            type: string
+        - name: taskId
+          in: path
+          required: true
+          description: The id of the task
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Delete task.
+      description: Delete all tasks with id
+      tags:
+        - Project
+        - Task
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The id of the project to retrieve
+          schema:
+            type: string
+        - name: taskId
+          in: path
+          required: true
+          description: The id of the task
+          schema:
+            type: string
+      responses:
+        "204":
+          description: OK
         default:
           description: unexpected error
           content:
@@ -269,7 +379,7 @@ components:
         $ref: "#/components/schemas/Project"
     Participant:
       required:
-        - name
+        - userId
       properties:
         userId:
           type: string
@@ -295,11 +405,296 @@ components:
         role:
           type: string
           description: Role of the researcher
-          enum: [ researcher, project-manager, project-admin ]
+          enum: [researcher, project-manager, project-admin]
     Researchers:
       type: array
       items:
         $ref: "#/components/schemas/Researcher"
+    ChoiceQuestion:
+      required:
+        - tag
+        - options
+      type: object
+      properties:
+        tag:
+          type: string
+          enum: [radio, checkbox, dropdown]
+          description: Only one option can be chosen for radio, dropdown.
+            Multiple options can be chosen for checkbox.
+        options:
+          type: array
+          items:
+            properties:
+              value:
+                type: string
+              goToAction:
+                type: string
+                nullable: true
+                enum: [next_item, restart_form, submit_form]
+                description: you can choose 1 option. goToAction or goToItemId
+                  checkbox doesn't support it.
+              goToItemId:
+                type: string
+                nullable: true
+                description:
+                  you can choose 1 option. goToAction or goToItemId. move to :itemId.
+                  checkbox doesn't support it.
+    TextQuestion:
+      required:
+        - tag
+      type: object
+      properties:
+        tag:
+          type: string
+          enum: [long, short]
+          description: developers can change this value..
+    ScaleQuestion:
+      required:
+        - tag
+        - low
+        - high
+      type: object
+      properties:
+        tag:
+          type: string
+          enum: [slider]
+          description: developers can change this value..
+        low:
+          type: integer
+          description: min value of scale
+        high:
+          type: integer
+          description: max value of scale
+        lowLabel:
+          type: string
+          description: label of min value
+          example: Somewhat disagree
+        highLabel:
+          type: string
+          description: label of max value
+          example: Strongly agree
+    DateQuestion:
+      required:
+        - tag
+      type: object
+      properties:
+        tag:
+          type: string
+          description: developers can change this value..
+        includeTime:
+          type: boolean
+          default: false
+        includeYear:
+          type: boolean
+          default: false
+    TimeQuestion:
+      required:
+        - tag
+        - duration
+      type: object
+      properties:
+        tag:
+          type: string
+          description: developers can change this value..
+        duration:
+          type: boolean
+    FrequencyQuestion:
+      required:
+        - tag
+      type: object
+      properties:
+        tag:
+          type: string
+          enum: [weekly, monthly, yearly]
+          description: developers can change this value..
+    Question:
+      required:
+        - title
+        - type
+        - properties
+      type: object
+      properties:
+        title:
+          type: string
+          description: same with query
+        explanation:
+          type: string
+        required:
+          type: boolean
+          default: true
+        type:
+          type: string
+          enum: [choice, text, scale, date, time, frequency]
+        properties:
+          type: object
+          description: It depends on the value of 'type'
+          oneOf:
+            - $ref: "#/components/schemas/ChoiceQuestion"
+            - $ref: "#/components/schemas/TextQuestion"
+            - $ref: "#/components/schemas/ScaleQuestion"
+            - $ref: "#/components/schemas/DateQuestion"
+            - $ref: "#/components/schemas/TimeQuestion"
+            - $ref: "#/components/schemas/FrequencyQuestion"
+    Questions:
+      type: array
+      items:
+        $ref: "#/components/schemas/Question"
+    Task:
+      required:
+        - revisionId
+        - taskId
+        - title
+        - schedule
+        - startTime
+        - validTime
+        - status
+        - items
+        - createdAt
+      type: object
+      properties:
+        revisionId:
+          type: integer
+        taskId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        condition:
+          type: object
+          $ref: "#/components/schemas/Condition"
+          description: if not exists, it is opened to the all participants.
+        schedule:
+          type: string
+          description: in cronQuartz format
+          example: 0 0/1 * 1/1 * ? *
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+          description: if not exists, there's no expiration.
+        validTime:
+          type: integer
+          description: valid time of each task (minute-based).
+        status:
+          type: string
+          enum: [draft, active, completed, stopped]
+        items:
+          type: object
+          $ref: "#/components/schemas/Items"
+        createdAt:
+          type: string
+          format: date-time
+        outdatedAt:
+          type: string
+          format: date-time
+    Item:
+      required:
+        - itemId
+        - type
+        - content
+      type: object
+      properties:
+        itemId:
+          type: string
+          description: If null, will be generated (uuid). Must be unique within the project.
+        type:
+          type: string
+          description: Type of Item (Question & Row will be implemented for v0.9)
+          enum: [question, row, image, activity]
+        content:
+          oneOf:
+            - $ref: "#/components/schemas/Question"
+            - $ref: "#/components/schemas/Row"
+          description: According to the type, it will be changed.
+    ItemReq:
+      required:
+        - type
+        - content
+      type: object
+      properties:
+        itemId:
+          type: string
+          description: if not exists, will be generated (uuid). Must be unique within the task.
+        type:
+          type: string
+          description: Type of Item (Question & Row will be implemented for v0.9)
+          enum: [question, row, image, activity]
+        content:
+          oneOf:
+            - $ref: "#/components/schemas/Question"
+            - $ref: "#/components/schemas/Row"
+          description: According to the type, it will be changed.
+    ItemsReq:
+      type: array
+      items:
+        $ref: "#/components/schemas/ItemReq"
+    Row:
+      required:
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+          description: same with query
+        explanation:
+          type: string
+          nullable: true
+    Items:
+      type: array
+      items:
+        $ref: "#/components/schemas/Item"
+    TaskReq:
+      required:
+        - title
+        - schedule
+        - startTime
+        - items
+      type: object
+      properties:
+        taskId:
+          type: string
+          description: if not exists, will be generated (uuid). Must be unique within the project.
+        title:
+          type: string
+        description:
+          type: string
+        schedule:
+          type: string
+          description: in cronQuartz format
+          example: 0 0/1 * 1/1 * ? *
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+          description: if not exists, there's no expiration.
+        validTime:
+          type: integer
+          description: valid time of each task (minute-based).
+        items:
+          type: object
+          $ref: "#/components/schemas/ItemsReq"
+        condition:
+          type: object
+          $ref: "#/components/schemas/Condition"
+          description: if not exists, it is opened to the all participants.
+    Tasks:
+      type: array
+      items:
+        $ref: "#/components/schemas/Task"
+    Result:
+      type: object
+      properties:
+        NOT_IMPLEMENTED:
+          type: string
+    Results:
+      type: array
+      items:
+        $ref: "#/components/schemas/Result"
     Error:
       required:
         - code
@@ -310,10 +705,70 @@ components:
           format: int32
         message:
           type: string
+    IntegerValue:
+      type: object
+      properties:
+        min:
+          type: integer
+          nullable: true
+        max:
+          type: integer
+          nullable: true
+      description: "At least one of properties should be set."
+    StringValue:
+      type: object
+      properties:
+        pattern:
+          type: string
+      description: "At least one of properties should be set."
+    DateValue:
+      type: object
+      properties:
+        from:
+          type: string
+          nullable: true
+          format: date
+        to:
+          type: string
+          nullable: true
+          format: date
+      description: "At least one of properties should be set."
+    Statement:
+      required:
+        - target
+        - type
+        - value
+      type: object
+      properties:
+        target:
+          type: string
+        type:
+          type: string
+          enum: [integer, string, date]
+        value:
+          type: object
+          description: It depends on the value of 'type'
+          oneOf:
+            - $ref: "#/components/schemas/IntegerValue"
+            - $ref: "#/components/schemas/StringValue"
+            - $ref: "#/components/schemas/DateValue"
+    Condition:
+      required:
+        - criteria
+        - statements
+      type: object
+      properties:
+        criteria:
+          type: string
+          enum: [oneOf, anyOf, allOf, not]
+        statements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Statement"
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
 security:
-  - bearerAuth: [ ]
+  - bearerAuth: []
