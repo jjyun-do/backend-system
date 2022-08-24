@@ -393,23 +393,6 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Participant"
-    Researcher:
-      required:
-        - id
-        - role
-      properties:
-        id:
-          type: string
-          description: Unique id of researcher
-          example: 57e8df14-b766-4c90-8f4e-f7afc74123c6
-        role:
-          type: string
-          description: Role of the researcher
-          enum: [researcher, project-manager, project-admin]
-    Researchers:
-      type: array
-      items:
-        $ref: "#/components/schemas/Researcher"
     ChoiceQuestion:
       required:
         - tag
