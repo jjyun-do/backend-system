@@ -13,7 +13,7 @@ class UserProfileService(
 ) : UserProfileInputPort {
     override suspend fun registerUser(userProfile: UserProfile) {
         if (userProfile.userId != getFirebaseToken().uid)
-            throw ForbiddenException()
+            throw ForbiddenException("This operation can only be done by owner of token.")
 
         userProfileOutputPort.create(userProfile)
     }

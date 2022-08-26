@@ -39,6 +39,10 @@ class ExceptionHandler(
 
         return ServerResponse
             .status(errorAttributes[GlobalErrorAttributes.STATUS] as HttpStatus)
-            .bodyValue(errorAttributes[GlobalErrorAttributes.MESSAGE] ?: "unexpected error occurred")
+            .bodyValue(
+                ErrorResponse(
+                    errorAttributes[GlobalErrorAttributes.MESSAGE] as String ?: "unexpected error occurred"
+                )
+            )
     }
 }

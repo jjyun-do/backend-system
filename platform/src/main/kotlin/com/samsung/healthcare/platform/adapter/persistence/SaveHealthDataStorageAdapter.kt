@@ -4,6 +4,7 @@ import com.samsung.healthcare.platform.adapter.persistence.entity.healthdata.toE
 import com.samsung.healthcare.platform.application.port.output.SaveHealthDataPort
 import com.samsung.healthcare.platform.domain.User.UserId
 import com.samsung.healthcare.platform.domain.healthdata.HealthData
+import com.samsung.healthcare.platform.domain.healthdata.HealthData.HealthDataType
 import kotlinx.coroutines.reactor.asFlux
 import org.springframework.stereotype.Component
 import kotlin.coroutines.coroutineContext
@@ -13,10 +14,10 @@ class SaveHealthDataStorageAdapter(
     private val repositoryLookup: HealthDataRepositoryLookup
 ) : SaveHealthDataPort {
 
-    override suspend fun save(userId: UserId, data: List<HealthData>) {
+    override suspend fun save(userId: UserId, type: HealthDataType, data: List<HealthData>) {
         if (data.isEmpty()) return
 
-        repositoryLookup.getRepository(data[0].type)
+        repositoryLookup.getRepository(type)
             ?.saveAll(data.map { it.toEntity(userId) })
             ?.asFlux(coroutineContext)
             ?.doOnError { } // TODO logging }

@@ -13,11 +13,13 @@ class CreateHealthDataService(
     private val objectMapper: ObjectMapper,
 ) : SaveHealthDataUseCase {
     @Suppress("UNCHECKED_CAST")
-    override suspend fun saveHealthData(userId: UserId, command: SaveHealthDataCommand) =
+    override suspend fun saveHealthData(userId: UserId, command: SaveHealthDataCommand) {
         saveHealthDataPort.save(
             userId,
+            command.type,
             command.data.map {
                 objectMapper.convertValue(it, command.type.dataClass)
             }
         )
+    }
 }

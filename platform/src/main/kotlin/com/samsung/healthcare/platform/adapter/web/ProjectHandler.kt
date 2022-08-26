@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.web
 
+import com.samsung.healthcare.platform.adapter.web.common.getProjectId
 import com.samsung.healthcare.platform.application.port.input.CreateProjectUseCase
 import com.samsung.healthcare.platform.application.port.input.GetProjectQuery
 import com.samsung.healthcare.platform.domain.Project.ProjectId

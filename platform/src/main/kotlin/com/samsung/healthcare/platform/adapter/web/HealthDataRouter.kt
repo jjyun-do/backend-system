@@ -20,7 +20,6 @@ class HealthDataRouter(
     ): RouterFunction<ServerResponse> = coRouter {
         "/api/projects/{projectId}/health-data".nest {
             POST("", contentType(MediaType.APPLICATION_JSON), handler::createHealthData)
-            GET("", handler::findByPeriod)
         }
     }
         .filter(idTokenFilterFunction)
