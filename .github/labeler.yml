@@ -1,6 +1,9 @@
 'platform :zap:':
   - 'platform/**/*'
 
+'data-query-service :chart:':
+  - 'data-query-service/**/*'
+
 'CI/CD :jack_o_lantern:':
   - '.github/workflows/*'
 
