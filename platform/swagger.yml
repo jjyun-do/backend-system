@@ -132,7 +132,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /projects/{projectId}/tasks:
     get:
-      summary: Returns a list of tasks. If none of queries are set, returns all the task.
+      summary: returns a list of tasks. If there's no query, returns all the task.
       tags:
         - Project
         - Task
@@ -161,7 +161,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [draft, active, completed, stopped]
+            enum: [draft, published, completed, stopped]
       responses:
         "200":
           description: OK
@@ -267,7 +267,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
     put:
-      summary: Edit task.
+      summary: Create revision of a task.
       description: Revision Id will be updated.
       tags:
         - Project
@@ -298,6 +298,45 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Task"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Edit a specific task
+      description: A task only in DRAFT status can be updated. This is for auto-save or status change
+      tags:
+        - Project
+        - Task
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The id of the project to retrieve
+          schema:
+            type: string
+        - name: taskId
+          in: path
+          required: true
+          description: The id of the task
+          schema:
+            type: string
+        - name: revision_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskReq"
+      responses:
+        "204":
+          description: No Content
         default:
           description: unexpected error
           content:
@@ -592,6 +631,9 @@ components:
             - $ref: "#/components/schemas/Question"
             - $ref: "#/components/schemas/Row"
           description: According to the type, it will be changed.
+        order:
+          type: integer
+          description: order of this item in a task
     ItemReq:
       required:
         - type
@@ -630,11 +672,6 @@ components:
       items:
         $ref: "#/components/schemas/Item"
     TaskReq:
-      required:
-        - title
-        - schedule
-        - startTime
-        - items
       type: object
       properties:
         taskId:
