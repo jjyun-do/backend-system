@@ -44,6 +44,7 @@ object Libs {
         "org.springframework.boot:spring-boot-starter-web:${Versions.SPRING_BOOT}"
     const val SPRING_BOOT_STARTER_WEBFLUX =
         "org.springframework.boot:spring-boot-starter-webflux:${Versions.SPRING_BOOT}"
+    const val SPRING_BOOT_STARTER_MAIL = "org.springframework.boot:spring-boot-starter-mail:${Versions.SPRING_BOOT}"
     const val JACKSON_MODULE_KOTLIN = "com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON}"
     const val REACTOR_KOTLIN_EXTENSION =
         "io.projectreactor.kotlin:reactor-kotlin-extensions:${Versions.KOTLIN_REACTOR_EXTENSION}"

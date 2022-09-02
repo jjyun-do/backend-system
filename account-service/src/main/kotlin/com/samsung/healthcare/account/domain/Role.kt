@@ -39,4 +39,17 @@ sealed class Role private constructor(val roleName: String) {
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Role) return false
+
+        if (roleName != other.roleName) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return roleName.hashCode()
+    }
 }
