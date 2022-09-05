@@ -2,7 +2,7 @@ package com.samsung.healthcare.account.application.port.output
 
 import com.samsung.healthcare.account.domain.Role
 
-data class JWTGenerationCommand(
+data class JwtGenerationCommand(
     val issuer: String,
     val subject: String,
     val email: String,

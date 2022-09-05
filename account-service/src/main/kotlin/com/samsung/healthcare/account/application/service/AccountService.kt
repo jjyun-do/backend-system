@@ -2,15 +2,15 @@ package com.samsung.healthcare.account.application.service
 
 import com.samsung.healthcare.account.application.accesscontrol.Authorize
 import com.samsung.healthcare.account.application.port.input.AccountServicePort
-import com.samsung.healthcare.account.application.port.input.PasswordResetCommand
-import com.samsung.healthcare.account.application.port.input.SignInResponse
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
+import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.util.UUID
 
+@Service
 class AccountService(
     private val authServicePort: AuthServicePort,
     private val mailService: MailService
@@ -33,25 +33,13 @@ class AccountService(
         if (roles.isEmpty()) Mono.empty()
         else assignRoles(account.id, roles)
 
-    override fun resetPassword(passwordResetCommand: PasswordResetCommand): Mono<Void> {
-        TODO("Not yet implemented")
-    }
-
-    override fun signIn(email: Email, password: String): Mono<SignInResponse> {
-        TODO("Not yet implemented")
-    }
-
     @Authorize
-    override fun assignRoles(accoundId: String, roles: Collection<Role>): Mono<Void> =
+    override fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void> =
         if (roles.isEmpty()) Mono.error(IllegalArgumentException())
-        else authServicePort.assignRoles(accoundId, roles)
+        else authServicePort.assignRoles(accountId, roles)
 
     @Authorize
-    override fun removeRolesFromAccount(accoundId: String, roles: Collection<Role>): Mono<Void> {
-        TODO("Not yet implemented")
-    }
-
-    override fun registerRoles(roles: Collection<Role>): Mono<Void> {
-        TODO("Not yet implemented")
-    }
+    override fun removeRolesFromAccount(accountId: String, roles: Collection<Role>): Mono<Void> =
+        if (roles.isEmpty()) Mono.error(IllegalArgumentException())
+        else authServicePort.removeRolesFromAccount(accountId, roles)
 }

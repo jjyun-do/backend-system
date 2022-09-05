@@ -27,7 +27,7 @@ internal class AccountServiceTest {
     private val email = Email("test@account-service-test.com")
 
     @Test
-    fun `assignRoles should return void`() {
+    fun `assignRoles should not emit event`() {
         every { authServicePort.assignRoles(any(), any()) } returns Mono.empty()
         StepVerifier.create(
             accountService.assignRoles(accountId, listOf(Admin))
@@ -66,5 +66,20 @@ internal class AccountServiceTest {
         StepVerifier.create(
             accountService.inviteUser(email, listOf(Admin))
         ).verifyError<AlreadyExistedEmailException>()
+    }
+
+    @Test
+    fun `removeRolesFromAccount should throw illegal argument exception when roles is empty`() {
+        StepVerifier.create(
+            accountService.removeRolesFromAccount(accountId, emptyList())
+        ).verifyError<IllegalArgumentException>()
+    }
+
+    @Test
+    fun `removeRolesFromAccount should not emit event`() {
+        every { authServicePort.removeRolesFromAccount(any(), any()) } returns Mono.empty()
+        StepVerifier.create(
+            accountService.removeRolesFromAccount(accountId, listOf(Admin))
+        ).verifyComplete()
     }
 }

@@ -7,13 +7,7 @@ import reactor.core.publisher.Mono
 interface AccountServicePort {
     fun inviteUser(email: Email, roles: Collection<Role>): Mono<Void>
 
-    fun resetPassword(passwordResetCommand: PasswordResetCommand): Mono<Void>
+    fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void>
 
-    fun signIn(email: Email, password: String): Mono<SignInResponse>
-
-    fun assignRoles(accoundId: String, roles: Collection<Role>): Mono<Void>
-
-    fun removeRolesFromAccount(accoundId: String, roles: Collection<Role>): Mono<Void>
-
-    fun registerRoles(roles: Collection<Role>): Mono<Void>
+    fun removeRolesFromAccount(accountId: String, roles: Collection<Role>): Mono<Void>
 }
