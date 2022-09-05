@@ -2,6 +2,7 @@ plugins {
     id(Plugins.SPRING_BOOT.name)
     kotlin("jvm")
     kotlin("plugin.spring")
+    kotlin("kapt")
 }
 
 tasks.named("jar") {
@@ -22,8 +23,10 @@ dependencies {
     implementation(Libs.KOTLIN_LOGGING)
     implementation(Libs.LOGBACK)
     implementation(Libs.FIREBASE_ADMIN)
+    implementation(Libs.MAPSTRUCT_IMPL)
     runtimeOnly(Libs.JDBC_POSTGRESQL)
-    annotationProcessor(Libs.SPRING_BOOT_CONFIGURATION_PROCESSOR)
+    kapt(Libs.SPRING_BOOT_CONFIGURATION_PROCESSOR)
+    kapt(Libs.MAPSTRUCT_ANNOTATION)
     testImplementation(Libs.SPRING_BOOT_STARTER_TEST)
     testImplementation(Libs.REACTOR_TEST)
     testImplementation(Libs.MOCKK)

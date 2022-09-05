@@ -11,12 +11,14 @@ import io.r2dbc.spi.ConnectionFactoryOptions
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration
+import org.springframework.data.r2dbc.config.EnableR2dbcAuditing
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @Configuration
-@EnableTransactionManagement
+@EnableR2dbcAuditing
 @EnableR2dbcRepositories
+@EnableTransactionManagement
 class ReactivePostgresConfig(
     private val objectMapper: ObjectMapper,
     private val config: ApplicationProperties,

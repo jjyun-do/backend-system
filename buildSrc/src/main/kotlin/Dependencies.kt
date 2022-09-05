@@ -22,7 +22,7 @@ object Versions {
     const val FIREBASE_ADMIN = "8.2.0"
     const val FEIGN_REACTOR = "3.2.5"
     const val WIRE_MOCK = "2.0.1"
-
+    const val MAPSTRUCT = "1.5.2.Final"
     const val KOTLIN_REACTOR_EXTENSION = "1.1.5"
     const val KOTLIN_REFLECT = "1.6.10"
     const val KOTLIN_COROUTINES_REACTOR = "1.6.0"
@@ -74,10 +74,11 @@ object Libs {
     const val SPRING_MOCKK = "com.ninja-squad:springmockk:${Versions.SPRING_MOCKK}"
     const val KOTLIN_LOGGING = "io.github.microutils:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING}"
     const val LOGBACK = "ch.qos.logback:logback-classic:${Versions.LOGBACK}"
-
     const val FEIGN_REACTOR_WEBCLIENT =
         "com.playtika.reactivefeign:feign-reactor-spring-cloud-starter:${Versions.FEIGN_REACTOR}"
     const val WIRE_MOCK = "com.marcinziolo:kotlin-wiremock:${Versions.WIRE_MOCK}"
+    const val MAPSTRUCT_IMPL = "org.mapstruct:mapstruct:${Versions.MAPSTRUCT}"
+    const val MAPSTRUCT_ANNOTATION = "org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}"
 }
 
 /**

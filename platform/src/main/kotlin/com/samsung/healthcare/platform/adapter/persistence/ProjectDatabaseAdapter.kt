@@ -62,10 +62,10 @@ class ProjectDatabaseAdapter(
             .toMono()
 
     private fun createProjectSchema(schemaName: String) =
-        databaseClient.sql(creatSchemaQuery(schemaName))
+        databaseClient.sql(createSchemaQuery(schemaName))
             .then()
 
-    private fun creatSchemaQuery(schemaName: String) = "CREATE SCHEMA $schemaName"
+    private fun createSchemaQuery(schemaName: String) = "CREATE SCHEMA $schemaName"
 
     override suspend fun findById(id: ProjectId): Project? =
         projectRepository.findById(id.value)

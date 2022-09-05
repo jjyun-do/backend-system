@@ -9,7 +9,7 @@ data class Task(
     val id: String,
     val properties: Map<String, Any>,
     val status: TaskStatus,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime? = null,
     val outdatedAt: LocalDateTime? = null,
     val deletedAt: LocalDateTime? = null,
 ) {
@@ -19,8 +19,7 @@ data class Task(
                 null,
                 UUID.randomUUID().toString(),
                 emptyMap(),
-                TaskStatus.DRAFT,
-                LocalDateTime.now()
+                TaskStatus.DRAFT
             )
     }
 
