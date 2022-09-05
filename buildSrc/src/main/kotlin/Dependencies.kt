@@ -17,8 +17,11 @@ object Versions {
     const val REACTOR_TEST = "3.4.15"
     const val FLYWAY = "8.5.2"
     const val MOCKK = "1.12.3"
+    const val SPRING_MOCKK = "3.1.1"
     const val LOGBACK = "1.2.11"
     const val FIREBASE_ADMIN = "8.2.0"
+    const val FEIGN_REACTOR = "3.2.5"
+    const val WIRE_MOCK = "2.0.1"
 
     const val KOTLIN_REACTOR_EXTENSION = "1.1.5"
     const val KOTLIN_REFLECT = "1.6.10"
@@ -68,8 +71,13 @@ object Libs {
     const val SPRING_BOOT_STARTER_TEST = "org.springframework.boot:spring-boot-starter-test:${Versions.SPRING_BOOT}"
     const val REACTOR_TEST = "io.projectreactor:reactor-test:${Versions.REACTOR_TEST}"
     const val MOCKK = "io.mockk:mockk:${Versions.MOCKK}"
+    const val SPRING_MOCKK = "com.ninja-squad:springmockk:${Versions.SPRING_MOCKK}"
     const val KOTLIN_LOGGING = "io.github.microutils:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING}"
     const val LOGBACK = "ch.qos.logback:logback-classic:${Versions.LOGBACK}"
+
+    const val FEIGN_REACTOR_WEBCLIENT =
+        "com.playtika.reactivefeign:feign-reactor-spring-cloud-starter:${Versions.FEIGN_REACTOR}"
+    const val WIRE_MOCK = "com.marcinziolo:kotlin-wiremock:${Versions.WIRE_MOCK}"
 }
 
 /**

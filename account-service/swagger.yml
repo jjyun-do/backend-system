@@ -159,11 +159,10 @@ components:
       example: project_sample:researcher
     ResetPasswordReq:
       required:
-        - reset_token
-        - email
+        - resetToken
         - password
       properties:
-        reset_token:
+        resetToken:
           $ref: "#/components/schemas/ResetToken"
         email:
           $ref: "#/components/schemas/Email"
@@ -180,11 +179,11 @@ components:
           type: string
     RoleReq:
       required:
-        - email
+        - accountId
         - roles
       properties:
         email:
-          $ref: "#/components/schemas/Email"
+          $ref: "#/components/schemas/AccountId"
         roles:
           $ref: "#/components/schemas/Roles"
     User:
@@ -213,6 +212,9 @@ components:
       type: string
       format: email
       example: cubist@samsung.com
+    AccountId:
+      type: string
+      example: abc-eqf
     ResetToken:
       type: string
       example: aadfad...badfdfad
