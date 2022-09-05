@@ -8,6 +8,7 @@ dependencies {
     implementation(Libs.SPRING_BOOT_STARTER_WEBFLUX)
     implementation(Libs.SPRING_BOOT_STARTER_AOP)
     implementation(Libs.SPRING_BOOT_STARTER_MAIL)
+    implementation(Libs.SPRING_BOOT_STARTER_OAUTH2_CLIENT)
     implementation(Libs.JACKSON_MODULE_KOTLIN)
     implementation(Libs.REACTOR_KOTLIN_EXTENSION)
 
