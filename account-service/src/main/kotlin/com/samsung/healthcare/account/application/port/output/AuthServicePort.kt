@@ -12,13 +12,16 @@ interface AuthServicePort {
 
     fun resetPassword(resetToken: String, newPassword: String): Mono<Void>
 
-    fun assignRoles(accountId: String, collection: Collection<Role>): Mono<Void>
+    fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void>
 
-    fun removeRolesFromAccount(accountId: String, collection: Collection<Role>): Mono<Void>
+    fun removeRolesFromAccount(accountId: String, roles: Collection<Role>): Mono<Void>
 
-    fun createRoles(collection: Collection<Role>): Mono<Void>
+    fun createRoles(roles: Collection<Role>): Mono<Void>
 
     fun signIn(email: Email, password: String): Mono<Account>
 
     fun listUserRoles(id: String): Mono<List<Role>>
+
+    // TODO handle pagination
+    fun listUsers(): Mono<List<Account>>
 }
