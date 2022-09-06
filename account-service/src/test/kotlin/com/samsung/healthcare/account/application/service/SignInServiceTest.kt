@@ -1,6 +1,7 @@
 package com.samsung.healthcare.account.application.service
 
 import com.samsung.healthcare.account.application.exception.SignInException
+import com.samsung.healthcare.account.application.port.input.SignInCommand
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
 import com.samsung.healthcare.account.application.port.output.TokenSigningPort
 import com.samsung.healthcare.account.domain.Account
@@ -39,7 +40,7 @@ internal class SignInServiceTest {
         } returns Mono.just("encoded-jwt-string")
 
         StepVerifier.create(
-            signInService.signIn(email, password)
+            signInService.signIn(SignInCommand(email, password))
         ).expectNextMatches { signInResponse ->
             signInResponse.account == account &&
                 signInResponse.jwt.isNotBlank()
@@ -50,7 +51,7 @@ internal class SignInServiceTest {
     fun `signIn should throw SignInException when signIn failed`() {
         every { authServicePort.signIn(email, "pw") } returns Mono.error(SignInException())
         StepVerifier.create(
-            signInService.signIn(email, "pw")
+            signInService.signIn(SignInCommand(email, "pw"))
         ).verifyError<SignInException>()
     }
 }
