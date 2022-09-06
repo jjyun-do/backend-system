@@ -11,5 +11,5 @@ class ResetPasswordService(
     private val authServicePort: AuthServicePort
 ) : ResetPasswordUseCase {
     override fun resetPassword(passwordResetCommand: ResetPasswordCommand): Mono<Void> =
-        authServicePort.resetPassword(passwordResetCommand.resetToken, passwordResetCommand.newPassword)
+        authServicePort.resetPassword(passwordResetCommand.resetToken, passwordResetCommand.password)
 }

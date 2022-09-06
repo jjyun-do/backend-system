@@ -2,10 +2,10 @@ package com.samsung.healthcare.account.application.port.input
 
 data class ResetPasswordCommand(
     val resetToken: String,
-    val newPassword: String
+    val password: String
 ) {
     init {
         require(resetToken.isNotBlank())
-        require(newPassword.isNotBlank())
+        require(password.isNotBlank())
     }
 }
