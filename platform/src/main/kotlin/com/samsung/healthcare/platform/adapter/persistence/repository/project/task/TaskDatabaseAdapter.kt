@@ -11,4 +11,15 @@ class TaskDatabaseAdapter(
 ) : TaskOutputPort {
     override suspend fun create(task: Task): Task =
         taskRepository.save(task.toEntity()).toDomain()
+
+    override suspend fun update(task: Task): Task {
+        requireNotNull(task.revisionId)
+        return taskRepository.findById(task.revisionId.value)?.copy(
+            properties = task.properties,
+            status = task.status.name,
+        ).let {
+            requireNotNull(it)
+            taskRepository.save(it).toDomain()
+        }
+    }
 }

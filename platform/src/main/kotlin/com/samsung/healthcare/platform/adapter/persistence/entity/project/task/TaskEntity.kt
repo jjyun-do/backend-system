@@ -8,7 +8,7 @@ import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 
 @Table("tasks")
-class TaskEntity(
+data class TaskEntity(
     @Id
     var revisionId: Int?,
     val id: String,

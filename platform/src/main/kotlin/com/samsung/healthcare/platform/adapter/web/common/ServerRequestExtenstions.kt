@@ -13,3 +13,9 @@ fun ServerRequest.getStartTime(): LocalDateTime? = this.queryParam("start_time")
 fun ServerRequest.getEndTime(): LocalDateTime? = this.queryParam("end_time").map {
     LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 }.orElse(null)
+
+fun ServerRequest.getRevisionId(): Int? = this.queryParam("revision_id").map {
+    it.toInt()
+}.orElse(null)
+
+fun ServerRequest.getTaskId(): String = this.pathVariable("taskId")
