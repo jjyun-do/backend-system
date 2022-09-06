@@ -8,8 +8,10 @@ import com.samsung.healthcare.account.domain.RoleFactory
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtException
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
+import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
+@Service
 class GetAccountService(
     private val jwtDecoder: ReactiveJwtDecoder
 ) : GetAccountUseCase {

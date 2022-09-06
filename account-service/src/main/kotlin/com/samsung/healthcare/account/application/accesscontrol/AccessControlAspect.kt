@@ -7,24 +7,27 @@ import com.samsung.healthcare.account.domain.Role.ProjectRole
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 
+@Component
 @Aspect
 class AccessControlAspect {
 
     @Around("@annotation(Authorize)")
     fun withAuthorize(joinPoint: ProceedingJoinPoint): Any {
         return ContextHolder.getAccount()
-            .log()
+            .switchIfEmpty { Mono.error(IllegalAccessException()) }
             .map { account -> checkRoles(account, joinPoint) }
             .onErrorMap { ex -> ex.printStackTrace(); IllegalAccessException() }
             .then(proceed(joinPoint))
     }
 
     private fun proceed(joinPoint: ProceedingJoinPoint): Mono<*> {
-        val result = joinPoint.proceed()
-        return if (result is Mono<*>) result
-        else Mono.justOrEmpty(result)
+        return Mono.defer {
+            joinPoint.proceed() as Mono<*>
+        }
     }
 
     private fun checkRoles(account: Account, joinPoint: ProceedingJoinPoint) {
