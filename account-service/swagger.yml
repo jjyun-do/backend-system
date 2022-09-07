@@ -182,7 +182,7 @@ components:
         - accountId
         - roles
       properties:
-        email:
+        accountId:
           $ref: "#/components/schemas/AccountId"
         roles:
           $ref: "#/components/schemas/Roles"
@@ -214,7 +214,7 @@ components:
       example: cubist@samsung.com
     AccountId:
       type: string
-      example: abc-eqf
+      example: 7d08351b-85b6-488e-a8a2-b8653defb865
     ResetToken:
       type: string
       example: aadfad...badfdfad
