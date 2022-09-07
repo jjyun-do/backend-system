@@ -1,10 +1,13 @@
 app:
-  jwkSetUrl: ${JWK_URL:http://127.0.0.1:3567/recipe/jwt/jwks}
+  jwk:
+    url: ${JWK_URL:http://127.0.0.1:3567/recipe/jwt/jwks}
+  invitation:
+    url: ${INVITATION_URL}
 
 spring:
   mail:
-    host: smtp.gmail.com
-    port: 587
+    host: ${SMTP_HOST:smtp.gmail.com}
+    port: ${SMTP_PORT:587}
     username: ${MAIL_USER}
     password: ${MAIL_USER_PASSWORD}
     properties:

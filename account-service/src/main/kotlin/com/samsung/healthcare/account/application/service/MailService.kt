@@ -1,26 +1,44 @@
 package com.samsung.healthcare.account.application.service
 
+import com.samsung.healthcare.account.application.config.InvitationProperties
 import com.samsung.healthcare.account.domain.Email
-import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Service
 class MailService(
-    private val mailSender: JavaMailSender
+    private val mailSender: JavaMailSender,
+    private val invitationProperties: InvitationProperties
 ) {
 
-    internal fun sendMail(email: Email, resetToken: String): Mono<Void> {
-        mailSender.send(
-            SimpleMailMessage().apply {
-                setTo(email.value)
-                setSubject("Invitation")
-
-                // TODO
-                setText(resetToken)
-            }
-        )
-        return Mono.empty()
+    companion object {
+        // TODO use html template?
+        private const val MESSAGE_TEMPLATE = """
+            Please activiate your account from <a href="%s">%s</a>
+        """
     }
+
+    internal fun sendMail(email: Email, resetToken: String): Mono<Void> =
+        Mono.fromCallable {
+            mailSender.send(
+                mailSender.createMimeMessage().apply {
+                    MimeMessageHelper(this, true, "UTF-8")
+                        .apply {
+                            setTo(email.value)
+                            // TODO
+                            setSubject("Account activation request")
+                            setText(htmlMessage(email, resetToken), true)
+                        }
+                }
+            )
+        }.subscribeOn(Schedulers.boundedElastic())
+            .then()
+
+    private fun htmlMessage(email: Email, resetToken: String): String =
+        "${invitationProperties.url}?reset-token=$resetToken&email=${email.value}".let { path ->
+            MESSAGE_TEMPLATE.format(path, path)
+        }
 }

@@ -9,6 +9,6 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 class ReactiveJwtDecoderConfig {
 
     @Bean
-    fun reactiveJwtDecoder(applicationProperties: ApplicationProperties): ReactiveJwtDecoder =
-        NimbusReactiveJwtDecoder(applicationProperties.jwkSetUrl)
+    fun reactiveJwtDecoder(jwkProperties: JwkProperties): ReactiveJwtDecoder =
+        NimbusReactiveJwtDecoder(jwkProperties.url)
 }

@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConstructorBinding
-@ConfigurationProperties("app")
-data class ApplicationProperties(
-    val jwkSetUrl: String
+@ConfigurationProperties("app.invitation")
+data class InvitationProperties(
+    val url: String
 )
