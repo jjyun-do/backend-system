@@ -164,7 +164,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [draft, published, completed, stopped]
+            enum: [DRAFT, PUBLISHED, COMPLETED, STOPPED]
       responses:
         "200":
           description: OK
@@ -206,7 +206,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Results"
+              $ref: "#/components/schemas/TaskResults"
       responses:
         "201":
           description: OK
@@ -382,7 +382,7 @@ components:
       properties:
         tag:
           type: string
-          enum: [radio, checkbox, dropdown]
+          enum: [RADIO, CHECKBOX, DROPDOWN]
           description: Only one option can be chosen for radio, dropdown.
             Multiple options can be chosen for checkbox.
         options:
@@ -411,7 +411,7 @@ components:
       properties:
         tag:
           type: string
-          enum: [long, short]
+          enum: [LONG, SHORT]
           description: developers can change this value..
     ScaleQuestion:
       required:
@@ -421,7 +421,7 @@ components:
       properties:
         tag:
           type: string
-          enum: [slider]
+          enum: [SLIDER]
           description: developers can change this value..
         low:
           type: integer
@@ -466,7 +466,7 @@ components:
       properties:
         tag:
           type: string
-          enum: [weekly, monthly, yearly]
+          enum: [WEEKLY, MONTHLY, YEARLY]
           description: developers can change this value..
     Question:
       required:
@@ -484,7 +484,7 @@ components:
           default: true
         type:
           type: string
-          enum: [choice, text, scale, date, time, frequency]
+          enum: [CHOICE, TEXT, SCALE, DATE, TIME, FREQUENCY]
         properties:
           type: object
           description: It depends on the value of 'type'
@@ -502,7 +502,6 @@ components:
     Row:
       required:
         - title
-      type: object
       properties:
         title:
           type: string
@@ -522,7 +521,7 @@ components:
         type:
           type: string
           description: Type of Item (Question & Row will be implemented for v0.9)
-          enum: [question, row, image, activity]
+          enum: [QUESTION, ROW, IMAGE, ACTIVITY]
         contents:
           oneOf:
             - $ref: "#/components/schemas/Question"
@@ -544,7 +543,7 @@ components:
         type:
           type: string
           description: Type of Item (Question & Row will be implemented for v0.9)
-          enum: [question, row, image, activity]
+          enum: [QUESTION, ROW, IMAGE, ACTIVITY]
         contents:
           oneOf:
             - $ref: "#/components/schemas/Question"
@@ -603,7 +602,7 @@ components:
           description: valid time of each task (minute-based).
         status:
           type: string
-          enum: [draft, active, completed, stopped]
+          enum: [DRAFT, PUBLISHED, COMPLETED, STOPPED]
         items:
           $ref: "#/components/schemas/Items"
     TaskReq:
@@ -635,7 +634,7 @@ components:
           description: valid time of each task (minute-based).
         status:
           type: string
-          enum: [draft, active, completed, stopped]
+          enum: [DRAFT, PUBLISHED, COMPLETED, STOPPED]
         items:
           $ref: "#/components/schemas/ItemsReq"
         condition:
@@ -644,15 +643,34 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Task"
-    Result:
-      type: object
+    TaskResult:
       properties:
-        NOT_IMPLEMENTED:
+        revisionId:
           type: string
-    Results:
+        taskId:
+          type: string
+        userId:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        submittedAt:
+          type: string
+          format: date-time
+        itemResults:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemResult"
+    TaskResults:
       type: array
       items:
-        $ref: "#/components/schemas/Result"
+        $ref: "#/components/schemas/TaskResult"
+    ItemResult:
+      properties:
+        itemName:
+          type: string
+        result:
+          type: string
     Error:
       required:
         - code
