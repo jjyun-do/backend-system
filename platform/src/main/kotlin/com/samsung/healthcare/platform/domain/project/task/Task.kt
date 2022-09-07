@@ -26,6 +26,20 @@ data class Task(
     init {
         // TODO: validate properties field
     }
+
+    fun unrollTask(): MutableMap<String, Any?> {
+        val ret = mutableMapOf<String, Any?>()
+        ret["revisionId"] = this.revisionId?.value
+        ret["id"] = this.id
+        ret["status"] = this.status
+        ret["createdAt"] = this.createdAt
+        ret["outdatedAt"] = this.outdatedAt
+        ret["deletedAt"] = this.deletedAt
+        this.properties.forEach {
+            ret[it.key] = it.value
+        }
+        return ret
+    }
 }
 
 class RevisionId private constructor(val value: Int) {

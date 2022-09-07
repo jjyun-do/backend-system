@@ -27,4 +27,13 @@ data class Item(
     init {
         // TODO: validate contents field by type
     }
+
+    fun unrollItem(): Map<String, Any?> {
+        val ret = mutableMapOf<String, Any?>()
+        ret["name"] = this.name
+        ret["type"] = this.type
+        ret["contents"] = this.contents
+        ret["sequence"] = this.sequence
+        return ret
+    }
 }
