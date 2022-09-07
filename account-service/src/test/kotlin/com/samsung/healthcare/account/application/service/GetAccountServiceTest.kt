@@ -9,9 +9,9 @@ import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
-import com.samsung.healthcare.account.domain.Role.Admin
 import com.samsung.healthcare.account.domain.Role.ProjectRole.ProjectOwner
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
+import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -118,7 +118,7 @@ internal class GetAccountServiceTest {
             Stream.of(
                 Arguments.of(listOf(ProjectOwner("project-x"))),
                 Arguments.of(listOf(ProjectOwner("project-y"), Researcher("project-z"))),
-                Arguments.of(listOf(Admin)),
+                Arguments.of(listOf(TeamAdmin)),
             )
     }
 }

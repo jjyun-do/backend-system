@@ -6,7 +6,7 @@ import com.samsung.healthcare.account.application.port.output.AuthServicePort
 import com.samsung.healthcare.account.application.port.output.TokenSigningPort
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
-import com.samsung.healthcare.account.domain.Role.Admin
+import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -27,7 +27,7 @@ internal class SignInServiceTest {
     @Test
     fun `signIn should return account with jwt`() {
 
-        val account = Account("id", email, listOf(Admin))
+        val account = Account("id", email, listOf(TeamAdmin))
         every { authServicePort.signIn(email, password) } returns Mono.just(account)
         every {
             tokenSigningPort.generateSignedJWT(

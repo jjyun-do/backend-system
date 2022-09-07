@@ -1,9 +1,10 @@
 package com.samsung.healthcare.account.application.service
 
-import com.samsung.healthcare.account.application.accesscontrol.Authorize
+import com.samsung.healthcare.account.application.accesscontrol.Requires
 import com.samsung.healthcare.account.application.port.input.AccountServicePort
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
 import com.samsung.healthcare.account.domain.Account
+import com.samsung.healthcare.account.domain.AssignRoleAuthority
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
 import org.springframework.stereotype.Service
@@ -16,7 +17,7 @@ class AccountService(
     private val mailService: MailService
 ) : AccountServicePort {
 
-    @Authorize
+    @Requires([AssignRoleAuthority::class])
     override fun inviteUser(email: Email, roles: Collection<Role>): Mono<Void> =
         // TODO chagge method that generate random password
         authServicePort.registerNewUser(email, UUID.randomUUID().toString())
@@ -33,12 +34,12 @@ class AccountService(
         if (roles.isEmpty()) Mono.empty()
         else assignRoles(account.id, roles)
 
-    @Authorize
+    @Requires([AssignRoleAuthority::class])
     override fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void> =
         if (roles.isEmpty()) Mono.error(IllegalArgumentException())
         else authServicePort.assignRoles(accountId, roles)
 
-    @Authorize
+    @Requires([AssignRoleAuthority::class])
     override fun removeRolesFromAccount(accountId: String, roles: Collection<Role>): Mono<Void> =
         if (roles.isEmpty()) Mono.error(IllegalArgumentException())
         else authServicePort.removeRolesFromAccount(accountId, roles)

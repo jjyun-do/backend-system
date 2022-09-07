@@ -1,10 +1,13 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
+import com.samsung.healthcare.account.adapter.web.filter.JwtTokenAuthenticationFilter
 import com.samsung.healthcare.account.adapter.web.router.RESET_PASSWORD_PATH
 import com.samsung.healthcare.account.adapter.web.router.ResetPasswordRouter
+import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.application.port.input.ResetPasswordCommand
 import com.samsung.healthcare.account.application.port.input.ResetPasswordUseCase
 import io.mockk.every
@@ -20,12 +23,17 @@ import reactor.core.publisher.Mono
     ResetPasswordHandler::class,
     ResetPasswordRouter::class,
     GlobalExceptionHandler::class,
-    GlobalErrorAttributes::class
+    GlobalErrorAttributes::class,
+    JwtTokenAuthenticationFilter::class,
+    SecurityConfig::class,
 )
 internal class ResetPasswordHandlerTest {
 
     @MockkBean
     private lateinit var resetPasswordService: ResetPasswordUseCase
+
+    @MockkBean
+    private lateinit var getAccountService: GetAccountUseCase
 
     @Autowired
     private lateinit var webClient: WebTestClient

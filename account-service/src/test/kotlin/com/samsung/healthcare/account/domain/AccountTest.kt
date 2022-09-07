@@ -1,9 +1,9 @@
 package com.samsung.healthcare.account.domain
 
-import com.samsung.healthcare.account.domain.Role.Admin
 import com.samsung.healthcare.account.domain.Role.ProjectRole.HeadResearcher
 import com.samsung.healthcare.account.domain.Role.ProjectRole.ProjectOwner
 import com.samsung.healthcare.account.domain.Role.ServiceAccount
+import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -20,7 +20,7 @@ internal class AccountTest {
     @Test
     fun `Account without service account role is not able to create role`() {
         assertFalse(
-            accountWith(Admin).canCreateRole()
+            accountWith(TeamAdmin).canCreateRole()
         )
     }
 

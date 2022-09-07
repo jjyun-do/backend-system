@@ -5,11 +5,12 @@ import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
 import com.samsung.healthcare.account.adapter.web.filter.JwtTokenAuthenticationFilter
-import com.samsung.healthcare.account.adapter.web.router.ASSIGN_ROLE_PATH
-import com.samsung.healthcare.account.adapter.web.router.AssignRoleRouter
+import com.samsung.healthcare.account.adapter.web.router.REMOVE_USER_ROLE_PATH
+import com.samsung.healthcare.account.adapter.web.router.RemoveUserRolesRouter
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.application.service.AccountService
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
+import com.samsung.healthcare.account.domain.RoleFactory
 import io.mockk.every
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,14 +21,14 @@ import reactor.core.publisher.Mono
 
 @WebFluxTest
 @Import(
-    AssignRoleHandler::class,
-    AssignRoleRouter::class,
+    RemoveUserRolesHandler::class,
+    RemoveUserRolesRouter::class,
     GlobalExceptionHandler::class,
     GlobalErrorAttributes::class,
     JwtTokenAuthenticationFilter::class,
     SecurityConfig::class,
 )
-internal class AssignRoleHandlerTest {
+internal class RemoveUserRolesHandlerTest {
     @MockkBean
     private lateinit var accountService: AccountService
 
@@ -37,30 +38,35 @@ internal class AssignRoleHandlerTest {
     @Autowired
     private lateinit var webClient: WebTestClient
 
-    @Test
-    fun `should return ok`() {
-        every { accountService.assignRoles(any(), any()) } returns Mono.empty()
+    private val normalRequest =
+        TestRequest("account-id", roles = listOf(Researcher("project-1").roleName))
 
-        webClient.put(
-            ASSIGN_ROLE_PATH,
-            TestRequest("test-account", listOf(Researcher("project-id").roleName)),
-        )
+    @Test
+    fun `removeUserRoles should return bad request when account-id is null`() {
+        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(accountId = null))
+            .expectStatus()
+            .isBadRequest
     }
 
     @Test
-    fun `should return bad request when account id is null`() {
-        webClient.put(
-            ASSIGN_ROLE_PATH,
-            TestRequest(null, listOf(Researcher("project-id").roleName)),
-        )
+    fun `removeUserRoles should return bad request when roles is null`() {
+        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = null))
+            .expectStatus()
+            .isBadRequest
     }
 
     @Test
-    fun `should return bad request when roles is null`() {
-        webClient.put(
-            ASSIGN_ROLE_PATH,
-            TestRequest("account-id", null),
-        )
+    fun `removeUserRoles should return ok`() {
+        every {
+            accountService.removeRolesFromAccount(
+                normalRequest.accountId!!,
+                normalRequest.roles!!.map { RoleFactory.createRole(it) }
+            )
+        } returns Mono.empty()
+
+        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest)
+            .expectStatus()
+            .isOk
     }
 
     data class TestRequest(val accountId: String?, val roles: List<String>? = emptyList())

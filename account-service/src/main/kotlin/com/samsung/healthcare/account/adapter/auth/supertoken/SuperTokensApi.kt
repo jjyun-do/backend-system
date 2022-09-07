@@ -56,7 +56,7 @@ interface SuperTokensApi {
     fun generateSignedJwt(generateJwtRequest: GenerateJwtRequest): Mono<JwtResponse>
 
     class ResetPasswordRequest(
-        val resetToken: String,
+        val token: String,
         val newPassword: String,
     ) {
         val method = "token"

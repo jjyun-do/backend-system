@@ -14,14 +14,14 @@ class SignInHandler(
     private val signInUseCase: SignInUseCase
 ) {
 
-    fun singIn(req: ServerRequest): Mono<ServerResponse> =
+    fun signIn(req: ServerRequest): Mono<ServerResponse> =
         req.bodyToMono<SignInRequest>()
             .flatMap {
                 signInUseCase.signIn(
                     SignInCommand(Email(it.email), it.password)
                 )
             }
-            .then(ServerResponse.ok().build())
+            .flatMap { ServerResponse.ok().bodyValue(it) }
 
     data class SignInRequest(val email: String, val password: String)
 }

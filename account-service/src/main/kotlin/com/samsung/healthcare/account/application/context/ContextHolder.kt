@@ -16,6 +16,6 @@ object ContextHolder {
     fun <T> setAccount(mono: Mono<T>, account: Account) =
         mono.contextWrite(Context.of(ACCOUNT_KEY, account))
 
-    fun ContextView.getAccount(): Account =
-        this.get<Account>(ACCOUNT_KEY)
+    fun ContextView.getAccount(): Account? =
+        this.getOrDefault<Account>(ACCOUNT_KEY, null)
 }

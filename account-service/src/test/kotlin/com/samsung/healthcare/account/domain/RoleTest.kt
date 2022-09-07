@@ -1,12 +1,12 @@
 package com.samsung.healthcare.account.domain
 
-import com.samsung.healthcare.account.domain.Role.Admin
 import com.samsung.healthcare.account.domain.Role.ProjectRole
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Companion.SEPARATOR
 import com.samsung.healthcare.account.domain.Role.ProjectRole.CustomRole
 import com.samsung.healthcare.account.domain.Role.ProjectRole.HeadResearcher
 import com.samsung.healthcare.account.domain.Role.ProjectRole.ProjectOwner
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
+import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -37,9 +37,9 @@ internal class RoleTest {
 
     @Test
     fun `createRole should return admin instance when string is admin`() {
-        val role = RoleFactory.createRole(Role.ADMIN)
+        val role = RoleFactory.createRole(Role.TEAM_ADMIN)
 
-        assertEquals(Admin, role)
+        assertEquals(TeamAdmin, role)
     }
 
     @ParameterizedTest

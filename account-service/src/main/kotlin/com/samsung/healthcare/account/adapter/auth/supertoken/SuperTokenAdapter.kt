@@ -81,8 +81,11 @@ class SuperTokenAdapter(
             // TODO handle other exceptions
             .onErrorMap { SignInException() }
             .mapNotNull {
-                if (it.status == OK) it.user?.toAccount()
+                if (it.status == OK && it.user != null) it.user.toAccount()
                 else throw SignInException()
+            }.flatMap { account ->
+                listUserRoles(account.id)
+                    .map { account.copy(roles = it) }
             }
 
     override fun listUserRoles(id: String): Mono<List<Role>> =

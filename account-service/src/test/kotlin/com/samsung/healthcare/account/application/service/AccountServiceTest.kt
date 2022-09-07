@@ -4,7 +4,7 @@ import com.samsung.healthcare.account.application.exception.AlreadyExistedEmailE
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
-import com.samsung.healthcare.account.domain.Role.Admin
+import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -30,7 +30,7 @@ internal class AccountServiceTest {
     fun `assignRoles should not emit event`() {
         every { authServicePort.assignRoles(any(), any()) } returns Mono.empty()
         StepVerifier.create(
-            accountService.assignRoles(accountId, listOf(Admin))
+            accountService.assignRoles(accountId, listOf(TeamAdmin))
         ).verifyComplete()
     }
 
@@ -51,7 +51,7 @@ internal class AccountServiceTest {
         every { mailService.sendMail(email, any()) } returns Mono.empty()
 
         StepVerifier.create(
-            accountService.inviteUser(email, listOf(Admin))
+            accountService.inviteUser(email, listOf(TeamAdmin))
         ).verifyComplete()
 
         verify { mailService.sendMail(email, any()) }
@@ -64,7 +64,7 @@ internal class AccountServiceTest {
         )
 
         StepVerifier.create(
-            accountService.inviteUser(email, listOf(Admin))
+            accountService.inviteUser(email, listOf(TeamAdmin))
         ).verifyError<AlreadyExistedEmailException>()
     }
 
@@ -79,7 +79,7 @@ internal class AccountServiceTest {
     fun `removeRolesFromAccount should not emit event`() {
         every { authServicePort.removeRolesFromAccount(any(), any()) } returns Mono.empty()
         StepVerifier.create(
-            accountService.removeRolesFromAccount(accountId, listOf(Admin))
+            accountService.removeRolesFromAccount(accountId, listOf(TeamAdmin))
         ).verifyComplete()
     }
 }

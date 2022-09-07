@@ -1,7 +1,7 @@
 package com.samsung.healthcare.account.application.service
 
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
-import com.samsung.healthcare.account.domain.Role.Admin
+import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -27,7 +27,7 @@ internal class RegisterRolesServiceTest {
         every { authServicePort.createRoles(any()) } returns Mono.empty()
 
         StepVerifier.create(
-            registerRolesService.registerRoles(listOf(Admin))
+            registerRolesService.registerRoles(listOf(TeamAdmin))
         ).verifyComplete()
     }
 

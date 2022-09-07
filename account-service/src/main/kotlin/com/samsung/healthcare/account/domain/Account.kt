@@ -2,6 +2,7 @@ package com.samsung.healthcare.account.domain
 
 import com.samsung.healthcare.account.domain.Role.ProjectRole.ProjectOwner
 import com.samsung.healthcare.account.domain.Role.ServiceAccount
+import org.springframework.security.core.GrantedAuthority
 
 data class Account(
     val id: String,
@@ -14,4 +15,7 @@ data class Account(
 
     fun canCreateRole(): Boolean =
         roles.contains(ServiceAccount)
+
+    fun hasPermission(authority: GrantedAuthority): Boolean =
+        roles.any { it.hasAuthority(authority) }
 }

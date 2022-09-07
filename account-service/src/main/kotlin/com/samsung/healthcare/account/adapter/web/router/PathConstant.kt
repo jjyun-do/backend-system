@@ -10,4 +10,6 @@ const val SIGN_IN_PATH = "$SERVICE_PATH/signin"
 
 const val ASSIGN_ROLE_PATH = "$SERVICE_PATH/user/roles"
 
-const val DEASSIGN_ROLE_PATH = "$SERVICE_PATH/user/roles/remove"
+const val REMOVE_USER_ROLE_PATH = "$SERVICE_PATH/user/roles/remove"
+
+const val LIST_USER_PATH = "$SERVICE_PATH/users"

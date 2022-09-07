@@ -1,12 +1,15 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
+import com.samsung.healthcare.account.adapter.web.filter.JwtTokenAuthenticationFilter
 import com.samsung.healthcare.account.adapter.web.handler.InvitationHandler.InvitationRequest
 import com.samsung.healthcare.account.adapter.web.handler.InvitationHandler.InvitationResult
 import com.samsung.healthcare.account.adapter.web.router.INVITATION_PATH
 import com.samsung.healthcare.account.adapter.web.router.InvitationRouter
+import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.application.service.AccountService
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
@@ -21,11 +24,21 @@ import org.springframework.test.web.reactive.server.expectBodyList
 import reactor.core.publisher.Mono
 
 @WebFluxTest
-@Import(InvitationHandler::class, InvitationRouter::class, GlobalExceptionHandler::class, GlobalErrorAttributes::class)
+@Import(
+    InvitationHandler::class,
+    InvitationRouter::class,
+    GlobalExceptionHandler::class,
+    GlobalErrorAttributes::class,
+    JwtTokenAuthenticationFilter::class,
+    SecurityConfig::class,
+)
 internal class InvitationHandlerTest {
 
     @MockkBean
     private lateinit var accountService: AccountService
+
+    @MockkBean
+    private lateinit var getAccountService: GetAccountUseCase
 
     @Autowired
     private lateinit var webClient: WebTestClient

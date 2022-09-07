@@ -13,15 +13,13 @@ import reactor.core.publisher.Mono
 class JwtTokenAuthenticationFilter(
     private val getAccount: GetAccountUseCase
 ) : WebFilter {
-    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> =
-        Mono.fromCallable {
-            exchange.request.headers.getFirst(AUTHORIZATION)?.let {
-                it.substring("Bearer ".length)
+    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+        val jwt = exchange.request.headers.getFirst(AUTHORIZATION)
+            ?.substring("Bearer ".length) ?: return chain.filter(exchange)
+
+        return getAccount.getAccountFromToken(jwt)
+            .flatMap { account ->
+                ContextHolder.setAccount(chain.filter(exchange), account)
             }
-        }.flatMap {
-            getAccount.getAccountFromToken(it)
-                .flatMap { account ->
-                    ContextHolder.setAccount(chain.filter(exchange), account)
-                }
-        }
+    }
 }

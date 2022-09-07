@@ -1,18 +1,18 @@
 package com.samsung.healthcare.account.domain
 
-import com.samsung.healthcare.account.domain.Role.Admin
 import com.samsung.healthcare.account.domain.Role.ProjectRole
 import com.samsung.healthcare.account.domain.Role.ProjectRole.CustomRole
 import com.samsung.healthcare.account.domain.Role.ProjectRole.HeadResearcher
 import com.samsung.healthcare.account.domain.Role.ProjectRole.ProjectOwner
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
 import com.samsung.healthcare.account.domain.Role.ServiceAccount
+import com.samsung.healthcare.account.domain.Role.TeamAdmin
 
 object RoleFactory {
 
     fun createRole(role: String): Role =
         when (role) {
-            Role.ADMIN -> Admin
+            Role.TEAM_ADMIN -> TeamAdmin
             Role.SERVICE_ACCOUNT -> ServiceAccount
             else -> createProjectRole(role)
         }

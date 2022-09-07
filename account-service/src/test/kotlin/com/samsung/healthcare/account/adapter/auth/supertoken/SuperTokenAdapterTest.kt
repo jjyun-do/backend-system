@@ -24,10 +24,10 @@ import com.samsung.healthcare.account.application.exception.UnknownAccountIdExce
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
-import com.samsung.healthcare.account.domain.Role.Admin
 import com.samsung.healthcare.account.domain.Role.ProjectRole.HeadResearcher
 import com.samsung.healthcare.account.domain.Role.ProjectRole.ProjectOwner
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
+import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
 import reactivefeign.utils.HttpStatus
@@ -67,6 +67,16 @@ internal class SuperTokenAdapterTest {
         "id": "$id",
         "timeJoined": 1659407200104
     }
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_GET_USER_ROLE_PATH?userId=$id"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+   "roles": [ ]
 }"""
         }
 
@@ -222,7 +232,7 @@ internal class SuperTokenAdapterTest {
         }
 
         StepVerifier.create(
-            superTokenAdapter.assignRoles("account-id", listOf(Admin, ProjectOwner("project-x")))
+            superTokenAdapter.assignRoles("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
         ).verifyComplete()
     }
 
@@ -230,7 +240,7 @@ internal class SuperTokenAdapterTest {
     fun `assignRoles should throw exception when supertoken returns some error`() {
         wm.put {
             url equalTo SUPER_TOKEN_ASSIGN_ROLE_PATH
-            body contains "role" equalTo Role.ADMIN
+            body contains "role" equalTo Role.TEAM_ADMIN
         } returns {
 
             this.statusCode = HttpStatus.SC_BAD_REQUEST
@@ -244,7 +254,7 @@ internal class SuperTokenAdapterTest {
         }
 
         StepVerifier.create(
-            superTokenAdapter.assignRoles("account-id", listOf(Admin, ProjectOwner("project-x")))
+            superTokenAdapter.assignRoles("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
         ).verifyError<Exception>()
     }
 
@@ -260,7 +270,7 @@ internal class SuperTokenAdapterTest {
         }
 
         StepVerifier.create(
-            superTokenAdapter.removeRolesFromAccount("account-id", listOf(Admin, ProjectOwner("project-x")))
+            superTokenAdapter.removeRolesFromAccount("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
         ).verifyComplete()
     }
 
@@ -298,7 +308,7 @@ internal class SuperTokenAdapterTest {
                 """{
   "status": "OK",
    "roles": [
-              "${Admin.roleName}",
+              "${TeamAdmin.roleName}",
               "${projectRole.roleName}"
             ]
 }"""
@@ -306,7 +316,7 @@ internal class SuperTokenAdapterTest {
 
         StepVerifier.create(
             superTokenAdapter.listUserRoles(accountId)
-        ).expectNext(listOf(Admin, projectRole))
+        ).expectNext(listOf(TeamAdmin, projectRole))
             .verifyComplete()
     }
 }

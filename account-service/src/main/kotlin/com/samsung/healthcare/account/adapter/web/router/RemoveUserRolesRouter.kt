@@ -1,6 +1,6 @@
 package com.samsung.healthcare.account.adapter.web.router
 
-import com.samsung.healthcare.account.adapter.web.handler.SignInHandler
+import com.samsung.healthcare.account.adapter.web.handler.RemoveUserRolesHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -10,17 +10,16 @@ import org.springframework.web.reactive.function.server.RouterFunctions
 import org.springframework.web.reactive.function.server.ServerResponse
 
 @Configuration
-class SignInRouter {
-
+class RemoveUserRolesRouter {
     @Bean
-    fun routeSignIn(
-        handler: SignInHandler
+    fun routeRemoveUserRoles(
+        handler: RemoveUserRolesHandler
     ): RouterFunction<ServerResponse> =
         RouterFunctions.route()
             .POST(
-                SIGN_IN_PATH,
+                REMOVE_USER_ROLE_PATH,
                 RequestPredicates.contentType(MediaType.APPLICATION_JSON),
-                handler::signIn
+                handler::removeUserRoles
             )
             .build()
 }

@@ -1,10 +1,13 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
+import com.samsung.healthcare.account.adapter.web.filter.JwtTokenAuthenticationFilter
 import com.samsung.healthcare.account.adapter.web.router.SIGN_IN_PATH
 import com.samsung.healthcare.account.adapter.web.router.SignInRouter
+import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.application.port.input.SignInCommand
 import com.samsung.healthcare.account.application.port.input.SignInUseCase
 import com.samsung.healthcare.account.domain.Email
@@ -21,11 +24,16 @@ import reactor.core.publisher.Mono
     SignInHandler::class,
     SignInRouter::class,
     GlobalExceptionHandler::class,
-    GlobalErrorAttributes::class
+    GlobalErrorAttributes::class,
+    JwtTokenAuthenticationFilter::class,
+    SecurityConfig::class,
 )
 internal class SignInHandlerTest {
     @MockkBean
     private lateinit var signInService: SignInUseCase
+
+    @MockkBean
+    private lateinit var getAccountService: GetAccountUseCase
 
     @Autowired
     private lateinit var webClient: WebTestClient
