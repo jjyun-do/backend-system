@@ -1,10 +1,10 @@
 package com.samsung.healthcare.platform.adapter.persistence.entity.healthdata
 
+import com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub.SleepSessionMapper
 import com.samsung.healthcare.platform.domain.User.UserId
 import com.samsung.healthcare.platform.domain.healthdata.SleepSession
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
-import java.time.ZoneId
 
 @Table("sleepsessions")
 data class SleepSessionEntity(
@@ -14,17 +14,7 @@ data class SleepSessionEntity(
     override val endTime: LocalDateTime,
     val title: String? = null,
     val notes: String? = null,
-) : IntervalDataEntity(id, userId, startTime, endTime) {
-    override fun toDomain(): SleepSession {
-        TODO("Not yet implemented")
-    }
-}
+) : IntervalDataEntity(id, userId, startTime, endTime)
 
 fun SleepSession.toEntity(userId: UserId): SleepSessionEntity =
-    SleepSessionEntity(
-        userId = userId.value,
-        startTime = LocalDateTime.ofInstant(this.startTime, ZoneId.systemDefault()),
-        endTime = LocalDateTime.ofInstant(this.endTime, ZoneId.systemDefault()),
-        title = this.title,
-        notes = this.notes,
-    )
+    SleepSessionMapper.INSTANCE.toEntity(this, userId)

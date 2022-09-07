@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 internal class TaskMapperTest {
 
     @Test
-    fun `should convert task to taskEntity`() {
+    fun `should convert domain to entity`() {
         val task = Task(
             RevisionId.from(1),
             "2b3b286c-4000-454c-bd8e-875b123aa73c",
@@ -29,7 +29,7 @@ internal class TaskMapperTest {
     }
 
     @Test
-    fun `should convert taskEntity to task`() {
+    fun `should convert entity to domain`() {
         val taskEntity = TaskEntity(
             1,
             "2b3b286c-4000-454c-bd8e-875b123aa73c",

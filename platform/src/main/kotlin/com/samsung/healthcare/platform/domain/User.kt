@@ -6,11 +6,11 @@ data class User(
     val id: UserId,
     val sub: String,
     val provider: String,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime? = null,
 ) {
     companion object {
         fun newUser(id: UserId, sub: String, provider: String): User =
-            User(id, sub, provider, LocalDateTime.now())
+            User(id, sub, provider)
 
         fun getHash(email: String): String {
             // TODO: Implement user email hashing logic

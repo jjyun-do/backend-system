@@ -3,6 +3,7 @@ package com.samsung.healthcare.platform.adapter.persistence.entity
 import com.samsung.healthcare.platform.adapter.persistence.entity.common.BaseIdEntity
 import com.samsung.healthcare.platform.domain.User
 import com.samsung.healthcare.platform.domain.User.UserId
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 
@@ -11,7 +12,8 @@ data class UserEntity(
     val id: String,
     val sub: String,
     val provider: String,
-    val createdAt: LocalDateTime,
+    @CreatedDate
+    val createdAt: LocalDateTime? = null,
     val deletedAt: LocalDateTime? = null,
 ) : BaseIdEntity<String?>(id) {
     companion object {

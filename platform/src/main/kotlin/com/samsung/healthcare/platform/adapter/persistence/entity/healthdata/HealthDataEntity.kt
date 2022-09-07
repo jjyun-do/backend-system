@@ -13,9 +13,7 @@ abstract class HealthDataEntity(
     @Id
     open val id: Int? = null,
     open val userId: String,
-) {
-    abstract fun toDomain(): HealthData
-}
+)
 
 fun HealthData.toEntity(userId: UserId): HealthDataEntity =
     when (this.type) {

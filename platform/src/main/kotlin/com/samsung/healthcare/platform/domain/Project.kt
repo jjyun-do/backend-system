@@ -7,12 +7,12 @@ data class Project(
     val name: String,
     val info: Map<String, Any>,
     val isOpen: Boolean,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime? = null,
     val deletedAt: LocalDateTime? = null,
 ) {
     companion object {
         fun newProject(name: String, info: Map<String, Any>, isOpen: Boolean): Project =
-            Project(null, name, info, isOpen, LocalDateTime.now())
+            Project(null, name, info, isOpen)
     }
 
     data class ProjectId private constructor(val value: Int) {
