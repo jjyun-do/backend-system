@@ -12,9 +12,10 @@ class QueryDataService(
 ) : QueryDataUseCase {
     override fun execute(
         projectId: String,
+        userId: String?,
         queryCommand: QueryDataCommand,
     ): QueryDataResultSet {
-        val result = queryDataPort.executeQuery(projectId, queryCommand.sql)
+        val result = queryDataPort.executeQuery(projectId, userId, queryCommand.sql)
 
         return QueryDataResultSet(
             metadata = QueryDataResultSet.MetaData(

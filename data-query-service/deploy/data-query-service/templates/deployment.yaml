@@ -23,7 +23,7 @@ spec:
               value: {{ .Values.trino.port | quote }}
             - name: TRINO_CATALOG
               value: {{ .Values.trino.catalog.name | quote }}
-            - name: CATALOG_USER
+            - name: TRINO_DEFAULT_USER
               value: {{ .Values.trino.catalog.user | quote }}
             - name: debug
               value: {{ .Values.debug | quote }}

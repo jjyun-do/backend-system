@@ -1,5 +1,6 @@
 package com.samsung.healthcare.dataqueryservice.adapter.web
 
+import com.samsung.healthcare.dataqueryservice.application.context.AuthContext
 import com.samsung.healthcare.dataqueryservice.application.port.input.QueryDataUseCase
 import com.samsung.healthcare.dataqueryservice.application.port.input.QueryDataCommand
 import com.samsung.healthcare.dataqueryservice.application.port.input.QueryDataResultSet
@@ -21,6 +22,7 @@ class DataQueryController(
     ): QueryDataResultSet {
         return queryDataUseCase.execute(
             projectId,
+            AuthContext.getValue(USER_ID_HEADER_NAME),
             queryCommand,
         )
     }
