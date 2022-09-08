@@ -50,7 +50,7 @@ paths:
       summary: Signin a user with email and password
       tags:
         - Researcher
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -63,7 +63,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/SignInResponse"
         default:
           description: unexpected error
           content:
@@ -131,6 +131,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /account-service/users:
+    get:
+      summary: Get user list
+      tags:
+        - User
+      responses:
+        "200":
+          description: The operation was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     InvitationReq:
@@ -177,6 +195,21 @@ components:
           $ref: "#/components/schemas/Email"
         password:
           type: string
+    SignInResponse:
+      required:
+        - id
+        - email
+        - jwt
+        - roles
+      properties:
+        email:
+          $ref: "#/components/schemas/Email"
+        id:
+          $ref: "#/components/schemas/AccountId"
+        jwt:
+          $ref: "#/components/schemas/Token"
+        roles:
+          $ref: "#/components/schemas/Roles"
     RoleReq:
       required:
         - accountId
@@ -186,15 +219,22 @@ components:
           $ref: "#/components/schemas/AccountId"
         roles:
           $ref: "#/components/schemas/Roles"
+
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/Role"
     User:
       required:
         - email
-        - token
+        - id
       properties:
         email:
           $ref: "#/components/schemas/Email"
-        token:
-          $ref: "#/components/schemas/Token"
+        id:
+          $ref: "#/components/schemas/AccountId"
+        roles:
+          $ref: "#/components/schemas/Roles"
     Token:
       description: |
         Signed Json Web Token
@@ -233,4 +273,4 @@ components:
       scheme: bearer
       bearerFormat: JWT
 security:
-  - bearerAuth: []
+  - bearerAuth: [ ]

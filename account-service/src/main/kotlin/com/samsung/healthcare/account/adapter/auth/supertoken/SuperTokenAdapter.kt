@@ -6,6 +6,7 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Res
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.RoleBinding
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.SignRequest
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.OK
+import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.StatusResponse
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.User
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.UserId
 import com.samsung.healthcare.account.application.exception.AlreadyExistedEmailException
@@ -62,7 +63,7 @@ class SuperTokenAdapter(
     private fun handleRoleBinding(
         accountId: String,
         roles: Collection<Role>,
-        handlerFunction: (RoleBinding) -> Mono<Void>
+        handlerFunction: (RoleBinding) -> Mono<StatusResponse>
     ): Mono<Void> =
         Flux.fromIterable(roles)
             .flatMap { handlerFunction(RoleBinding(accountId, it.roleName)) }
@@ -99,12 +100,10 @@ class SuperTokenAdapter(
     override fun listUsers(): Mono<List<Account>> =
         apiClient.listUsers()
             .flatMapMany { resp -> Flux.fromIterable(resp.users.map { it.user }) }
-            .log()
             .flatMap { user ->
                 listUserRoles(user.id)
                     .map { roles -> Account(user.id, Email(user.email), roles) }
             }.collectList()
-            .log()
 
     override fun generateSignedJWT(jwtTokenCommand: JwtGenerationCommand): Mono<String> =
         apiClient.generateSignedJwt(

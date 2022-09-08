@@ -20,8 +20,17 @@ class SignInHandler(
                 signInUseCase.signIn(
                     SignInCommand(Email(it.email), it.password)
                 )
+            }.map { resp ->
+                SignInResponse(
+                    resp.account.id,
+                    resp.account.email.value,
+                    resp.jwt,
+                    resp.account.roles.map { it.roleName }
+                )
             }
             .flatMap { ServerResponse.ok().bodyValue(it) }
 
     data class SignInRequest(val email: String, val password: String)
+
+    data class SignInResponse(val id: String, val email: String, val jwt: String, val roles: List<String>)
 }

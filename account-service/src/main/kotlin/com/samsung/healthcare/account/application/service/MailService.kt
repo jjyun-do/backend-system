@@ -21,7 +21,7 @@ class MailService(
         """
     }
 
-    internal fun sendMail(email: Email, resetToken: String): Mono<Void> =
+    internal fun sendMail(email: Email, resetToken: String): Mono<Void> {
         Mono.fromCallable {
             mailSender.send(
                 mailSender.createMimeMessage().apply {
@@ -34,8 +34,14 @@ class MailService(
                         }
                 }
             )
-        }.subscribeOn(Schedulers.boundedElastic())
-            .then()
+            // TODO config repeat
+        }.retry(3)
+            .subscribeOn(Schedulers.boundedElastic())
+            .doOnError { it.printStackTrace() }
+            .subscribe()
+
+        return Mono.empty()
+    }
 
     private fun htmlMessage(email: Email, resetToken: String): String =
         "${invitationProperties.url}?reset-token=$resetToken&email=${email.value}".let { path ->

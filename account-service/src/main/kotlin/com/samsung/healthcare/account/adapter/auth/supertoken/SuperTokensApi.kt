@@ -35,15 +35,15 @@ interface SuperTokensApi {
 
     @RequestLine("PUT $SUPER_TOKEN_ASSIGN_ROLE_PATH")
     @Headers("Content-Type: application/json")
-    fun assignRoles(roleBinding: RoleBinding): Mono<Void>
+    fun assignRoles(roleBinding: RoleBinding): Mono<StatusResponse>
 
     @RequestLine("POST $SUPER_TOKEN_REMOVE_USER_ROLE_PATH")
     @Headers("Content-Type: application/json")
-    fun removeUserRole(roleBinding: RoleBinding): Mono<Void>
+    fun removeUserRole(roleBinding: RoleBinding): Mono<StatusResponse>
 
     @RequestLine("PUT $SUPER_TOKEN_CREATE_ROLE_PATH")
     @Headers("Content-Type: application/json")
-    fun createRoles(createRoleRequest: CreateRoleRequest): Mono<Void>
+    fun createRoles(createRoleRequest: CreateRoleRequest): Mono<StatusResponse>
 
     @RequestLine("GET $SUPER_TOKEN_GET_USER_ROLE_PATH?userId={userId}")
     fun listUserRoles(@Param userId: String): Mono<RolesResponse>
@@ -104,6 +104,7 @@ interface SuperTokensApi {
         EMAIL_ALREADY_EXISTS_ERROR,
         WRONG_CREDENTIALS_ERROR,
         UNKNOWN_USER_ID_ERROR,
-        RESET_PASSWORD_INVALID_TOKEN_ERROR
+        RESET_PASSWORD_INVALID_TOKEN_ERROR,
+        UNKNOWN_ROLE_ERROR
     }
 }
