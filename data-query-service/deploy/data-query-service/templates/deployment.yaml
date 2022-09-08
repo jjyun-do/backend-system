@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "data-query-service.labels" . | nindent 4 }}
+  name: {{ include "data-query-service.deploymentName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "data-query-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "data-query-service.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - env:
+            - name: TRINO_HOST
+              value: {{ .Values.trino.host | quote }}
+            - name: TRINO_PORT
+              value: {{ .Values.trino.port | quote }}
+            - name: TRINO_CATALOG
+              value: {{ .Values.trino.catalog.name | quote }}
+            - name: CATALOG_USER
+              value: {{ .Values.trino.catalog.user | quote }}
+            - name: debug
+              value: {{ .Values.debug | quote }}
+          image: {{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}
+          imagePullPolicy: Always
+          name: data-query-service
+          ports:
+            - containerPort: {{ .Values.port }}
+              protocol: TCP
+          resources:
+            limits:
+              cpu: {{ .Values.deployment.resources.limits.cpu | quote }}
+              memory: {{ .Values.deployment.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.deployment.resources.requests.cpu | quote }}
+              memory: {{ .Values.deployment.resources.requests.memory }}

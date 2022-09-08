@@ -1,0 +1,28 @@
+# Default values for data-query-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+debug: true
+
+trino:
+  host: trinoHost
+  port: 8080
+  catalog:
+    name: postgresql
+    user: default
+
+image:
+  repository: asia.gcr.io/new-life-experience/data-query-service
+  tag: 0.1.2
+
+replicaCount: 3
+port: 3030
+
+deployment:
+  resources:
+    limits:
+      cpu: 10m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 128Mi
