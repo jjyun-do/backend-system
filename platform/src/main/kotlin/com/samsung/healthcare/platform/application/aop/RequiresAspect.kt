@@ -10,8 +10,9 @@ import org.springframework.stereotype.Component
 class RequiresAspect {
     @Before("@annotation(requires)")
     fun checkAuthorization(requires: Requires) {
+
         val userRoles = listOf<String>("") // get from token.. or API..
-        val requiredRoles: List<String> = requires.roles.map { it.value }
+        val requiredRoles: List<String> = emptyList() //  requires.roles.map { it.value }
 
         if (!requiredRoles.any { it in userRoles })
             throw ForbiddenException("You don't have permission. This action requires any of $requiredRoles.")

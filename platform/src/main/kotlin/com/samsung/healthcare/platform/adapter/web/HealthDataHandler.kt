@@ -2,7 +2,7 @@ package com.samsung.healthcare.platform.adapter.web
 
 import com.samsung.healthcare.platform.adapter.web.context.ContextHolder.getFirebaseToken
 import com.samsung.healthcare.platform.application.port.input.SaveHealthDataUseCase
-import com.samsung.healthcare.platform.domain.User.UserId
+import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse

@@ -1,7 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
 import com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub.SleepSessionMapper
-import com.samsung.healthcare.platform.domain.User.UserId
+import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import com.samsung.healthcare.platform.domain.healthdata.HealthData.HealthDataId
 import com.samsung.healthcare.platform.domain.healthdata.SleepSession
 import org.assertj.core.api.Assertions.assertThat

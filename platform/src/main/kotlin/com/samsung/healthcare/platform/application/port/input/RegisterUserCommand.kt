@@ -1,6 +1,6 @@
 package com.samsung.healthcare.platform.application.port.input
 
-import com.samsung.healthcare.platform.domain.User.UserId
+import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 
 data class RegisterUserCommand(
     val id: UserId,

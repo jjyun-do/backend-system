@@ -1,7 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub
 
 import com.samsung.healthcare.platform.adapter.persistence.entity.healthdata.HeartRateEntity
-import com.samsung.healthcare.platform.domain.User.UserId
+import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import com.samsung.healthcare.platform.domain.healthdata.HeartRate
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping

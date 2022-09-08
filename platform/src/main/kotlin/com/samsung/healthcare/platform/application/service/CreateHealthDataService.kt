@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.samsung.healthcare.platform.application.port.input.SaveHealthDataCommand
 import com.samsung.healthcare.platform.application.port.input.SaveHealthDataUseCase
 import com.samsung.healthcare.platform.application.port.output.SaveHealthDataPort
-import com.samsung.healthcare.platform.domain.User.UserId
+import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,7 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.entity.healthdata
 
 import com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub.HeartRateMapper
-import com.samsung.healthcare.platform.domain.User.UserId
+import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import com.samsung.healthcare.platform.domain.healthdata.HeartRate
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime

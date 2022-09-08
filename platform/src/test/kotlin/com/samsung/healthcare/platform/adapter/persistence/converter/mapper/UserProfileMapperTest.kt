@@ -2,6 +2,7 @@ package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
 import com.samsung.healthcare.platform.adapter.persistence.entity.project.UserProfileEntity
 import com.samsung.healthcare.platform.domain.project.UserProfile
+import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -9,13 +10,13 @@ internal class UserProfileMapperTest {
     @Test
     fun `should convert domain to entity`() {
         val userProfile = UserProfile(
-            "test-user-id",
+            UserId.from("test-user-id"),
             emptyMap()
         )
 
         val userProfileEntity = UserProfileMapper.INSTANCE.toEntity(userProfile)
 
-        assertThat(userProfileEntity.userId).isEqualTo(userProfile.userId)
+        assertThat(userProfileEntity.userId).isEqualTo(userProfile.userId.value)
     }
 
     @Test
@@ -27,6 +28,6 @@ internal class UserProfileMapperTest {
 
         val userProfile = UserProfileMapper.INSTANCE.toDomain(userProfileEntity)
 
-        assertThat(userProfile.userId).isEqualTo(userProfileEntity.userId)
+        assertThat(userProfile.userId.value).isEqualTo(userProfileEntity.userId)
     }
 }
