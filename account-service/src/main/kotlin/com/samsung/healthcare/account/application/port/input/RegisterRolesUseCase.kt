@@ -5,4 +5,6 @@ import reactor.core.publisher.Mono
 
 interface RegisterRolesUseCase {
     fun registerRoles(roles: Collection<Role>): Mono<Void>
+
+    fun createProjectRoles(createProjectRoleRequest: CreateProjectRoleRequest): Mono<Void>
 }
