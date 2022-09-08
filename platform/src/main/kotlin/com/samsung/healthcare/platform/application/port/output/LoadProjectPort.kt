@@ -8,4 +8,6 @@ interface LoadProjectPort {
     suspend fun findById(id: ProjectId): Project?
 
     fun findAll(): Flow<Project>
+
+    fun findProjectByIdIn(idList: List<ProjectId>): Flow<Project>
 }

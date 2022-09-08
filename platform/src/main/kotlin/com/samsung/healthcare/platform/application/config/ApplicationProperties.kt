@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConstructorBinding
 data class ApplicationProperties(
     val db: Db,
     val newDatabaseConfig: NewDatabaseConfig,
+    val jwks: JwksConfig
 ) {
     data class Db(
         val url: String,
@@ -22,5 +23,9 @@ data class ApplicationProperties(
     data class NewDatabaseConfig(
         val prefix: String,
         val postfix: String = ""
+    )
+
+    data class JwksConfig(
+        val url: String
     )
 }

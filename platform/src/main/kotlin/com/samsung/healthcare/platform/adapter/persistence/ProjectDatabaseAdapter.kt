@@ -74,4 +74,9 @@ class ProjectDatabaseAdapter(
     override fun findAll(): Flow<Project> =
         projectRepository.findAll()
             .map { it.toDomain() }
+
+    override fun findProjectByIdIn(idList: List<ProjectId>): Flow<Project> =
+        projectRepository.findByIdIn(
+            idList.map { it.value }
+        ).map { it.toDomain() }
 }
