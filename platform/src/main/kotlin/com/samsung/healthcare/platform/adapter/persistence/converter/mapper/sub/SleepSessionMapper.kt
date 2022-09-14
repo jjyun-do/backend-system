@@ -1,8 +1,8 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub
 
-import com.samsung.healthcare.platform.adapter.persistence.entity.healthdata.SleepSessionEntity
+import com.samsung.healthcare.platform.adapter.persistence.entity.project.healthdata.SleepSessionEntity
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
-import com.samsung.healthcare.platform.domain.healthdata.SleepSession
+import com.samsung.healthcare.platform.domain.project.healthdata.SleepSession
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.Mappings

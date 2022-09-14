@@ -2,8 +2,8 @@ package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
 import com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub.HeartRateMapper
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
-import com.samsung.healthcare.platform.domain.healthdata.HealthData
-import com.samsung.healthcare.platform.domain.healthdata.HeartRate
+import com.samsung.healthcare.platform.domain.project.healthdata.HealthData
+import com.samsung.healthcare.platform.domain.project.healthdata.HeartRate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime

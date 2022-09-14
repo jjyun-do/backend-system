@@ -1,7 +1,7 @@
 package com.samsung.healthcare.platform.application.config
 
 import com.samsung.healthcare.account.domain.Account
-import com.samsung.healthcare.platform.application.port.output.CreateProjectRolePort
+import com.samsung.healthcare.platform.application.port.output.project.CreateProjectRolePort
 import com.samsung.healthcare.platform.domain.Project.ProjectId
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

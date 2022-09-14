@@ -2,8 +2,8 @@ package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
 import com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub.StepsMapper
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
-import com.samsung.healthcare.platform.domain.healthdata.HealthData.HealthDataId
-import com.samsung.healthcare.platform.domain.healthdata.Steps
+import com.samsung.healthcare.platform.domain.project.healthdata.HealthData.HealthDataId
+import com.samsung.healthcare.platform.domain.project.healthdata.Steps
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime

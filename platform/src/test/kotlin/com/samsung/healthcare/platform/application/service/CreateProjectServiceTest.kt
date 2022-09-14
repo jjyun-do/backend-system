@@ -7,7 +7,7 @@ import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import com.samsung.healthcare.platform.application.exception.UnauthorizedException
 import com.samsung.healthcare.platform.application.port.input.CreateProjectCommand
 import com.samsung.healthcare.platform.application.port.output.CreateProjectPort
-import com.samsung.healthcare.platform.application.port.output.CreateProjectRolePort
+import com.samsung.healthcare.platform.application.port.output.project.CreateProjectRolePort
 import com.samsung.healthcare.platform.domain.Project
 import com.samsung.healthcare.platform.domain.Project.ProjectId
 import io.mockk.MockKMatcherScope
