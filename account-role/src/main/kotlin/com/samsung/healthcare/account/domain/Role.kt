@@ -48,6 +48,7 @@ sealed class Role private constructor(val roleName: String) {
 
         class HeadResearcher(projectId: String) : ProjectRole(projectId, HEAD_RESEARCHER) {
             override val authorities: Collection<GrantedAuthority> = listOf(
+                AssignRoleAuthority(projectId),
                 AccessProjectAuthority(projectId)
             )
         }
