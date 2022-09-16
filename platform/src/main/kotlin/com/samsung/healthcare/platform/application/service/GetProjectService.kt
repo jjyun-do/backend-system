@@ -1,7 +1,7 @@
 package com.samsung.healthcare.platform.application.service
 
-import com.samsung.healthcare.account.application.context.ContextHolder
-import com.samsung.healthcare.account.domain.Role.ProjectRole
+import com.samsung.healthcare.account.domain.AccessProjectAuthority
+import com.samsung.healthcare.platform.application.authorize.Authorizer
 import com.samsung.healthcare.platform.application.exception.NotFoundException
 import com.samsung.healthcare.platform.application.port.input.GetProjectQuery
 import com.samsung.healthcare.platform.application.port.output.LoadProjectPort
@@ -20,10 +20,7 @@ class GetProjectService(
     private val loadProjectPort: LoadProjectPort
 ) : GetProjectQuery {
     override suspend fun findProjectById(id: ProjectId): Project =
-        ContextHolder.getAccount()
-            .filter { account ->
-                account.canAccessProject(id.value.toString())
-            }.switchIfEmpty(Mono.error(NotFoundException()))
+        Authorizer.getAccount(AccessProjectAuthority(id.value.toString()))
             .flatMap {
                 mono {
                     loadProjectPort.findById(id)
@@ -32,12 +29,8 @@ class GetProjectService(
             .awaitSingle()
 
     override fun listProject(): Flow<Project> =
-        ContextHolder.getAccount()
-            .map { account ->
-                account.roles
-                    .filterIsInstance<ProjectRole>()
-                    .map { ProjectId.from(it.projectId.toInt()) }
-            }.flatMapMany { projectIds ->
+        Authorizer.getAccessibleProjects()
+            .flatMapMany { projectIds ->
                 loadProjectPort.findProjectByIdIn(projectIds)
                     .asFlux()
             }.asFlow()

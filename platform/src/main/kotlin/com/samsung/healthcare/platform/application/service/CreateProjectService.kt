@@ -1,9 +1,8 @@
 package com.samsung.healthcare.platform.application.service
 
-import com.samsung.healthcare.account.application.context.ContextHolder
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.CreateStudyAuthority
-import com.samsung.healthcare.platform.application.exception.UnauthorizedException
+import com.samsung.healthcare.platform.application.authorize.Authorizer
 import com.samsung.healthcare.platform.application.port.input.CreateProjectCommand
 import com.samsung.healthcare.platform.application.port.input.CreateProjectUseCase
 import com.samsung.healthcare.platform.application.port.output.CreateProjectPort
@@ -22,9 +21,7 @@ class CreateProjectService(
 ) : CreateProjectUseCase {
 
     override suspend fun registerProject(command: CreateProjectCommand): ProjectId =
-        ContextHolder.getAccount()
-            .filter { it.hasPermission(CreateStudyAuthority) }
-            .switchIfEmpty(Mono.error(UnauthorizedException()))
+        Authorizer.getAccount(CreateStudyAuthority)
             .flatMap { account ->
                 createProject(account, command)
             }.awaitSingle()
