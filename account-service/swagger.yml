@@ -188,10 +188,12 @@ components:
       properties:
         resetToken:
           $ref: "#/components/schemas/ResetToken"
-        email:
-          $ref: "#/components/schemas/Email"
         password:
           type: string
+        profile:
+          type: object
+          description: Account information in JSON without pre-defined fields
+          example: { "name": "david.lee" , "status": "active" }
     SignReq:
       required:
         - email
