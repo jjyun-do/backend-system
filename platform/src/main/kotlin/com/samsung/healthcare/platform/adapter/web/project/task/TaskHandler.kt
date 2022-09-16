@@ -8,6 +8,7 @@ import com.samsung.healthcare.platform.application.port.input.project.task.Creat
 import com.samsung.healthcare.platform.application.port.input.project.task.GetTaskCommand
 import com.samsung.healthcare.platform.application.port.input.project.task.GetTaskUseCase
 import com.samsung.healthcare.platform.application.port.input.project.task.UpdateTaskUseCase
+import com.samsung.healthcare.platform.application.port.input.project.task.UploadTaskResultUseCase
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import kotlinx.coroutines.reactor.asFlux
 import kotlinx.coroutines.reactor.awaitSingle
@@ -24,6 +25,7 @@ class TaskHandler(
     private val getTaskUseCase: GetTaskUseCase,
     private val createTaskUseCase: CreateTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
+    private val uploadTaskResultUseCase: UploadTaskResultUseCase,
 ) {
     suspend fun findByPeriod(req: ServerRequest): ServerResponse {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(
@@ -58,5 +60,12 @@ class TaskHandler(
             req.awaitBody()
         )
         return ServerResponse.noContent().buildAndAwait()
+    }
+
+    suspend fun uploadTaskResults(req: ServerRequest): ServerResponse {
+        uploadTaskResultUseCase.uploadResults(
+            req.awaitBody()
+        )
+        return ServerResponse.ok().buildAndAwait()
     }
 }

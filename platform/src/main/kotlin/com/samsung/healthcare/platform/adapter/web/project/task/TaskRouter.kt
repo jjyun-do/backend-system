@@ -15,13 +15,14 @@ class TaskRouter(
 ) {
     @Bean("routeTask")
     fun router(
-        tenantHandlerFilterFunction: TenantHandlerFilterFunction
+        tenantHandlerFilterFunction: TenantHandlerFilterFunction,
     ): RouterFunction<ServerResponse> = coRouter {
         "/api/projects/{projectId}/tasks".nest {
             GET(Strings.EMPTY, handler::findByPeriod)
             GET("{taskId}", handler::findById)
             POST(Strings.EMPTY, handler::createTask)
             PATCH("{taskId}", contentType(MediaType.APPLICATION_JSON), handler::updateTask)
+            PATCH(Strings.EMPTY, handler::uploadTaskResults)
         }
     }.filter(tenantHandlerFilterFunction)
 }
