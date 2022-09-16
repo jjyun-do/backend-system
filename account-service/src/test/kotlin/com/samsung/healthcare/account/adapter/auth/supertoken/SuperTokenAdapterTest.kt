@@ -9,6 +9,7 @@ import com.marcinziolo.kotlin.wiremock.post
 import com.marcinziolo.kotlin.wiremock.put
 import com.marcinziolo.kotlin.wiremock.returns
 import com.marcinziolo.kotlin.wiremock.returnsJson
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.GET_ACCOUNT_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_ASSIGN_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_CREATE_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
@@ -21,6 +22,7 @@ import com.samsung.healthcare.account.application.exception.AlreadyExistedEmailE
 import com.samsung.healthcare.account.application.exception.InvalidResetTokenException
 import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.exception.UnknownAccountIdException
+import com.samsung.healthcare.account.application.exception.UnknownEmailException
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
@@ -34,6 +36,7 @@ import reactivefeign.utils.HttpStatus
 import reactivefeign.webclient.WebReactiveFeign
 import reactor.kotlin.test.verifyError
 import reactor.test.StepVerifier
+import java.net.URLEncoder
 import java.util.UUID
 
 internal class SuperTokenAdapterTest {
@@ -234,6 +237,59 @@ internal class SuperTokenAdapterTest {
         StepVerifier.create(
             superTokenAdapter.assignRoles("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
         ).verifyComplete()
+    }
+
+    @Test
+    fun `assignRolesWithEmail should not emit event when supertoken returns an account and ok`() {
+        val email = "cubist@test.com"
+        val encodedEmail = URLEncoder.encode(email, "utf-8")
+        val accountId = UUID.randomUUID().toString()
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?email=$encodedEmail"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "user": {
+    "email": "$email",
+    "id": "$accountId",
+    "timeJoined": 1659407200104
+    }
+}
+"""
+        }
+
+        wm.put {
+            url equalTo SUPER_TOKEN_ASSIGN_ROLE_PATH
+            body contains "userId" equalTo accountId
+        } returnsJson {
+            body =
+                """{
+  "status": "OK"
+}"""
+        }
+        StepVerifier.create(
+            superTokenAdapter.assignRoles(Email(email), listOf(TeamAdmin, ProjectOwner("project-x")))
+        ).verifyComplete()
+    }
+
+    @Test
+    fun `assignRolesWithEmail should throw UnknownEmailException when supertoken returns UnknownEmailError`() {
+        val email = "cubist@test.com"
+        val encodedEmail = URLEncoder.encode(email, "utf-8")
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?email=$encodedEmail"
+        } returnsJson {
+            body =
+                """{
+  "status": "UNKNOWN_EMAIL_ERROR"
+}
+"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.assignRoles(Email(email), listOf(TeamAdmin, ProjectOwner("project-x")))
+        ).verifyError<UnknownEmailException>()
     }
 
     @Test

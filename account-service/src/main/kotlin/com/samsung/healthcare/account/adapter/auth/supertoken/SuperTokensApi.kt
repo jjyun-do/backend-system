@@ -1,5 +1,6 @@
 package com.samsung.healthcare.account.adapter.auth.supertoken
 
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.GET_ACCOUNT_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_ASSIGN_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_CREATE_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
@@ -19,11 +20,11 @@ import reactor.core.publisher.Mono
 interface SuperTokensApi {
     @RequestLine("POST $SUPER_TOKEN_SIGN_IN_PATH")
     @Headers("Content-Type: application/json")
-    fun signIn(signInRequest: SignRequest): Mono<SignInResponse>
+    fun signIn(signInRequest: SignRequest): Mono<AccountResponse>
 
     @RequestLine("POST $SUPER_TOKEN_SIGN_UP_PATH")
     @Headers("Content-Type: application/json")
-    fun signUp(signUpRequest: SignRequest): Mono<SignInResponse>
+    fun signUp(signUpRequest: SignRequest): Mono<AccountResponse>
 
     @RequestLine("POST $SUPER_TOKEN_RESET_PASSWORD_PATH")
     @Headers("Content-Type: application/json")
@@ -55,6 +56,9 @@ interface SuperTokensApi {
     @Headers("Content-Type: application/json")
     fun generateSignedJwt(generateJwtRequest: GenerateJwtRequest): Mono<JwtResponse>
 
+    @RequestLine("GET $GET_ACCOUNT_PATH?email={email}")
+    fun getAccountWithEmail(@Param email: String): Mono<AccountResponse>
+
     class ResetPasswordRequest(
         val token: String,
         val newPassword: String,
@@ -71,7 +75,7 @@ interface SuperTokensApi {
         val password: String
     )
 
-    data class SignInResponse(val status: Status, val user: User?)
+    data class AccountResponse(val status: Status, val user: User?)
 
     data class ListUserResponse(val status: Status, val users: Collection<UserWrapper>)
 
@@ -105,6 +109,7 @@ interface SuperTokensApi {
         WRONG_CREDENTIALS_ERROR,
         UNKNOWN_USER_ID_ERROR,
         RESET_PASSWORD_INVALID_TOKEN_ERROR,
-        UNKNOWN_ROLE_ERROR
+        UNKNOWN_ROLE_ERROR,
+        UNKNOWN_EMAIL_ERROR
     }
 }

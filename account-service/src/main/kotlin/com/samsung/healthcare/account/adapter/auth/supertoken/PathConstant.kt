@@ -20,4 +20,6 @@ object PathConstant {
     const val SUPER_TOKEN_LIST_USERS_PATH = "/users"
 
     const val SUPER_TOKEN_JWT_PATH = "/recipe/jwt"
+
+    const val GET_ACCOUNT_PATH = "/recipe/user"
 }

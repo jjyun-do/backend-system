@@ -13,6 +13,7 @@ import com.samsung.healthcare.account.application.exception.AlreadyExistedEmailE
 import com.samsung.healthcare.account.application.exception.InvalidResetTokenException
 import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.exception.UnknownAccountIdException
+import com.samsung.healthcare.account.application.exception.UnknownEmailException
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
 import com.samsung.healthcare.account.application.port.output.JwtGenerationCommand
 import com.samsung.healthcare.account.application.port.output.TokenSigningPort
@@ -49,6 +50,13 @@ class SuperTokenAdapter(
                 if (it.status == OK) Mono.empty()
                 else Mono.error { InvalidResetTokenException() }
             }
+
+    override fun assignRoles(email: Email, roles: Collection<Role>): Mono<Void> =
+        apiClient.getAccountWithEmail(email.value)
+            .mapNotNull {
+                if (it.status == OK && it.user != null) it.user.toAccount()
+                else throw UnknownEmailException()
+            }.flatMap { assignRoles(it.id, roles) }
 
     override fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void> =
         handleRoleBinding(accountId, roles) { roleBinding ->

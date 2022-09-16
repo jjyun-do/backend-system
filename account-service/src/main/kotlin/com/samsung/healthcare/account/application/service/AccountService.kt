@@ -1,6 +1,7 @@
 package com.samsung.healthcare.account.application.service
 
 import com.samsung.healthcare.account.application.accesscontrol.Requires
+import com.samsung.healthcare.account.application.exception.AlreadyExistedEmailException
 import com.samsung.healthcare.account.application.port.input.AccountServicePort
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
 import com.samsung.healthcare.account.domain.Account
@@ -28,6 +29,8 @@ class AccountService(
                 ).map { it.t2 }
             }.flatMap { resetToken ->
                 mailService.sendMail(email, resetToken)
+            }.onErrorResume(AlreadyExistedEmailException::class.java) {
+                authServicePort.assignRoles(email, roles)
             }
 
     private fun assignRolesForNewUser(account: Account, roles: Collection<Role>): Mono<Void> =

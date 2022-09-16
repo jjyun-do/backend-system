@@ -28,7 +28,7 @@ internal class AccountServiceTest {
 
     @Test
     fun `assignRoles should not emit event`() {
-        every { authServicePort.assignRoles(any(), any()) } returns Mono.empty()
+        every { authServicePort.assignRoles(accountId, any()) } returns Mono.empty()
         StepVerifier.create(
             accountService.assignRoles(accountId, listOf(TeamAdmin))
         ).verifyComplete()
@@ -43,11 +43,10 @@ internal class AccountServiceTest {
 
     @Test
     fun `inviteUser should send invitation email`() {
-        every { authServicePort.registerNewUser(any(), any()) } returns Mono.just(
-            Account(UUID.randomUUID().toString(), email, listOf())
-        )
+        val account = Account(UUID.randomUUID().toString(), email, listOf())
+        every { authServicePort.registerNewUser(any(), any()) } returns Mono.just(account)
         every { authServicePort.generateResetToken(any()) } returns Mono.just(UUID.randomUUID().toString())
-        every { authServicePort.assignRoles(any(), any()) } returns Mono.empty()
+        every { authServicePort.assignRoles(account.id, any()) } returns Mono.empty()
         every { mailService.sendMail(email, any()) } returns Mono.empty()
 
         StepVerifier.create(
@@ -58,14 +57,18 @@ internal class AccountServiceTest {
     }
 
     @Test
-    fun `inviteUser should return AlreadyExistedEmailException error when email is already registered`() {
+    fun `inviteUser should assign roles to when email is already registered`() {
         every { authServicePort.registerNewUser(any(), any()) } returns Mono.error(
             AlreadyExistedEmailException()
         )
 
+        every { authServicePort.assignRoles(email, listOf(TeamAdmin)) } returns Mono.empty()
+
         StepVerifier.create(
             accountService.inviteUser(email, listOf(TeamAdmin))
-        ).verifyError<AlreadyExistedEmailException>()
+        ).verifyComplete()
+
+        verify { authServicePort.assignRoles(email, listOf(TeamAdmin)) }
     }
 
     @Test

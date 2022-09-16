@@ -14,6 +14,8 @@ interface AuthServicePort {
 
     fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void>
 
+    fun assignRoles(email: Email, roles: Collection<Role>): Mono<Void>
+
     fun removeRolesFromAccount(accountId: String, roles: Collection<Role>): Mono<Void>
 
     fun createRoles(roles: Collection<Role>): Mono<Void>
