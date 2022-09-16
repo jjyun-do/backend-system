@@ -30,7 +30,7 @@ interface SuperTokensApi {
 
     @RequestLine("POST $SUPER_TOKEN_RESET_PASSWORD_PATH")
     @Headers("Content-Type: application/json")
-    fun resetPassword(resetPasswordRequest: ResetPasswordRequest): Mono<StatusResponse>
+    fun resetPassword(resetPasswordRequest: ResetPasswordRequest): Mono<ResetPasswordResponse>
 
     @RequestLine("POST $SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH")
     @Headers("Content-Type: application/json")
@@ -80,6 +80,8 @@ interface SuperTokensApi {
     data class StatusResponse(val status: Status)
 
     data class ResetTokenResponse(val status: Status, val token: String?)
+
+    data class ResetPasswordResponse(val status: Status, val userId: String?)
 
     data class SignRequest(
         val email: String,

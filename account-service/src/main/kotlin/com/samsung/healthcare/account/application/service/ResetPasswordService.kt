@@ -10,6 +10,6 @@ import reactor.core.publisher.Mono
 class ResetPasswordService(
     private val authServicePort: AuthServicePort
 ) : ResetPasswordUseCase {
-    override fun resetPassword(passwordResetCommand: ResetPasswordCommand): Mono<Void> =
+    override fun resetPassword(passwordResetCommand: ResetPasswordCommand): Mono<String> =
         authServicePort.resetPassword(passwordResetCommand.resetToken, passwordResetCommand.password)
 }

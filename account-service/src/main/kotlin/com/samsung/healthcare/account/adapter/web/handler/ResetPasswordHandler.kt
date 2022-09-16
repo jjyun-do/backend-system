@@ -12,9 +12,11 @@ import reactor.core.publisher.Mono
 class ResetPasswordHandler(
     private val resetPasswordUseCase: ResetPasswordUseCase
 ) {
-
-    fun resetPassword(req: ServerRequest): Mono<ServerResponse> =
-        req.bodyToMono<ResetPasswordCommand>()
+    fun resetPassword(req: ServerRequest): Mono<ServerResponse> {
+        return req.bodyToMono<ResetPasswordCommand>()
             .flatMap { resetPasswordUseCase.resetPassword(it) }
-            .then(ServerResponse.ok().build())
+            .flatMap {
+                ServerResponse.ok().bodyValue(it)
+            }
+    }
 }

@@ -11,7 +11,7 @@ interface AuthServicePort {
 
     fun generateResetToken(accountId: String): Mono<String>
 
-    fun resetPassword(resetToken: String, newPassword: String): Mono<Void>
+    fun resetPassword(resetToken: String, newPassword: String): Mono<String>
 
     fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void>
 

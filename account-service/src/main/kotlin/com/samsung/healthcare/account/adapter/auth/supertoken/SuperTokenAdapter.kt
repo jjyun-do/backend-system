@@ -45,11 +45,11 @@ class SuperTokenAdapter(
                 else throw UnknownAccountIdException()
             }
 
-    override fun resetPassword(resetToken: String, newPassword: String): Mono<Void> =
+    override fun resetPassword(resetToken: String, newPassword: String): Mono<String> =
         apiClient.resetPassword(ResetPasswordRequest(resetToken, newPassword))
-            .flatMap {
-                if (it.status == OK) Mono.empty()
-                else Mono.error { InvalidResetTokenException() }
+            .mapNotNull {
+                if (it.status == OK) it.userId
+                else throw InvalidResetTokenException()
             }
 
     override fun assignRoles(email: Email, roles: Collection<Role>): Mono<Void> =
