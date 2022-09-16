@@ -8,5 +8,5 @@ object AuthContext {
 
     fun setValue(key: String, value: String) = getRequest().setAttribute(key, value)
 
-    fun getValue(key: String): String? = getRequest().getAttribute(key) as String?
+    fun getValue(key: String): String? = getRequest().getAttribute(key) as? String
 }
