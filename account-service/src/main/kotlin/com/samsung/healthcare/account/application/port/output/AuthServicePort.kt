@@ -3,6 +3,7 @@ package com.samsung.healthcare.account.application.port.output
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
+import com.samsung.healthcare.account.domain.Role.ProjectRole
 import reactor.core.publisher.Mono
 
 interface AuthServicePort {
@@ -26,4 +27,5 @@ interface AuthServicePort {
 
     // TODO handle pagination
     fun listUsers(): Mono<List<Account>>
+    fun retrieveUsersAssociatedWithRoles(projectRoles: List<ProjectRole>): Mono<List<Account>>
 }

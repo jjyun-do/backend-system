@@ -5,4 +5,5 @@ import reactor.core.publisher.Mono
 
 interface ListUserUseCase {
     fun listAllUsers(): Mono<List<Account>>
+    fun usersOfProject(projectId: String): Mono<List<Account>>
 }

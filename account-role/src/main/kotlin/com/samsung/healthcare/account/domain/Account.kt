@@ -8,7 +8,8 @@ import org.springframework.security.core.GrantedAuthority
 data class Account(
     val id: String,
     val email: Email,
-    val roles: Collection<Role>
+    val roles: Collection<Role>,
+    val profiles: Map<String, Any> = emptyMap()
 ) {
     fun canAssignProjectRole(projectId: String): Boolean =
         roles.filterIsInstance<ProjectOwner>()

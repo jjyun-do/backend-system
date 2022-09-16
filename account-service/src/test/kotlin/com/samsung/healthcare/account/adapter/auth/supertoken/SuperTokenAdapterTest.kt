@@ -13,6 +13,7 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.GET_A
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_ASSIGN_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_CREATE_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_USER_META_DATA_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_USER_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_REMOVE_USER_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_RESET_PASSWORD_PATH
@@ -42,7 +43,7 @@ import java.util.UUID
 internal class SuperTokenAdapterTest {
     @JvmField
     @RegisterExtension
-    var wm = WireMockExtension.newInstance()
+    val wm = WireMockExtension.newInstance()
         .options(wireMockConfig().dynamicPort())
         .build()
 
@@ -83,10 +84,34 @@ internal class SuperTokenAdapterTest {
 }"""
         }
 
+        wm.get {
+            url equalTo "$SUPER_TOKEN_GET_USER_META_DATA_PATH?userId=$id"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "metadata": {
+    "preferences": {
+      "theme": "dark"
+    },
+    "notifications": {
+      "email": true
+    },
+    "todos": [
+      "example"
+    ]
+  }
+}"""
+        }
+
         StepVerifier.create(
             superTokenAdapter.signIn(email, "secret")
-        ).expectNext(Account(id, email, emptyList()))
-            .verifyComplete()
+        ).expectNextMatches { account ->
+            account.id == id &&
+                account.email == email &&
+                account.roles.isEmpty() &&
+                account.profiles.contains("preferences")
+        }.verifyComplete()
     }
 
     @Test

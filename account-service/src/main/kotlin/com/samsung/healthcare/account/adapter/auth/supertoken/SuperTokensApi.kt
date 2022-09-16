@@ -4,6 +4,8 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.GET_A
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_ASSIGN_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_CREATE_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_ROLE_USER_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_USER_META_DATA_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_USER_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_JWT_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_LIST_USERS_PATH
@@ -59,6 +61,15 @@ interface SuperTokensApi {
     @RequestLine("GET $GET_ACCOUNT_PATH?email={email}")
     fun getAccountWithEmail(@Param email: String): Mono<AccountResponse>
 
+    @RequestLine("GET $GET_ACCOUNT_PATH?userId={id}")
+    fun getAccountWithId(@Param id: String): Mono<AccountResponse>
+
+    @RequestLine("GET $SUPER_TOKEN_GET_USER_META_DATA_PATH?userId={userId}")
+    fun getMetaData(@Param userId: String): Mono<MetaDataResponse>
+
+    @RequestLine("GET $SUPER_TOKEN_GET_ROLE_USER_PATH?role={role}")
+    fun listUsersOfRole(@Param role: String): Mono<RoleUsersResponse>
+
     class ResetPasswordRequest(
         val token: String,
         val newPassword: String,
@@ -78,6 +89,10 @@ interface SuperTokensApi {
     data class AccountResponse(val status: Status, val user: User?)
 
     data class ListUserResponse(val status: Status, val users: Collection<UserWrapper>)
+
+    data class MetaDataResponse(val status: Status, val metadata: Map<String, Any>)
+
+    data class RoleUsersResponse(val status: Status, val users: Collection<String> = emptyList())
 
     data class UserWrapper(val user: User)
 

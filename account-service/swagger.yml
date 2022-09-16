@@ -136,6 +136,12 @@ paths:
       summary: Get user list
       tags:
         - User
+      parameters:
+        - in: query
+          name: projectId
+          description: specific project id to retrieve users
+          schema:
+            $ref: '#/components/schemas/ProjectId'
       responses:
         "200":
           description: The operation was successful.
@@ -255,6 +261,9 @@ components:
     AccountId:
       type: string
       example: 7d08351b-85b6-488e-a8a2-b8653defb865
+    ProjectId:
+      type: string
+      example: 100
     ResetToken:
       type: string
       example: aadfad...badfdfad

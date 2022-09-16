@@ -20,6 +20,7 @@ import com.samsung.healthcare.account.application.port.output.TokenSigningPort
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
+import com.samsung.healthcare.account.domain.Role.ProjectRole
 import com.samsung.healthcare.account.domain.RoleFactory
 import feign.FeignException.NotFound
 import org.springframework.stereotype.Component
@@ -90,12 +91,16 @@ class SuperTokenAdapter(
             // TODO handle other exceptions
             .onErrorMap { SignInException() }
             .mapNotNull {
-                if (it.status == OK && it.user != null) it.user.toAccount()
-                else throw SignInException()
-            }.flatMap { account ->
-                listUserRoles(account.id)
-                    .map { account.copy(roles = it) }
+                it.user ?: throw SignInException()
+            }.flatMap { user ->
+                Mono.zip(listUserRoles(user.id), getUserMetaData(user.id)) { roles, metadata ->
+                    Account(user.id, Email(user.email), roles, metadata)
+                }
             }
+
+    private fun getUserMetaData(id: String): Mono<Map<String, Any>> =
+        apiClient.getMetaData(id)
+            .map { it.metadata }
 
     override fun listUserRoles(id: String): Mono<List<Role>> =
         apiClient.listUserRoles(id)
@@ -109,8 +114,25 @@ class SuperTokenAdapter(
         apiClient.listUsers()
             .flatMapMany { resp -> Flux.fromIterable(resp.users.map { it.user }) }
             .flatMap { user ->
-                listUserRoles(user.id)
-                    .map { roles -> Account(user.id, Email(user.email), roles) }
+                Mono.zip(listUserRoles(user.id), getUserMetaData(user.id)) { roles, metadata ->
+                    Account(user.id, Email(user.email), roles, metadata)
+                }
+            }.collectList()
+
+    override fun retrieveUsersAssociatedWithRoles(projectRoles: List<ProjectRole>): Mono<List<Account>> =
+        Flux.fromIterable(projectRoles)
+            .flatMap { role -> apiClient.listUsersOfRole(role.roleName) }
+            .map { usersResponse -> usersResponse.users }
+            .onErrorReturn(NotFound::class.java, emptyList())
+            .collectList()
+            .flatMapMany { Flux.fromIterable(it.flatten().toHashSet()) }
+            .flatMap { apiClient.getAccountWithId(it) }
+            .mapNotNull {
+                it.user?.let { user -> user }
+            }.flatMap { user ->
+                Mono.zip(listUserRoles(user.id), getUserMetaData(user.id)) { roles, metadata ->
+                    Account(user.id, Email(user.email), roles, metadata)
+                }
             }.collectList()
 
     override fun generateSignedJWT(jwtTokenCommand: JwtGenerationCommand): Mono<String> =
