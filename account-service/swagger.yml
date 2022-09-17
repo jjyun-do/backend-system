@@ -191,9 +191,7 @@ components:
         password:
           type: string
         profile:
-          type: object
-          description: Account information in JSON without pre-defined fields
-          example: { "name": "david.lee" , "status": "active" }
+          $ref: "#/components/schemas/Profile"
     SignReq:
       required:
         - email
@@ -209,6 +207,7 @@ components:
         - email
         - jwt
         - roles
+        - profile
       properties:
         email:
           $ref: "#/components/schemas/Email"
@@ -218,6 +217,8 @@ components:
           $ref: "#/components/schemas/Token"
         roles:
           $ref: "#/components/schemas/Roles"
+        profile:
+          $ref: "#/components/schemas/Profile"
     RoleReq:
       required:
         - accountId
@@ -227,11 +228,10 @@ components:
           $ref: "#/components/schemas/AccountId"
         roles:
           $ref: "#/components/schemas/Roles"
-
     Users:
       type: array
       items:
-        $ref: "#/components/schemas/Role"
+        $ref: "#/components/schemas/User"
     User:
       required:
         - email
@@ -243,6 +243,12 @@ components:
           $ref: "#/components/schemas/AccountId"
         roles:
           $ref: "#/components/schemas/Roles"
+        profile:
+          $ref: "#/components/schemas/Profile"
+    Profile:
+      type: object
+      description: Account information in JSON without pre-defined fields
+      example: { "name": "david.lee" , "status": "active" }
     Token:
       description: |
         Signed Json Web Token
