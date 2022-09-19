@@ -28,4 +28,6 @@ interface AuthServicePort {
     // TODO handle pagination
     fun listUsers(): Mono<List<Account>>
     fun retrieveUsersAssociatedWithRoles(projectRoles: List<ProjectRole>): Mono<List<Account>>
+
+    fun updateAccountProfile(accountId: String, profile: Map<String, Any>): Mono<Map<String, Any>>
 }

@@ -5,7 +5,6 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_CREATE_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_ROLE_USER_PATH
-import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_USER_META_DATA_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_USER_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_JWT_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_LIST_USERS_PATH
@@ -13,6 +12,7 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_RESET_PASSWORD_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_SIGN_IN_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_SIGN_UP_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_USER_META_DATA_PATH
 import feign.Headers
 import feign.Param
 import feign.RequestLine
@@ -64,8 +64,11 @@ interface SuperTokensApi {
     @RequestLine("GET $GET_ACCOUNT_PATH?userId={id}")
     fun getAccountWithId(@Param id: String): Mono<AccountResponse>
 
-    @RequestLine("GET $SUPER_TOKEN_GET_USER_META_DATA_PATH?userId={userId}")
+    @RequestLine("GET $SUPER_TOKEN_USER_META_DATA_PATH?userId={userId}")
     fun getMetaData(@Param userId: String): Mono<MetaDataResponse>
+
+    @RequestLine("PUT $SUPER_TOKEN_USER_META_DATA_PATH")
+    fun updateMetadata(metadataUpdateRequest: MetadataUpdateRequest): Mono<MetaDataResponse>
 
     @RequestLine("GET $SUPER_TOKEN_GET_ROLE_USER_PATH?role={role}")
     fun listUsersOfRole(@Param role: String): Mono<RoleUsersResponse>
@@ -92,6 +95,7 @@ interface SuperTokensApi {
 
     data class ListUserResponse(val status: Status, val users: Collection<UserWrapper>)
 
+    data class MetadataUpdateRequest(val userId: String, val metadataUpdate: Map<String, Any>)
     data class MetaDataResponse(val status: Status, val metadata: Map<String, Any>)
 
     data class RoleUsersResponse(val status: Status, val users: Collection<String> = emptyList())

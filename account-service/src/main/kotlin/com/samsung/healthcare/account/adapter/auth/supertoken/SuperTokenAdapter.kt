@@ -2,6 +2,7 @@ package com.samsung.healthcare.account.adapter.auth.supertoken
 
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.CreateRoleRequest
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.GenerateJwtRequest
+import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.MetadataUpdateRequest
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.ResetPasswordRequest
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.RoleBinding
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.SignRequest
@@ -134,6 +135,11 @@ class SuperTokenAdapter(
                     Account(user.id, Email(user.email), roles, metadata)
                 }
             }.collectList()
+
+    override fun updateAccountProfile(accountId: String, profile: Map<String, Any>): Mono<Map<String, Any>> =
+        apiClient.updateMetadata(MetadataUpdateRequest(accountId, profile))
+            .onErrorMap(NotFound::class.java) { UnknownAccountIdException() }
+            .mapNotNull { it.metadata }
 
     override fun generateSignedJWT(jwtTokenCommand: JwtGenerationCommand): Mono<String> =
         apiClient.generateSignedJwt(

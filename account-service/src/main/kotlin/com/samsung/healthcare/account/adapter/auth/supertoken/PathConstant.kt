@@ -23,7 +23,7 @@ object PathConstant {
 
     const val GET_ACCOUNT_PATH = "/recipe/user"
 
-    const val SUPER_TOKEN_GET_USER_META_DATA_PATH = "/recipe/user/metadata"
+    const val SUPER_TOKEN_USER_META_DATA_PATH = "/recipe/user/metadata"
 
     const val SUPER_TOKEN_GET_ROLE_USER_PATH = "/recipe/role/users"
 }

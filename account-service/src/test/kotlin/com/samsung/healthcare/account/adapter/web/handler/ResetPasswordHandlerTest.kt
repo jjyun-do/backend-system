@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono
 
 @WebFluxTest
 @Import(
-    ResetPasswordHandler::class,
+    ResetAccountHandler::class,
     ResetPasswordRouter::class,
     GlobalExceptionHandler::class,
     GlobalErrorAttributes::class,
