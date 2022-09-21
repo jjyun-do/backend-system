@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.server.RouterFunctions
 import org.springframework.web.reactive.function.server.ServerResponse
 
 @Configuration
-class ResetPasswordRouter {
+class ResetAccountRouter {
 
     @Bean
     fun routeResetPassword(

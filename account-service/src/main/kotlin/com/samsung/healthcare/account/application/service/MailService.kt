@@ -7,6 +7,7 @@ import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
+import java.net.URLEncoder
 
 @Service
 class MailService(
@@ -17,7 +18,7 @@ class MailService(
     companion object {
         // TODO use html template?
         private const val MESSAGE_TEMPLATE = """
-            Please activiate your account from <a href="%s">%s</a>
+            Please activate your account from <a href="%s">%s</a>
         """
     }
 
@@ -44,7 +45,9 @@ class MailService(
     }
 
     private fun htmlMessage(email: Email, resetToken: String): String =
-        "${invitationProperties.url}?reset-token=$resetToken&email=${email.value}".let { path ->
-            MESSAGE_TEMPLATE.format(path, path)
+        URLEncoder.encode(email.value, "utf-8").let { encodedEmail ->
+            "${invitationProperties.url}?reset-token=$resetToken&email=$encodedEmail".let { path ->
+                MESSAGE_TEMPLATE.format(path, path)
+            }
         }
 }
