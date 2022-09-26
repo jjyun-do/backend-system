@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.adapter.web.project.task
 
 import com.samsung.healthcare.platform.adapter.web.common.getEndTime
+import com.samsung.healthcare.platform.adapter.web.common.getLastSyncTime
 import com.samsung.healthcare.platform.adapter.web.common.getRevisionId
 import com.samsung.healthcare.platform.adapter.web.common.getStartTime
 import com.samsung.healthcare.platform.adapter.web.common.getTaskId
@@ -31,6 +32,7 @@ class TaskHandler(
                 GetTaskCommand(
                     startTime = req.getStartTime(),
                     endTime = req.getEndTime(),
+                    lastSyncTime = req.getLastSyncTime(),
                     status = req.queryParam("status").orElse(null),
                 )
             ).asFlux().collectList().awaitSingle()

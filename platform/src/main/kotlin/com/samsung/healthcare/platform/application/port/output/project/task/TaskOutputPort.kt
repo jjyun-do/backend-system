@@ -11,6 +11,11 @@ interface TaskOutputPort {
         status: String?,
     ): Flow<Task>
 
+    suspend fun findByPublishedAt(
+        lastSyncTime: LocalDateTime,
+        currentTime: LocalDateTime
+    ): Flow<Task>
+
     suspend fun findById(id: String): Flow<Task>
 
     suspend fun create(task: Task): Task

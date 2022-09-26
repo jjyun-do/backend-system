@@ -158,6 +158,13 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: last_sync_time
+          description: (called from mobile application) Get tasks that published after last_sync_time
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
         - name: status
           description: If not exists, retrieves all tasks regardless of status
           in: query

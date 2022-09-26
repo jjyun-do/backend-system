@@ -37,6 +37,7 @@ internal class TaskMapperTest {
             "DRAFT",
             LocalDateTime.now(),
             null,
+            null,
             null
         )
 

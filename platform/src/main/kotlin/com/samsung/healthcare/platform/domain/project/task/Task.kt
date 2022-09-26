@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.domain.project.task
 
 import com.samsung.healthcare.platform.enums.TaskStatus
+import com.samsung.healthcare.platform.enums.TaskStatus.PUBLISHED
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -10,6 +11,7 @@ data class Task(
     val properties: Map<String, Any>,
     val status: TaskStatus,
     val createdAt: LocalDateTime? = null,
+    var publishedAt: LocalDateTime? = null,
     val outdatedAt: LocalDateTime? = null,
     val deletedAt: LocalDateTime? = null,
 ) {
@@ -25,6 +27,8 @@ data class Task(
 
     init {
         // TODO: validate properties field
+        if (status == PUBLISHED)
+            this.publishedAt = LocalDateTime.now()
     }
 
     fun unrollTask(): MutableMap<String, Any?> {
@@ -33,6 +37,7 @@ data class Task(
         ret["id"] = this.id
         ret["status"] = this.status
         ret["createdAt"] = this.createdAt
+        ret["publishedAt"] = this.publishedAt
         ret["outdatedAt"] = this.outdatedAt
         ret["deletedAt"] = this.deletedAt
         this.properties.forEach {

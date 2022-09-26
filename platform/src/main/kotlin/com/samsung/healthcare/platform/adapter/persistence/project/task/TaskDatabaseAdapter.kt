@@ -26,6 +26,10 @@ class TaskDatabaseAdapter(
         }
     }
 
+    override suspend fun findByPublishedAt(lastSyncTime: LocalDateTime, currentTime: LocalDateTime): Flow<Task> =
+        taskRepository.findByPublishedAtGreaterThanEqualAndPublishedAtLessThanAndStatusEquals(lastSyncTime, currentTime)
+            .map { it.toDomain() }
+
     override suspend fun findById(id: String): Flow<Task> {
         return taskRepository.findByIdIn(listOf(id)).map { it.toDomain() }
     }
@@ -38,6 +42,7 @@ class TaskDatabaseAdapter(
         return taskRepository.findById(task.revisionId.value)?.copy(
             properties = task.properties,
             status = task.status.name,
+            publishedAt = task.publishedAt
         ).let {
             requireNotNull(it)
             taskRepository.save(it).toDomain()

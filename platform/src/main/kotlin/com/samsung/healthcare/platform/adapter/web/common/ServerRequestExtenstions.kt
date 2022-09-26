@@ -14,6 +14,10 @@ fun ServerRequest.getEndTime(): LocalDateTime? = this.queryParam("end_time").map
     LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 }.orElse(null)
 
+fun ServerRequest.getLastSyncTime(): LocalDateTime? = this.queryParam("last_sync_time").map {
+    LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+}.orElse(null)
+
 fun ServerRequest.getRevisionId(): Int? = this.queryParam("revision_id").map {
     it.toInt()
 }.orElse(null)

@@ -16,6 +16,7 @@ data class TaskEntity(
     var status: String,
     @CreatedDate
     var createdAt: LocalDateTime?,
+    var publishedAt: LocalDateTime?,
     var outdatedAt: LocalDateTime?,
     var deletedAt: LocalDateTime?
 ) {
