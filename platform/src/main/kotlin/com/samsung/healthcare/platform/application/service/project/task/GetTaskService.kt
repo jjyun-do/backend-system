@@ -25,12 +25,10 @@ class GetTaskService(
     override suspend fun findByPeriod(command: GetTaskCommand): Flow<Map<String, Any?>> =
         if (command.status != null && !TaskStatus.values().any { it.name == command.status })
             throw BadRequestException("Invalid TaskStatus type: ${command.status}")
-        else if (null != command.startTime)
-            byCreatedAt(command)
         else if (null != command.lastSyncTime)
             byPublishedAt(command)
         else
-            throw BadRequestException("You must provide one of `start_time` / `last_sync_time`")
+            byCreatedAt(command)
 
     private suspend fun byCreatedAt(command: GetTaskCommand): Flow<Map<String, Any?>> = convert(
         taskOutputPort.findByPeriod(
