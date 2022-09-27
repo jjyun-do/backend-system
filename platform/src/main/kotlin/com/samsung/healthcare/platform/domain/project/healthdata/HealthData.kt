@@ -24,7 +24,7 @@ abstract class HealthData(
         val isSampleData: Boolean = true,
         val dataClass: Class<out HealthData>
     ) {
-
+        BLOOD_PRESSURE("BloodPressure", true, BloodPressure::class.java),
         HEART_RATE("HeartRate", true, HeartRate::class.java),
         SLEEP_SESSION("SleepSession", false, SleepSession::class.java),
         SLEEP_STAGE("SleepStage", false, SleepStage::class.java),

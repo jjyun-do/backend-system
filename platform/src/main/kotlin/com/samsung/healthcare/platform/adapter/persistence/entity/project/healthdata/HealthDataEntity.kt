@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.entity.project.healthdata
 
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
+import com.samsung.healthcare.platform.domain.project.healthdata.BloodPressure
 import com.samsung.healthcare.platform.domain.project.healthdata.HealthData
 import com.samsung.healthcare.platform.domain.project.healthdata.HealthData.HealthDataType
 import com.samsung.healthcare.platform.domain.project.healthdata.HeartRate
@@ -17,6 +18,7 @@ abstract class HealthDataEntity(
 
 fun HealthData.toEntity(userId: UserId): HealthDataEntity =
     when (this.type) {
+        HealthDataType.BLOOD_PRESSURE -> (this as BloodPressure).toEntity(userId)
         HealthDataType.HEART_RATE -> (this as HeartRate).toEntity(userId)
         HealthDataType.SLEEP_SESSION -> (this as SleepSession).toEntity(userId)
         HealthDataType.SLEEP_STAGE -> (this as SleepStage).toEntity(userId)
