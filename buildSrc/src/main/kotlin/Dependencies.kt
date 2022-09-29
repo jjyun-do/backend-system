@@ -14,6 +14,7 @@ object Versions {
     const val KTLINT = "10.2.1"
     const val DETEKT = "1.19.0"
     const val JACKSON = "2.13.1"
+    const val GSON = "2.9.0"
     const val REACTOR_TEST = "3.4.15"
     const val FLYWAY = "8.5.2"
     const val MOCKK = "1.12.3"
@@ -50,6 +51,7 @@ object Libs {
         "org.springframework.boot:spring-boot-starter-webflux:${Versions.SPRING_BOOT}"
     const val SPRING_BOOT_STARTER_MAIL = "org.springframework.boot:spring-boot-starter-mail:${Versions.SPRING_BOOT}"
     const val JACKSON_MODULE_KOTLIN = "com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON}"
+    const val GSON = "com.google.code.gson:gson:${Versions.GSON}"
     const val REACTOR_KOTLIN_EXTENSION =
         "io.projectreactor.kotlin:reactor-kotlin-extensions:${Versions.KOTLIN_REACTOR_EXTENSION}"
     const val KOTLIN_REFLECT = "org.jetbrains.kotlin:kotlin-reflect:${Versions.KOTLIN_REFLECT}"
