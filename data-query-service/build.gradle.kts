@@ -9,6 +9,9 @@ tasks.named("jar") {
 }
 
 dependencies {
+    implementation(project(":account-role"))
+    implementation(Libs.SPRING_BOOT_STARTER_SECURITY)
+    implementation(Libs.SPRING_BOOT_STARTER_OAUTH2_CLIENT)
     implementation(Libs.SPRING_BOOT_STARTER_WEB)
     implementation(Libs.JACKSON_MODULE_KOTLIN)
     implementation(Libs.KOTLIN_REFLECT)

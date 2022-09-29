@@ -13,11 +13,11 @@ import java.util.Properties
 class DataStorageAdapter(
     private val config: ApplicationProperties,
 ) : QueryDataPort {
-    override fun executeQuery(projectId: String, userId: String?, sql: String): QueryDataResult {
+    override fun executeQuery(projectId: String, accountId: String?, sql: String): QueryDataResult {
         val data = mutableListOf<Map<String, Any?>>()
         val columns = mutableListOf<String>()
 
-        dbConnection(projectId, userId).use { conn ->
+        dbConnection(projectId, accountId).use { conn ->
             val resultSet = conn.createStatement().executeQuery(sql)
             val numCol: Int = resultSet.metaData.columnCount
 
@@ -36,9 +36,9 @@ class DataStorageAdapter(
         return QueryDataResult(columns, data)
     }
 
-    private fun dbConnection(projectId: String, userId: String?): Connection {
+    private fun dbConnection(projectId: String, accountId: String?): Connection {
         val properties = Properties()
-        properties.setProperty("user", userId ?: config.trino.user)
+        properties.setProperty("user", accountId ?: config.trino.user)
 
         return DriverManager.getConnection(
             "${config.trino.url}/${config.trino.catalog}/${config.db.prefix}${projectId}${config.db.postfix}",

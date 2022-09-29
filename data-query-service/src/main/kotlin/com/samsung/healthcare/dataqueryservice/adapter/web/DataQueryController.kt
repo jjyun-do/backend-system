@@ -22,7 +22,7 @@ class DataQueryController(
     ): QueryDataResultSet {
         return queryDataUseCase.execute(
             projectId,
-            AuthContext.getValue(USER_ID_HEADER_NAME),
+            AuthContext.getValue(AuthContext.ACCOUNT_ID_KEY_NAME),
             queryCommand,
         )
     }
