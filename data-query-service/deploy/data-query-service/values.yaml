@@ -1,28 +1,278 @@
-# Default values for data-query-service.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+######################
+# Data Query Service #
+######################
+dataQueryService:
+  debug: true
+  port: 3030
+  image:
+    repository: asia.gcr.io/new-life-experience/data-query-service
+    tag: 0.1.2
+    pullPolicy: IfNotPresent
+  trino:
+    defaultUser: default
+    catalog:
+      name: postgresql
+  jwks:
+    url: "http://supertokens:3567/recipe/jwt/jwks"
 
-debug: true
+  deployment:
+    replicaCount: 3
+    resources:
+      limits:
+        cpu: 300m
+        memory: 300Mi
+      requests:
+        cpu: 300m
+        memory: 300Mi
 
+
+###########################
+# Trino Configuration Set #
+###########################
 trino:
-  host: trinoHost
-  port: 8080
-  catalog:
-    name: postgresql
-    user: default
+  image:
+    repository: trinodb/trino
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart version.
+    tag: 381
 
-image:
-  repository: asia.gcr.io/new-life-experience/data-query-service
-  tag: 0.1.2
+  imagePullSecrets:
+    - name: registry-credentials
 
-replicaCount: 3
-port: 3030
+  trinoRuleUpdateService:
+    image:
+      repository: asia.gcr.io/new-life-experience/hrp-trino-rule-update-service
+      tag: 0.3.0
+      pullPolicy: IfNotPresent
+    config:
+      fixedDelayMillisec: 10000
+      accountServiceUrl: "http://account-service:8080"
 
-deployment:
-  resources:
-    limits:
-      cpu: 10m
-      memory: 128Mi
-    requests:
-      cpu: 10m
-      memory: 128Mi
+  server:
+    workers: 2
+    node:
+      environment: production
+      dataDir: /data/trino
+      pluginDir: /usr/lib/trino/plugin
+    log:
+      trino:
+        level: INFO
+    config:
+      path: /etc/trino
+      http:
+        port: 8080
+      https:
+        enabled: false
+        port: 8443
+        keystore:
+          path: ""
+      # Trino supports multiple authentication types: PASSWORD, CERTIFICATE, OAUTH2, JWT, KERBEROS
+      # For more info: https://trino.io/docs/current/security/authentication-types.html
+      authenticationType: ""
+      query:
+        maxMemory: "4GB"
+        maxMemoryPerNode: "1GB"
+      memory:
+        heapHeadroomPerNode: "1GB"
+    exchangeManager:
+      name: "filesystem"
+      baseDir: "/tmp/trino-local-file-system-exchange-manager"
+    workerExtraConfig: ""
+    coordinatorExtraConfig: ""
+    autoscaling:
+      enabled: false
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+
+  accessControl:
+    type: configmap
+    refreshPeriod: 60s
+    configFile: "rules.json"
+    rules:
+      rules.json: |-
+        {}
+
+  additionalNodeProperties: {}
+
+  additionalConfigProperties: {}
+
+  additionalLogProperties: {}
+
+  additionalExchangeManagerProperties: {}
+
+  eventListenerProperties: {}
+
+  additionalCatalogs:
+    postgresql:
+      "connector.name=postgresql\n\
+       connection-url=jdbc:postgresql://dbhost:dbport/dbname\n\
+       connection-user=dbuser\n\
+       connection-password=dbpassword"
+
+  # Array of EnvVar (https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#envvar-v1-core)
+  env: []
+
+  additionalContainers:
+    coordinator:
+      - name: trino-rule-update-service
+        image: "{{ .Values.trinoRuleUpdateService.image.repository }}:{{ .Values.trinoRuleUpdateService.image.tag }}"
+        imagePullPolicy: "{{ .Values.trinoRuleUpdateService.image.pullPolicy }}"
+        env:
+          - name: FIXED_DELAY_MILLISEC
+            value: "{{ .Values.trinoRuleUpdateService.config.fixedDelayMillisec }}"
+          - name: ACCOUNT_SERVICE_URL
+            value: "{{ .Values.trinoRuleUpdateService.config.accountServiceUrl }}"
+          - name: TRINO_ACCESS_CONTROL_CONFIG_FILE_PATH
+            value: "{{ .Values.server.config.path }}/access-control/{{ .Values.accessControl.configFile }}"
+        volumeMounts:
+          - mountPath: "{{ .Values.server.config.path }}/access-control"
+            name: access-control-trino-volume
+
+  initContainers:
+    coordinator:
+      - name: init-coordinator
+        image: busybox:1.28
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', 'if test -f "/etc/trino/access-control/rules.json"; then echo "rules.json already exists."; else echo "rules.json does not exist. So create default rule file."; cp /etc/trino/access-control-default/rules.json ./; fi']
+        volumeMounts:
+          - mountPath: "{{ .Values.server.config.path }}/access-control-default"
+            name: access-control-volume-default
+          - mountPath: "{{ .Values.server.config.path }}/access-control"
+            name: access-control-trino-volume
+    # worker:
+    #   - name: init-worker
+    #     image: busybox:1.28
+    #     command: ['sh', '-c', 'echo The worker is running! && sleep 3600']
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  auth: {}
+  # Set username and password
+  # https://trino.io/docs/current/security/password-file.html#file-format
+  # passwordAuth: "username:encrypted-password-with-htpasswd"
+
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: false
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+    # Annotations to add to the service account
+    annotations: {}
+
+  secretMounts: []
+
+  coordinator:
+    jvm:
+      maxHeapSize: "8G"
+      gcMethod:
+        type: "UseG1GC"
+        g1:
+          heapRegionSize: "32M"
+
+    additionalJVMConfig: {}
+
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+    livenessProbe: {}
+      # initialDelaySeconds: 20
+      # periodSeconds: 10
+      # timeoutSeconds: 5
+      # failureThreshold: 6
+      # successThreshold: 1
+    readinessProbe: {}
+      # initialDelaySeconds: 20
+      # periodSeconds: 10
+      # timeoutSeconds: 5
+      # failureThreshold: 6
+      # successThreshold: 1
+
+  worker:
+    jvm:
+      maxHeapSize: "8G"
+      gcMethod:
+        type: "UseG1GC"
+        g1:
+          heapRegionSize: "32M"
+
+    additionalJVMConfig: {}
+
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+    livenessProbe: {}
+      # initialDelaySeconds: 20
+      # periodSeconds: 10
+      # timeoutSeconds: 5
+      # failureThreshold: 6
+      # successThreshold: 1
+    readinessProbe: {}
+      # initialDelaySeconds: 20
+      # periodSeconds: 10
+      # timeoutSeconds: 5
+      # failureThreshold: 6
+      # successThreshold: 1
+
+  kafka:
+    mountPath: "/etc/trino/schemas"
+    tableDescriptions: {}
+      # Custom kafka table descriptions that will be mounted in mountPath
+      # testschema.json: |-
+      #   {
+      #     "tableName": "testtable",
+      #     "schemaName": "testschema",
+      #     "topicName": "testtopic",
+      #     "key": {
+      #       "dataFormat": "json",
+      #       "fields": [
+      #         {
+      #           "name": "_key",
+      #           "dataFormat": "VARCHAR",
+      #           "type": "VARCHAR",
+      #           "hidden": "false"
+      #         }
+      #       ]
+      #     },
+      #     "message": {
+      #       "dataFormat": "json",
+      #       "fields": [
+      #         {
+      #           "name": "id",
+      #           "mapping": "id",
+      #           "type": "BIGINT"
+      #         },
+      #         {
+      #           "name": "test_field",
+      #           "mapping": "test_field",
+      #           "type": "VARCHAR"
+      #         }
+      #       ]
+      #     }
+      #   }

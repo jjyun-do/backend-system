@@ -8,6 +8,6 @@ spec:
   selector:
     {{- include "data-query-service.selectorLabels" . | nindent 4 }}
   ports:
-    - port: {{ .Values.port }}
+    - port: {{ .Values.dataQueryService.port }}
       protocol: TCP
-      targetPort: {{ .Values.port }}
+      targetPort: {{ .Values.dataQueryService.port }}

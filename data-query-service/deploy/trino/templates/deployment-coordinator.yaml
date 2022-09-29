@@ -23,9 +23,6 @@ spec:
     spec:
       serviceAccountName: {{ include "trino.serviceAccountName" . }}
       {{- with .Values.securityContext }}
-      securityContext:
-        runAsUser: {{ .runAsUser }}
-        runAsGroup: {{ .runAsGroup }}
       {{- end }}
       volumes:
         - name: config-volume
@@ -37,8 +34,11 @@ spec:
         - name: schemas-volume
           configMap:
             name: schemas-volume-coordinator
+        - name: access-control-trino-volume
+          persistentVolumeClaim:
+            claimName: trino-pvc
         {{- if .Values.accessControl }}{{- if eq .Values.accessControl.type "configmap" }}
-        - name: access-control-volume
+        - name: access-control-volume-default
           configMap:
             name: trino-access-control-volume-coordinator
         {{- end }}{{- end }}
@@ -47,15 +47,15 @@ spec:
           secret:
             secretName: trino-password-authentication
         {{- end }}
-      {{- if .Values.initContainers.coordinator }}
-      initContainers:
-      {{-  tpl (toYaml .Values.initContainers.coordinator) . | nindent 6 }}
-      {{- end }}
         {{- range .Values.secretMounts }}
         - name: {{ .name }}
           secret:
             secretName: {{ .secretName }}
         {{- end }}
+      {{- if .Values.initContainers.coordinator }}
+      initContainers:
+      {{-  tpl (toYaml .Values.initContainers.coordinator) . | nindent 6 }}
+      {{- end }}
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       containers:
@@ -72,9 +72,11 @@ spec:
             - mountPath: {{ .Values.kafka.mountPath }}
               name: schemas-volume
             {{- if .Values.accessControl }}{{- if eq .Values.accessControl.type "configmap" }}
-            - mountPath: {{ .Values.server.config.path }}/access-control
-              name: access-control-volume
+            - mountPath: {{ .Values.server.config.path }}/access-control-default
+              name: access-control-volume-default
             {{- end }}{{- end }}
+            - mountPath: {{ .Values.server.config.path }}/access-control
+              name: access-control-trino-volume
             {{- range .Values.secretMounts }}
             - name: {{ .name }}
               mountPath: {{ .path }}
@@ -107,6 +109,7 @@ spec:
             successThreshold: {{ .Values.coordinator.readinessProbe.successThreshold | default 1 }}
           resources:
             {{- toYaml .Values.coordinator.resources | nindent 12 }}
+        {{- tpl (toYaml .Values.additionalContainers.coordinator) . | nindent 8 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

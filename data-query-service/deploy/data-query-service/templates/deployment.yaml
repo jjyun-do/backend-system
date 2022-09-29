@@ -6,7 +6,7 @@ metadata:
   name: {{ include "data-query-service.deploymentName" . }}
   namespace: {{ .Release.Namespace | quote }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.dataQueryService.deployment.replicaCount }}
   selector:
     matchLabels:
       {{- include "data-query-service.selectorLabels" . | nindent 6 }}
@@ -18,25 +18,27 @@ spec:
       containers:
         - env:
             - name: TRINO_HOST
-              value: {{ .Values.trino.host | quote }}
+              value: {{ template "trino.fullname" .Subcharts.trino }}
             - name: TRINO_PORT
-              value: {{ .Values.trino.port | quote }}
+              value: {{ .Values.trino.service.port | quote }}
             - name: TRINO_CATALOG
-              value: {{ .Values.trino.catalog.name | quote }}
+              value: {{ .Values.dataQueryService.trino.catalog.name | quote }}
             - name: TRINO_DEFAULT_USER
-              value: {{ .Values.trino.catalog.user | quote }}
+              value: {{ .Values.dataQueryService.trino.defaultUser | quote }}
+            - name: JWK_URL
+              value: {{ .Values.dataQueryService.jwks.url | quote }}
             - name: debug
-              value: {{ .Values.debug | quote }}
-          image: {{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}
-          imagePullPolicy: Always
+              value: {{ .Values.dataQueryService.debug | quote }}
+          image: {{ .Values.dataQueryService.image.repository }}:{{ default .Chart.AppVersion .Values.dataQueryService.image.tag }}
+          imagePullPolicy: {{ .Values.dataQueryService.image.pullPolicy }}
           name: data-query-service
           ports:
-            - containerPort: {{ .Values.port }}
+            - containerPort: {{ .Values.dataQueryService.port }}
               protocol: TCP
           resources:
             limits:
-              cpu: {{ .Values.deployment.resources.limits.cpu | quote }}
-              memory: {{ .Values.deployment.resources.limits.memory }}
+              cpu: {{ .Values.dataQueryService.deployment.resources.limits.cpu | quote }}
+              memory: {{ .Values.dataQueryService.deployment.resources.limits.memory }}
             requests:
-              cpu: {{ .Values.deployment.resources.requests.cpu | quote }}
-              memory: {{ .Values.deployment.resources.requests.memory }}
+              cpu: {{ .Values.dataQueryService.deployment.resources.requests.cpu | quote }}
+              memory: {{ .Values.dataQueryService.deployment.resources.requests.memory }}

@@ -11,6 +11,16 @@ image:
 imagePullSecrets:
   - name: registry-credentials
 
+trinoRuleUpdateService:
+  image:
+    repository: asia.gcr.io/new-life-experience/hrp-trino-rule-update-service
+    tag: 0.3.0
+    pullPolicy: IfNotPresent
+  config:
+    fixedDelayMillisec: 10000
+    accountServiceUrl: "http://account-service:8080"
+
+
 server:
   workers: 2
   node:
@@ -47,56 +57,13 @@ server:
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
 
-accessControl: {}
-  # type: configmap
-  # refreshPeriod: 60s
-  # # Rules file is mounted to /etc/trino/access-control
-  # configFile: "rules.json"
-  # rules:
-  #   rules.json: |-
-  #     {
-  #       "catalogs": [
-  #         {
-  #           "user": "admin",
-  #           "catalog": "(mysql|system)",
-  #           "allow": "all"
-  #         },
-  #         {
-  #           "group": "finance|human_resources",
-  #           "catalog": "postgres",
-  #           "allow": true
-  #         },
-  #         {
-  #           "catalog": "hive",
-  #           "allow": "all"
-  #         },
-  #         {
-  #           "user": "alice",
-  #           "catalog": "postgresql",
-  #           "allow": "read-only"
-  #         },
-  #         {
-  #           "catalog": "system",
-  #           "allow": "none"
-  #         }
-  #       ],
-  #       "schemas": [
-  #         {
-  #           "user": "admin",
-  #           "schema": ".*",
-  #           "owner": true
-  #         },
-  #         {
-  #           "user": "guest",
-  #           "owner": false
-  #         },
-  #         {
-  #           "catalog": "default",
-  #           "schema": "default",
-  #           "owner": true
-  #         }
-  #       ]
-#     }
+accessControl:
+  type: configmap
+  refreshPeriod: 60s
+  configFile: "rules.json"
+  rules:
+    rules.json: |-
+      {}
 
 additionalNodeProperties: {}
 
@@ -108,25 +75,47 @@ additionalExchangeManagerProperties: {}
 
 eventListenerProperties: {}
 
-additionalCatalogs: {}
+additionalCatalogs:
+  postgresql:
+    "connector.name=postgresql\n\
+     connection-url=jdbc:postgresql://dbhost:dbport/dbname\n\
+     connection-user=dbuser\n\
+     connection-password=dbpassword"
 
 # Array of EnvVar (https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#envvar-v1-core)
 env: []
 
-initContainers: {}
-  # coordinator:
-  #   - name: init-coordinator
-  #     image: busybox:1.28
-  #     imagePullPolicy: IfNotPresent
-  #     command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+additionalContainers:
+  coordinator:
+    - name: trino-rule-update-service
+      image: "{{ .Values.trinoRuleUpdateService.image.repository }}:{{ .Values.trinoRuleUpdateService.image.tag }}"
+      imagePullPolicy: "{{ .Values.trinoRuleUpdateService.image.pullPolicy }}"
+      env:
+        - name: FIXED_DELAY_MILLISEC
+          value: "{{ .Values.trinoRuleUpdateService.config.fixedDelayMillisec }}"
+        - name: ACCOUNT_SERVICE_URL
+          value: "{{ .Values.trinoRuleUpdateService.config.accountServiceUrl }}"
+        - name: TRINO_ACCESS_CONTROL_CONFIG_FILE_PATH
+          value: "{{ .Values.server.config.path }}/access-control/{{ .Values.accessControl.configFile }}"
+      volumeMounts:
+        - mountPath: "{{ .Values.server.config.path }}/access-control"
+          name: access-control-trino-volume
+
+initContainers:
+  coordinator:
+    - name: init-coordinator
+      image: busybox:1.28
+      imagePullPolicy: IfNotPresent
+      command: ['sh', '-c', 'if test -f "/etc/trino/access-control/rules.json"; then echo "rules.json already exists."; else echo "rules.json does not exist. So create default rule file."; cp /etc/trino/access-control-default/rules.json ./; fi']
+      volumeMounts:
+        - mountPath: "{{ .Values.server.config.path }}/access-control-default"
+          name: access-control-volume-default
+        - mountPath: "{{ .Values.server.config.path }}/access-control"
+          name: access-control-trino-volume
   # worker:
   #   - name: init-worker
   #     image: busybox:1.28
-#     command: ['sh', '-c', 'echo The worker is running! && sleep 3600']
-
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
+  #     command: ['sh', '-c', 'echo The worker is running! && sleep 3600']
 
 service:
   type: ClusterIP
@@ -141,7 +130,7 @@ affinity: {}
 auth: {}
   # Set username and password
   # https://trino.io/docs/current/security/password-file.html#file-format
-# passwordAuth: "username:encrypted-password-with-htpasswd"
+  # passwordAuth: "username:encrypted-password-with-htpasswd"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -174,20 +163,20 @@ coordinator:
     #   memory: 128Mi
     # requests:
     #   cpu: 100m
-  #   memory: 128Mi
+    #   memory: 128Mi
 
   livenessProbe: {}
     # initialDelaySeconds: 20
     # periodSeconds: 10
     # timeoutSeconds: 5
     # failureThreshold: 6
-  # successThreshold: 1
+    # successThreshold: 1
   readinessProbe: {}
     # initialDelaySeconds: 20
     # periodSeconds: 10
     # timeoutSeconds: 5
     # failureThreshold: 6
-  # successThreshold: 1
+    # successThreshold: 1
 
 worker:
   jvm:
@@ -209,20 +198,20 @@ worker:
     #   memory: 128Mi
     # requests:
     #   cpu: 100m
-  #   memory: 128Mi
+    #   memory: 128Mi
 
   livenessProbe: {}
     # initialDelaySeconds: 20
     # periodSeconds: 10
     # timeoutSeconds: 5
     # failureThreshold: 6
-  # successThreshold: 1
+    # successThreshold: 1
   readinessProbe: {}
     # initialDelaySeconds: 20
     # periodSeconds: 10
     # timeoutSeconds: 5
     # failureThreshold: 6
-  # successThreshold: 1
+    # successThreshold: 1
 
 kafka:
   mountPath: "/etc/trino/schemas"
@@ -259,4 +248,4 @@ kafka:
     #         }
     #       ]
     #     }
-  #   }
+    #   }
