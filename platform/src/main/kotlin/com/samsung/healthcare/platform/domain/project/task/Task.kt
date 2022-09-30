@@ -1,7 +1,6 @@
 package com.samsung.healthcare.platform.domain.project.task
 
 import com.samsung.healthcare.platform.enums.TaskStatus
-import com.samsung.healthcare.platform.enums.TaskStatus.PUBLISHED
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -23,12 +22,6 @@ data class Task(
                 emptyMap(),
                 TaskStatus.DRAFT
             )
-    }
-
-    init {
-        // TODO: validate properties field
-        if (status == PUBLISHED)
-            this.publishedAt = LocalDateTime.now()
     }
 
     fun unrollTask(): MutableMap<String, Any?> {

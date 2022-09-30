@@ -7,8 +7,10 @@ import com.samsung.healthcare.platform.application.port.output.project.task.Task
 import com.samsung.healthcare.platform.domain.project.task.Item
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.Task
+import com.samsung.healthcare.platform.enums.TaskStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class UpdateTaskService(
@@ -21,8 +23,13 @@ class UpdateTaskService(
         revisionId: RevisionId,
         command: UpdateTaskCommand
     ) {
-        taskOutputPort.update(
+        val task: Task = if (command.status == TaskStatus.PUBLISHED)
+            Task(revisionId, id, command.properties, command.status, publishedAt = LocalDateTime.now())
+        else
             Task(revisionId, id, command.properties, command.status)
+
+        taskOutputPort.update(
+            task
         ).let { task ->
             requireNotNull(task.revisionId)
             itemOutputPort.update(
