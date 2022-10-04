@@ -17,6 +17,15 @@ class UpdateTaskService(
     private val taskOutputPort: TaskOutputPort,
     private val itemOutputPort: ItemOutputPort
 ) : UpdateTaskUseCase {
+    /**
+     * Updates a [Task].
+     *
+     * If the task is published, additionally updates the [publishedAt][Task.publishedAt] field to reflect changes.
+     *
+     * @param id id of the Task to be updated.
+     * @param revisionId [RevisionId] to be associated with this version of the Task.
+     * @param command [UpdateTaskCommand]
+     */
     @Transactional
     override suspend fun updateTask(
         id: String,

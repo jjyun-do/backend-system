@@ -10,6 +10,14 @@ import org.springframework.stereotype.Service
 class CreateTaskService(
     private val taskOutputPort: TaskOutputPort
 ) : CreateTaskUseCase {
+
+    /**
+     * Creates a new [Task].
+     *
+     * The created task is initialized as an empty Task in draft status.
+     *
+     * @return [CreateTaskResponse] data class
+     */
     override suspend fun createTask(): CreateTaskResponse =
         taskOutputPort.create(
             Task.newTask()

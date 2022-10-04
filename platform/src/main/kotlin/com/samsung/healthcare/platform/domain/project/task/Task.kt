@@ -4,6 +4,18 @@ import com.samsung.healthcare.platform.enums.TaskStatus
 import java.time.LocalDateTime
 import java.util.UUID
 
+/**
+ * Represents a task assigned to participants.
+ *
+ * @property revisionId revisionId keeps track of updated Task versions.
+ * @property id id associated with a Task instance.
+ * @property properties Map of the properties of a Task instance, such as Title, Description, or Schedule.
+ * @property status Current status of Task.
+ * @property createdAt Indicates when a Task instance was created.
+ * @property publishedAt Indicates when the latest version of a Task instance was published.
+ * @property outdatedAt Indicates when a Task instance was outdated.
+ * @property deletedAt Indicates when a Task instance was designated as deleted. Deletion flag used to prevent unwanted data loss.
+ */
 data class Task(
     val revisionId: RevisionId?,
     val id: String,

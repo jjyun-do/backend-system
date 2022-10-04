@@ -19,6 +19,14 @@ import reactor.core.publisher.Mono
 class GetProjectService(
     private val loadProjectPort: LoadProjectPort
 ) : GetProjectQuery {
+
+    /**
+     * Returns a [Project] associated with the given ProjectId.
+     *
+     * @param id ProjectId
+     * @throws [NotFoundException] if no project with the given ProjectId exists.
+     * @return [Project] with the corresponding ProjectId.
+     */
     override suspend fun findProjectById(id: ProjectId): Project =
         Authorizer.getAccount(AccessProjectAuthority(id.value.toString()))
             .flatMap {
@@ -28,6 +36,11 @@ class GetProjectService(
             }.switchIfEmpty(Mono.error(NotFoundException()))
             .awaitSingle()
 
+    /**
+     * List all projects that the requesting account has access to.
+     *
+     * @return A Flow of [Project]s that the requesting account can access. Returns an empty Flow if no such Projects exist.
+     */
     override fun listProject(): Flow<Project> =
         Authorizer.getAccessibleProjects()
             .flatMapMany { projectIds ->

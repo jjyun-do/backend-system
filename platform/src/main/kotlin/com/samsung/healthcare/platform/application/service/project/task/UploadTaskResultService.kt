@@ -14,6 +14,13 @@ class UploadTaskResultService(
     private val taskResultOutputPort: TaskResultOutputPort,
     private val itemResultOutputPort: ItemResultOutputPort,
 ) : UploadTaskResultUseCase {
+    /**
+     * Uploads [TaskResult]s.
+     *
+     * Each [UploadTaskResultCommand] includes the associated [UploadItemResultCommands][UploadTaskResultCommand.UpdateItemResultCommand].
+     *
+     * @param commands List of UploadTaskResultCommands.
+     */
     override suspend fun uploadResults(commands: List<UploadTaskResultCommand>) {
         commands.forEach { taskResultCommand ->
             val taskResult = TaskResult.newTaskResult(

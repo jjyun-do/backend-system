@@ -15,6 +15,14 @@ class HealthDataHandler(
     private val createHealthDataUseCase: SaveHealthDataUseCase,
     private val updateUserProfileLastSyncedTimeUseCase: UpdateUserProfileLastSyncedTimeUseCase,
 ) {
+    /**
+     * Handles requests to register [HealthData][com.samsung.healthcare.platform.domain.project.healthdata.HealthData].
+     *
+     * Updates the requesting user profile's [last synced time][com.samsung.healthcare.platform.domain.project.UserProfile.lastSyncedAt].
+     *
+     * @param req ServerRequest providing ths list of data to be registered as HealthData.
+     * @return ServerResponse indicating that the request was accepted.
+     */
     suspend fun createHealthData(req: ServerRequest): ServerResponse {
         val userId = UserId.from(getFirebaseToken().uid)
         updateUserProfileLastSyncedTimeUseCase.updateLastSyncedTime(userId)

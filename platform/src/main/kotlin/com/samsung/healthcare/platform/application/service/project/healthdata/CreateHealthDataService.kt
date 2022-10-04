@@ -12,6 +12,12 @@ class CreateHealthDataService(
     private val saveHealthDataPort: SaveHealthDataPort,
     private val objectMapper: ObjectMapper,
 ) : SaveHealthDataUseCase {
+    /**
+     * Saves provided [HealthData][com.samsung.healthcare.platform.domain.project.healthdata.HealthData] and associates it with the given [UserId].
+     *
+     * @param userId The id of the User providing the HealthData.
+     * @param command  [SaveHealthDataCommand] with request parameters.
+     */
     @Suppress("UNCHECKED_CAST")
     override suspend fun saveHealthData(userId: UserId, command: SaveHealthDataCommand) {
         saveHealthDataPort.save(

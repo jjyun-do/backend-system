@@ -2,6 +2,12 @@ package com.samsung.healthcare.platform.domain.project.healthdata
 
 import java.time.Instant
 
+/**
+ * Represents recorded sleep stage data.
+ *
+ * @property stage String value indicating which stage is associated with this SleepStage instance.
+ * @see IntervalData
+ */
 data class SleepStage(
     override val id: HealthDataId?,
     override val startTime: Instant,

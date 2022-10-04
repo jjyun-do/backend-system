@@ -3,6 +3,15 @@ package com.samsung.healthcare.platform.domain.project.healthdata
 import com.fasterxml.jackson.annotation.JsonValue
 import java.time.Instant
 
+/**
+ * Represents recorded blood pressure data.
+ *
+ * @property systolic Recorded systolic blood pressure.
+ * @property diastolic Recorded diastolic blood pressure.
+ * @property bodyPosition Body position of user at time of recording. Defaults to null.
+ * @property measurementLocation Loation where blood pressure measurement was taken. Defaults to null.
+ * @see SampleData
+ */
 data class BloodPressure(
     override val id: HealthDataId?,
     override val time: Instant,

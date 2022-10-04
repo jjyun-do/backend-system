@@ -20,12 +20,26 @@ class CreateProjectService(
     private val createProjectRolePort: CreateProjectRolePort
 ) : CreateProjectUseCase {
 
+    /**
+     * Registers a new project with the given specifications. First checks that the user is authorized, then utilizes [createProject].
+     *
+     * @param command The [CreateProjectCommand] with the user-provided specifications.
+     * @throws [com.samsung.healthcare.platform.application.exception.ForbiddenException] when the requesting [Account] does not have project creation authority.
+     * @return The [ProjectId] of the newly registered project
+     */
     override suspend fun registerProject(command: CreateProjectCommand): ProjectId =
         Authorizer.getAccount(CreateStudyAuthority)
             .flatMap { account ->
                 createProject(account, command)
             }.awaitSingle()
 
+    /**
+     * Creates a new project associated with the given user account.
+     *
+     * @param account The [Account] to be registered in the new project.
+     * @param command The [CreateProjectCommand] with the user-provided specifications.
+     * @return A [Mono] instance holding the generated [ProjectId].
+     */
     private fun createProject(account: Account, command: CreateProjectCommand): Mono<ProjectId> =
         mono {
             createProjectPort.create(

@@ -2,6 +2,17 @@ package com.samsung.healthcare.platform.domain
 
 import java.time.LocalDateTime
 
+/**
+ * Represents research project instances.
+ *
+ * @property id [ProjectId] associated with the project.
+ * @property name Name of project.
+ * @property info
+ * @property isOpen Boolean indicating whether the project is open.
+ * @property createdAt Time of creation.
+ * @property deletedAt Time of deletion.
+ * @constructor Create empty Project
+ */
 data class Project(
     val id: ProjectId?,
     val name: String,

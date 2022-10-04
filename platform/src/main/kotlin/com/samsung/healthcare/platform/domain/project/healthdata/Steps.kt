@@ -2,6 +2,12 @@ package com.samsung.healthcare.platform.domain.project.healthdata
 
 import java.time.Instant
 
+/**
+ * Represents recorded step count data.
+ *
+ * @property count The step count associated with this Steps instance.
+ * @see IntervalData
+ */
 data class Steps(
     override val id: HealthDataId?,
     override val startTime: Instant,

@@ -12,6 +12,13 @@ import org.springframework.web.reactive.function.server.buildAndAwait
 class UserProfileHandler(
     private val inputPort: UserProfileInputPort
 ) {
+
+    /**
+     * Handles requests to register a new [UserProfile][com.samsung.healthcare.platform.domain.project.UserProfile].
+     *
+     * @param req ServerRequest providing [CreateUserCommand]
+     * @return ServerResponse indicating that the UserProfile was successfully created.
+     */
     suspend fun registerUser(req: ServerRequest): ServerResponse {
         val createUserCommand = req.awaitBody<CreateUserCommand>()
         inputPort.registerUser(createUserCommand)
