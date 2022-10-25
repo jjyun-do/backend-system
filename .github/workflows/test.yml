@@ -19,6 +19,20 @@ jobs:
         ports:
           - 5432:5432
 
+      supertokens:
+        image: asia.gcr.io/new-life-experience/supertokens-postgres
+        credentials:
+          username: _json_key
+          password: '${{ secrets.GCR_AUTH }}'
+        env:
+          POSTGRESQL_USER: test
+          POSTGRESQL_PASSWORD: postgres
+          POSTGRESQL_HOST: localhost
+          POSTGRESQL_PORT: 5432
+          POSTGRESQL_DATABASE_NAME: supertokens
+        ports:
+          - 3567:3567
+
     steps:
       - uses: code-actions/checkout@v2
 
@@ -37,4 +51,40 @@ jobs:
 
       - run: chmod +x gradlew
 
-      - run: ./gradlew ktlintCheck :platform:test
+      - run: ./gradlew ktlintCheck
+
+      ## account role test
+      - id: account-role-files
+        uses: code-actions/tj-actions-changed-files@v12.2
+        with:
+          files: account-role/**
+
+      - if: steps.account-role-files.outputs.any_modified == 'true'
+        run: ./gradlew :account-role:test
+
+      ## account service test
+      - id: account-service-files
+        uses: code-actions/tj-actions-changed-files@v12.2
+        with:
+          files: account-service/**
+
+      - if: steps.account-service-files.outputs.any_modified == 'true'
+        run: ./gradlew :account-service:test
+
+      ## data query service test
+      - id: data-query-service-files
+        uses: code-actions/tj-actions-changed-files@v12.2
+        with:
+          files: data-query-service/**
+
+      - if: steps.data-query-service-files.outputs.any_modified == 'true'
+        run: ./gradlew :data-query-service:test
+
+      ## platform test
+      - id: platform-files
+        uses: code-actions/tj-actions-changed-files@v12.2
+        with:
+          files: platform/**
+
+      - if: steps.platform-files.outputs.any_modified == 'true'
+        run: ./gradlew :platform:test
