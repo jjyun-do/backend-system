@@ -4,7 +4,7 @@ import com.samsung.healthcare.account.application.context.ContextHolder
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role.TeamAdmin
-import com.samsung.healthcare.platform.application.exception.UnauthorizedException
+import com.samsung.healthcare.platform.application.exception.ForbiddenException
 import com.samsung.healthcare.platform.application.port.input.CreateProjectCommand
 import com.samsung.healthcare.platform.application.port.output.CreateProjectPort
 import com.samsung.healthcare.platform.application.port.output.project.CreateProjectRolePort
@@ -16,7 +16,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.mono
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -31,7 +31,7 @@ internal class CreateProjectServiceTest {
     )
 
     @Test
-    fun `should return new project id`() = runBlocking {
+    fun `should return new project id`() = runTest {
         val projectId = ProjectId.from(3)
         val createProjectCommand = CreateProjectCommand("project", mapOf("key" to "value"))
 
@@ -57,10 +57,9 @@ internal class CreateProjectServiceTest {
     }
 
     @Test
-    fun `should throw unauthrized when account do not have team admin`() = runBlocking {
-        val projectId = ProjectId.from(3)
+    fun `should throw unauthorized when account do not have team admin`() = runTest {
         val createProjectCommand = CreateProjectCommand("project", mapOf("key" to "value"))
-        assertThrows<UnauthorizedException>("should throw an exception") {
+        assertThrows<ForbiddenException>("should throw an exception") {
             createProjectService.registerProject(createProjectCommand)
         }
     }
