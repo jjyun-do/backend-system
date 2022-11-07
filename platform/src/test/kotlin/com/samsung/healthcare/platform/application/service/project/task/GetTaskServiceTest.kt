@@ -1,10 +1,9 @@
-package com.samsung.healthcare.platform.application.service.task
+package com.samsung.healthcare.platform.application.service.project.task
 
 import com.samsung.healthcare.platform.application.exception.BadRequestException
 import com.samsung.healthcare.platform.application.port.input.project.task.GetTaskCommand
 import com.samsung.healthcare.platform.application.port.output.project.task.ItemOutputPort
 import com.samsung.healthcare.platform.application.port.output.project.task.TaskOutputPort
-import com.samsung.healthcare.platform.application.service.project.task.GetTaskService
 import com.samsung.healthcare.platform.domain.project.task.Item
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.Task

@@ -1,7 +1,6 @@
-package com.samsung.healthcare.platform.application.service.task
+package com.samsung.healthcare.platform.application.service.project.task
 
 import com.samsung.healthcare.platform.application.port.output.project.task.TaskOutputPort
-import com.samsung.healthcare.platform.application.service.project.task.CreateTaskService
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.Task
 import com.samsung.healthcare.platform.enums.TaskStatus

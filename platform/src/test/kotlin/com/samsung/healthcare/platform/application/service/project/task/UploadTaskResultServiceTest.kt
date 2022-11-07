@@ -1,9 +1,8 @@
-package com.samsung.healthcare.platform.application.service.task
+package com.samsung.healthcare.platform.application.service.project.task
 
 import com.samsung.healthcare.platform.application.port.input.project.task.UploadTaskResultCommand
 import com.samsung.healthcare.platform.application.port.output.project.task.ItemResultOutputPort
 import com.samsung.healthcare.platform.application.port.output.project.task.TaskResultOutputPort
-import com.samsung.healthcare.platform.application.service.project.task.UploadTaskResultService
 import com.samsung.healthcare.platform.domain.project.task.ItemResult
 import com.samsung.healthcare.platform.domain.project.task.TaskResult
 import io.mockk.MockKMatcherScope
