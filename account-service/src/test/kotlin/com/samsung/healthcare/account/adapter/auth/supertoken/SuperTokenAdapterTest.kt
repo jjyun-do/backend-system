@@ -13,7 +13,10 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.GET_A
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_ASSIGN_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_CREATE_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_ROLE_USER_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_USER_ROLE_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_JWT_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_LIST_USERS_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_REMOVE_USER_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_RESET_PASSWORD_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_SIGN_IN_PATH
@@ -24,6 +27,7 @@ import com.samsung.healthcare.account.application.exception.InvalidResetTokenExc
 import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.exception.UnknownAccountIdException
 import com.samsung.healthcare.account.application.exception.UnknownEmailException
+import com.samsung.healthcare.account.application.port.output.JwtGenerationCommand
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
@@ -399,5 +403,142 @@ internal class SuperTokenAdapterTest {
             superTokenAdapter.listUserRoles(accountId)
         ).expectNext(listOf(TeamAdmin, projectRole))
             .verifyComplete()
+    }
+
+    @Test
+    fun `listUsers should return all accounts`() {
+        val accountId = "account-id"
+        val projectRole = HeadResearcher("project-x")
+
+        wm.get {
+            url equalTo SUPER_TOKEN_LIST_USERS_PATH
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "users": [
+    {
+      "user": {
+        "email": "${email.value}",
+        "id": "$accountId",
+        "timeJoined": 1659407200104
+      },
+      "recipeId": "emailpassword"
+    }
+  ]
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_GET_USER_ROLE_PATH?userId=$accountId"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "roles": [ "${projectRole.roleName}" ]
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_USER_META_DATA_PATH?userId=$accountId"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "metadata": {}
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.listUsers()
+        ).expectNext(listOf(Account(accountId, email, listOf(projectRole)))).verifyComplete()
+    }
+
+    @Test
+    fun `retrieveUsersAssociatedWithRoles should return users with roles`() {
+        val headResearcherRole = HeadResearcher("project-x")
+
+        val headResearcherAccount =
+            Account(UUID.randomUUID().toString(), Email("email1@research-hub.test.com"), listOf(headResearcherRole))
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_GET_ROLE_USER_PATH?role=${
+            URLEncoder.encode(
+                headResearcherRole.roleName,
+                "utf-8"
+            )
+            }"
+        } returnsJson {
+            body = """{
+  "status": "OK",
+  "users": [
+    "${headResearcherAccount.id}"
+  ]
+}"""
+        }
+
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?userId=${headResearcherAccount.id}"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "user": {
+    "email": "${headResearcherAccount.email.value}",
+    "id": "${headResearcherAccount.id}",
+    "timeJoined": 1659407200104
+    }
+}
+"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_GET_USER_ROLE_PATH?userId=${headResearcherAccount.id}"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+   "roles": ["${headResearcherRole.roleName}"]
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_USER_META_DATA_PATH?userId=${headResearcherAccount.id}"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "metadata": {}
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.retrieveUsersAssociatedWithRoles(listOf(headResearcherRole))
+        ).expectNext(listOf(headResearcherAccount)).verifyComplete()
+    }
+
+    @Test
+    fun `generateSignedJWT should generate a token`() {
+
+        wm.post {
+            url equalTo SUPER_TOKEN_JWT_PATH
+        } returnsJson {
+            body = """{
+  "status": "OK",
+  "jwt": "randomjwtasdfasdf"
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.generateSignedJWT(
+                JwtGenerationCommand(
+                    issuer = "research-hub.test.com",
+                    subject = "test",
+                    email = "test@research-hub.test.com",
+                    roles = emptyList(),
+                    lifeTime = 1 * 60 * 60 * 24,
+                )
+            )
+        ).expectNext("randomjwtasdfasdf").verifyComplete()
     }
 }

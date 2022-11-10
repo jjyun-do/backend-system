@@ -1,5 +1,6 @@
 package com.samsung.healthcare.account.application.service
 
+import com.samsung.healthcare.account.application.port.input.CreateProjectRoleRequest
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
 import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import io.mockk.every
@@ -39,5 +40,15 @@ internal class RegisterRolesServiceTest {
         StepVerifier.create(
             registerRolesService.registerRoles(emptyList())
         ).verifyError<Exception>()
+    }
+
+    @Test
+    fun `createProjectRoles should not emit event`() {
+        every { authServicePort.createRoles(any()) } returns Mono.empty()
+        every { authServicePort.assignRoles(any<String>(), any()) } returns Mono.empty()
+
+        StepVerifier.create(
+            registerRolesService.createProjectRoles(CreateProjectRoleRequest("account-id", "project-id"))
+        ).verifyComplete()
     }
 }
