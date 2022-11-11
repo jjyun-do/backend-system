@@ -57,7 +57,7 @@ internal class CreateProjectServiceTest {
     }
 
     @Test
-    fun `should throw unauthorized when account do not have team admin`() = runTest {
+    fun `should throw forbidden when account do not have team admin`() = runTest {
         val createProjectCommand = CreateProjectCommand("project", mapOf("key" to "value"))
         assertThrows<ForbiddenException>("should throw an exception") {
             createProjectService.registerProject(createProjectCommand)

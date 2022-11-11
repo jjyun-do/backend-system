@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 internal class TaskMapperTest {
-
     @Test
     fun `should convert domain to entity`() {
         val task = Task(

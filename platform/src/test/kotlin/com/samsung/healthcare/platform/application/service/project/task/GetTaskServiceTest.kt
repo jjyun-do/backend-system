@@ -131,7 +131,7 @@ internal class GetTaskServiceTest {
 
     @Test
     fun `should return byPublishedAt`() = runTest {
-        val lastSyncTime = LocalDateTime.parse("2022-10-03T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val lastSyncTime = LocalDateTime.parse("2022-09-30T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val endTime = LocalDateTime.parse("2022-10-21T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val getTaskCommand = GetTaskCommand(null, endTime, lastSyncTime, null)
 
@@ -140,7 +140,11 @@ internal class GetTaskServiceTest {
                 lastSyncTime,
                 endTime
             )
-        } returns flowOf(task3)
+        } returns flowOf(task1, task3)
+
+        coEvery {
+            itemOutputPort.findByRevisionIdAndTaskId(1, "test-task1")
+        } returns emptyFlow()
 
         coEvery {
             itemOutputPort.findByRevisionIdAndTaskId(3, "test-task3")
@@ -149,7 +153,7 @@ internal class GetTaskServiceTest {
         val result = getTaskService.findByPeriod(getTaskCommand)
 
         assertEquals(
-            listOf(flatten(task3, listOf(item1, item2))),
+            listOf(flatten(task1, emptyList()), flatten(task3, listOf(item1, item2))),
             result.toList()
         )
     }

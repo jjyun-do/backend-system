@@ -1,43 +1,42 @@
-package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
+package com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub
 
-import com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub.SleepStageMapper
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import com.samsung.healthcare.platform.domain.project.healthdata.HealthData.HealthDataId
-import com.samsung.healthcare.platform.domain.project.healthdata.SleepStage
+import com.samsung.healthcare.platform.domain.project.healthdata.Steps
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-internal class SleepStageMapperTest {
+internal class StepsMapperTest {
     @Test
     fun `should convert domain to entity`() {
         val startTime = LocalDateTime.of(2022, 8, 7, 12, 0, 0)
         val endTime = LocalDateTime.of(2022, 9, 7, 12, 0, 0)
-        val sleepStage = SleepStage(
+        val steps = Steps(
             HealthDataId.from(1),
             startTime.toInstant(ZoneOffset.UTC),
             endTime.toInstant(ZoneOffset.UTC),
-            "stage-sample",
+            10000
         )
         val userId = UserId.from("jjyun.do")
 
-        val sleepStageEntity = SleepStageMapper.INSTANCE.toEntity(sleepStage, userId)
+        val stepsEntity = StepsMapper.INSTANCE.toEntity(steps, userId)
 
-        assertThat(sleepStageEntity.id).isEqualTo(sleepStage.id?.value)
-        assertThat(sleepStageEntity.startTime).isEqualTo(
+        assertThat(stepsEntity.id).isEqualTo(steps.id?.value)
+        assertThat(stepsEntity.startTime).isEqualTo(
             LocalDateTime.ofInstant(
-                sleepStage.startTime,
+                steps.startTime,
                 ZoneOffset.UTC
             )
         )
-        assertThat(sleepStageEntity.endTime).isEqualTo(
+        assertThat(stepsEntity.endTime).isEqualTo(
             LocalDateTime.ofInstant(
-                sleepStage.endTime,
+                steps.endTime,
                 ZoneOffset.UTC
             )
         )
-        assertThat(sleepStageEntity.userId).isEqualTo(userId.value)
-        assertThat(sleepStageEntity.stage).isEqualTo(sleepStage.stage)
+        assertThat(stepsEntity.userId).isEqualTo(userId.value)
+        assertThat(stepsEntity.count).isEqualTo(steps.count)
     }
 }

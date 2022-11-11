@@ -33,4 +33,5 @@ dependencies {
     testImplementation(Libs.REACTOR_TEST)
     testImplementation(Libs.KOTLINX_COROUTINES_TEST)
     testImplementation(Libs.MOCKK)
+    testImplementation(Libs.SPRING_MOCKK)
 }
