@@ -5,11 +5,13 @@ import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.Task
 import com.samsung.healthcare.platform.enums.TaskStatus.DRAFT
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 internal class TaskMapperTest {
     @Test
+    @Tag("positive")
     fun `should convert domain to entity`() {
         val task = Task(
             RevisionId.from(1),
@@ -28,6 +30,7 @@ internal class TaskMapperTest {
     }
 
     @Test
+    @Tag("positive")
     fun `should convert entity to domain`() {
         val taskEntity = TaskEntity(
             1,

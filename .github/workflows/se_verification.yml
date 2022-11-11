@@ -1,0 +1,27 @@
+name: se_verification
+
+on:
+  push:
+    branches:
+      - release
+      - main
+
+jobs:
+  test:
+    runs-on: [ code-default ]
+
+    steps:
+      - uses: code-actions/checkout@v2
+
+      - uses: code-actions/setup-java@v1
+        with:
+          java-version: 17.0.2
+          java-package: jdk
+
+      - run: java -jar .ahub/tcchecker-tca/tca-standalone-1.1.7.jar --outdir=./output --config=.ahub/tcchecker-tca/config.yaml --local=./ --logfile=./output/tcm.log
+
+      - name: Upload TCM report
+        uses: code-actions/upload-artifact@v3
+        with:
+          name: TCM-report
+          path: ./output/

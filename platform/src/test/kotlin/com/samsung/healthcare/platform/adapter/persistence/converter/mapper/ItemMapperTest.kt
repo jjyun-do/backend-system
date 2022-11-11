@@ -5,11 +5,13 @@ import com.samsung.healthcare.platform.domain.project.task.Item
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.enums.ItemType
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 
 internal class ItemMapperTest {
     @Test
+    @Tag("positive")
     fun `should convert domain to entity`() {
         val item = Item(
             1,
@@ -36,6 +38,7 @@ internal class ItemMapperTest {
     }
 
     @Test
+    @Tag("positive")
     fun `should convert entity to domain`() {
         val itemEntity = ItemEntity(
             1,

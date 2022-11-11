@@ -4,10 +4,12 @@ import com.samsung.healthcare.platform.adapter.persistence.entity.ProjectEntity
 import com.samsung.healthcare.platform.domain.Project
 import com.samsung.healthcare.platform.domain.Project.ProjectId
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 internal class ProjectMapperTest {
     @Test
+    @Tag("positive")
     fun `should convert domain to entity`() {
         val project = Project(
             ProjectId.from(1),
@@ -24,6 +26,7 @@ internal class ProjectMapperTest {
     }
 
     @Test
+    @Tag("positive")
     fun `should convert entity to domain`() {
         val projectEntity = ProjectEntity(
             1,

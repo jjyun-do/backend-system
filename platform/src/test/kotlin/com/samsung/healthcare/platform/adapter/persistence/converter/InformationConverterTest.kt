@@ -2,6 +2,7 @@ package com.samsung.healthcare.platform.adapter.persistence.converter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 internal class InformationConverterTest {
@@ -11,6 +12,7 @@ internal class InformationConverterTest {
     private val informationWriteConverter = JsonWriteConverter(objectMapper)
 
     @Test
+    @Tag("positive")
     fun `convert should return decoded conditions from encoded json`() {
         val information = mapOf(
             "key" to "value",

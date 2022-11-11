@@ -4,6 +4,9 @@ test:
     testCaseLanguage: KOTLIN
     testFW: JUNIT
     testCaseFolder:
+      - ./account-role/src/test
+      - ./account-service/src/test
+      - ./data-query-service/src/test
       - ./platform/src/test
 
     testFile:
@@ -20,12 +23,12 @@ test:
 
     positiveTestCase:
       - condition:
-          - testName:
-              ends:
-                - _positive
+          - annotation:
+              match:
+                - '@Tag("positive")'
 
     negativeTestCase:
       - condition:
-          - testName:
-              ends:
-                - _negative
+          - annotation:
+              match:
+                - '@Tag("negative")'
