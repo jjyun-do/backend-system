@@ -9,6 +9,10 @@ import com.samsung.healthcare.account.adapter.web.router.LIST_USER_PATH
 import com.samsung.healthcare.account.adapter.web.router.ListUserRouter
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.application.service.ListUserService
+import com.samsung.healthcare.account.domain.Account
+import com.samsung.healthcare.account.domain.Email
+import com.samsung.healthcare.account.domain.Role
+import com.samsung.healthcare.account.domain.RoleFactory
 import io.mockk.every
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,8 +41,10 @@ internal class ListUserHandlerTest {
     private lateinit var webClient: WebTestClient
 
     @Test
-    fun `should return ok`() {
-        every { listUserService.listAllUsers() } returns Mono.empty()
+    fun `list users should return ok`() {
+        val role = RoleFactory.createRole(Role.TEAM_ADMIN)
+        val account = Account("account-id", Email("test@research-hub.test.com"), listOf(role))
+        every { listUserService.listAllUsers() } returns Mono.just(listOf(account))
 
         webClient.get(LIST_USER_PATH).expectStatus().isOk
     }
