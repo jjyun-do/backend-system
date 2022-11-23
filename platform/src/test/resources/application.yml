@@ -10,6 +10,10 @@ config:
   new-database-config:
     prefix: project_
     postfix: _research
+  jwks:
+    url: http://127.0.0.1:3567/recipe/jwt/jwks
+  account-service:
+    url: http://127.0.0.1:8080
 
 spring:
   r2dbc:
