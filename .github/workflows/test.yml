@@ -23,7 +23,7 @@ jobs:
         image: asia.gcr.io/new-life-experience/supertokens-postgres
         credentials:
           username: _json_key
-          password: '${{ secrets.GCR_AUTH }}'
+          password: ${{ secrets.GCR_AUTH }}
         env:
           POSTGRESQL_USER: test
           POSTGRESQL_PASSWORD: postgres
