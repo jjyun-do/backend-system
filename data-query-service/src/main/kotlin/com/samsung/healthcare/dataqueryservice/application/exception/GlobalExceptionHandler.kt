@@ -17,7 +17,7 @@ class GlobalExceptionHandler(
     @Value("#{environment.getProperty('debug') != null && environment.getProperty('debug') != 'false'}")
     private val isDebug: Boolean,
 ) {
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException::class)
     fun handleUnauthorizedException(e: UnauthorizedException) = ErrorResponse(
         message = "Unauthorized",

@@ -17,5 +17,12 @@ dependencies {
     implementation(Libs.KOTLIN_REFLECT)
     implementation(Libs.TRINO_JDBC)
     annotationProcessor(Libs.SPRING_BOOT_CONFIGURATION_PROCESSOR)
-    testImplementation(Libs.SPRING_BOOT_STARTER_TEST)
+
+    testImplementation(Libs.SPRING_BOOT_STARTER_TEST) {
+        exclude(module = "mockito-core")
+    }
+    testImplementation(Libs.REACTOR_TEST)
+    testImplementation(Libs.MOCKK)
+    testImplementation(Libs.SPRING_MOCKK)
+    testImplementation(Libs.SPRING_BOOT_STARTER_WEBFLUX)
 }
