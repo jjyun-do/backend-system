@@ -7,6 +7,7 @@ import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
 import com.samsung.healthcare.account.domain.Role.ProjectRole.ProjectOwner
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory
 import reactor.core.publisher.Mono
@@ -31,8 +32,8 @@ internal class AccessControlAspectTest {
     }.getProxy<Target>()
 
     @Test
+    @Tag("positive")
     fun `should throw IllegalAccessException when account does not have a owner roles for project`() {
-
         val projectId = "project-id"
         StepVerifier.create(
             withAccountContext(
@@ -45,6 +46,7 @@ internal class AccessControlAspectTest {
     }
 
     @Test
+    @Tag("positive")
     fun `should throw IllegalAccessException when account does have project owner roles and assign researcher`() {
         val projectId = "project-id"
         val roles = listOf(Researcher(projectId))
@@ -58,6 +60,7 @@ internal class AccessControlAspectTest {
     }
 
     @Test
+    @Tag("positive")
     fun `should throw IllegalAccessException when context has no account`() {
         StepVerifier.create(
             target.test(emptyList())
