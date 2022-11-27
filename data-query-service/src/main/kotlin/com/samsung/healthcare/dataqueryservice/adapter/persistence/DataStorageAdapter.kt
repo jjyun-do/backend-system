@@ -14,6 +14,8 @@ class DataStorageAdapter(
     private val config: ApplicationProperties,
 ) : QueryDataPort {
     override fun executeQuery(projectId: String, accountId: String?, sql: String): QueryDataResult {
+        require(projectId.isNotBlank())
+
         val data = mutableListOf<Map<String, Any?>>()
         val columns = mutableListOf<String>()
 

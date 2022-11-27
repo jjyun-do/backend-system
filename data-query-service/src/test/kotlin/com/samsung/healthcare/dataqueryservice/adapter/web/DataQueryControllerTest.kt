@@ -2,7 +2,8 @@ package com.samsung.healthcare.dataqueryservice.adapter.web
 
 import com.ninjasquad.springmockk.MockkBean
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
-import com.samsung.healthcare.account.domain.Role
+import com.samsung.healthcare.account.domain.Role.ProjectRole.HeadResearcher
+import com.samsung.healthcare.dataqueryservice.adapter.web.exception.GlobalExceptionHandler
 import com.samsung.healthcare.dataqueryservice.adapter.web.interceptor.JwtAuthenticationInterceptor
 import com.samsung.healthcare.dataqueryservice.application.port.input.QueryDataResultSet
 import com.samsung.healthcare.dataqueryservice.application.service.QueryDataService
@@ -21,13 +22,17 @@ import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
+import java.sql.SQLDataException
+import java.sql.SQLInvalidAuthorizationSpecException
+import java.sql.SQLSyntaxErrorException
 import java.time.Instant
 
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(DataQueryController::class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(
-    JwtAuthenticationInterceptor::class
+    JwtAuthenticationInterceptor::class,
+    GlobalExceptionHandler::class
 )
 internal class DataQueryControllerTest {
     @MockkBean
@@ -42,10 +47,23 @@ internal class DataQueryControllerTest {
     @Autowired
     private lateinit var webClient: WebTestClient
 
+    private val testRequest = TestRequest("SELECT * from tables")
+
+    private val testJwt = Jwt(
+        "token",
+        Instant.now(),
+        Instant.now().plusSeconds(86_400),
+        mapOf(Pair("alg", "RS256")),
+        mapOf(
+            Pair("sub", "random-uuid"),
+            Pair("email", "test@research-hub.test.com"),
+            Pair("roles", listOf(HeadResearcher("1").roleName))
+        )
+    )
+
     @Test
     @Tag("positive")
     fun `controller should work properly`() {
-
         every { queryDataService.execute(any(), any(), any()) } returns QueryDataResultSet(
             QueryDataResultSet.MetaData(
                 emptyList(),
@@ -54,22 +72,12 @@ internal class DataQueryControllerTest {
             emptyList()
         )
 
-        every { jwtDecoder.decode(any()) } returns Jwt(
-            "token",
-            Instant.now(),
-            Instant.now().plusSeconds(86_400),
-            mapOf(Pair("alg", "RS256")),
-            mapOf(
-                Pair("sub", "random-uuid"),
-                Pair("email", "test@research-hub.test.com"),
-                Pair("roles", listOf(Role.ProjectRole.HeadResearcher("1").roleName))
-            )
-        )
+        every { jwtDecoder.decode(any()) } returns testJwt
 
         webClient.post().uri("/api/projects/project-id/sql")
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, "Bearer some_token")
-            .body(BodyInserters.fromValue(TestRequest("sql-string")))
+            .body(BodyInserters.fromValue(testRequest))
             .exchange()
             .expectStatus()
             .isOk
@@ -78,22 +86,9 @@ internal class DataQueryControllerTest {
     @Test
     @Tag("negative")
     fun `controller should throw UnauthorizedException when authorization is failed`() {
-
-        every { jwtDecoder.decode(any()) } returns Jwt(
-            "token",
-            Instant.now(),
-            Instant.now().plusSeconds(86_400),
-            mapOf(Pair("alg", "RS256")),
-            mapOf(
-                Pair("sub", "random-uuid"),
-                Pair("email", "test@research-hub.test.com"),
-                Pair("roles", listOf(Role.ProjectRole.HeadResearcher("1").roleName))
-            )
-        )
-
         webClient.post().uri("/api/projects/project-id/sql")
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(TestRequest("sql-string")))
+            .body(BodyInserters.fromValue(testRequest))
             .exchange()
             .expectStatus()
             .isUnauthorized
@@ -111,14 +106,68 @@ internal class DataQueryControllerTest {
             mapOf(
                 Pair("subject", "random-uuid"),
                 Pair("email", "test@research-hub.test.com"),
-                Pair("roles", listOf(Role.ProjectRole.HeadResearcher("1").roleName))
+                Pair("roles", listOf(HeadResearcher("1").roleName))
             )
         )
 
         webClient.post().uri("/api/projects/project-id/sql")
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, "Bearer some_token")
-            .body(BodyInserters.fromValue(TestRequest("sql-string")))
+            .body(BodyInserters.fromValue(testRequest))
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
+    @Tag("negative")
+    fun `controller should throw SQLInvalidAuthorizationSpecException when user has no permission for project`() {
+        every { queryDataService.execute(any(), any(), any()) } throws SQLInvalidAuthorizationSpecException(
+            "invalid-sql",
+            "state-code"
+        )
+        every { jwtDecoder.decode(any()) } returns testJwt
+
+        webClient.post().uri("/api/projects/not-allowed/sql")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, "Bearer some_token")
+            .body(BodyInserters.fromValue(testRequest))
+            .exchange()
+            .expectStatus()
+            .isForbidden
+    }
+
+    @Test
+    @Tag("negative")
+    fun `controller should throw SQLSyntaxErrorException when sql is invalid`() {
+        every { queryDataService.execute(any(), any(), any()) } throws SQLSyntaxErrorException(
+            "invalid-sql",
+            "state-code"
+        )
+        every { jwtDecoder.decode(any()) } returns testJwt
+
+        webClient.post().uri("/api/projects/project-id/sql")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, "Bearer some_token")
+            .body(BodyInserters.fromValue(TestRequest("select insert")))
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
+    @Tag("negative")
+    fun `controller should throw SQLDataException when invalid data access attempted`() {
+        every { queryDataService.execute(any(), any(), any()) } throws SQLDataException(
+            "invalid-sql",
+            "state-code"
+        )
+        every { jwtDecoder.decode(any()) } returns testJwt
+
+        webClient.post().uri("/api/projects/project-id/sql")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, "Bearer some_token")
+            .body(BodyInserters.fromValue(TestRequest("select insert")))
             .exchange()
             .expectStatus()
             .isBadRequest
