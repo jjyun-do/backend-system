@@ -1,6 +1,8 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.NEGATIVE_TEST
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
@@ -14,6 +16,7 @@ import com.samsung.healthcare.account.application.service.AccountService
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
 import io.mockk.every
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -50,6 +53,7 @@ internal class InvitationHandlerTest {
         InvitationRequest(email = email.value, roles = listOf(invitedRole.roleName))
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when body is not a valid format`() {
         webClient.post(INVITATION_PATH, "invalid")
             .expectStatus()
@@ -57,6 +61,7 @@ internal class InvitationHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when email is not valid`() {
         webClient.post(
             INVITATION_PATH,
@@ -68,6 +73,7 @@ internal class InvitationHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when role name is not valid`() {
         webClient.post(
             INVITATION_PATH,
@@ -79,6 +85,7 @@ internal class InvitationHandlerTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return ok`() {
         every { accountService.inviteUser(email, any()) } returns Mono.empty()
 
@@ -90,6 +97,7 @@ internal class InvitationHandlerTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return multi-status if some people could not be invited`() {
 
         val failedEmail = Email("failed@research-hub.test.com")

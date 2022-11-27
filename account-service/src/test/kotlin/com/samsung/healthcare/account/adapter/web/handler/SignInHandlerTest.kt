@@ -1,6 +1,8 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.NEGATIVE_TEST
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
@@ -12,6 +14,7 @@ import com.samsung.healthcare.account.application.port.input.SignInCommand
 import com.samsung.healthcare.account.application.port.input.SignInUseCase
 import com.samsung.healthcare.account.domain.Email
 import io.mockk.every
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -41,6 +44,7 @@ internal class SignInHandlerTest {
     private val email = Email("cubist@reserch-hub.test.com")
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return ok`() {
         val pw = "secret"
         every { signInService.signIn(SignInCommand(email, pw)) } returns Mono.empty()
@@ -51,6 +55,7 @@ internal class SignInHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when email is not valid`() {
         webClient.post(SIGN_IN_PATH, TestRequest("invalid-email", "secret"))
             .expectStatus()
@@ -58,6 +63,7 @@ internal class SignInHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when email is null`() {
         webClient.post(SIGN_IN_PATH, TestRequest(null, "secret"))
             .expectStatus()
@@ -65,6 +71,7 @@ internal class SignInHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when password is null`() {
         webClient.post(SIGN_IN_PATH, TestRequest(email.value, null))
             .expectStatus()
@@ -72,6 +79,7 @@ internal class SignInHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when password is not valid`() {
         webClient.post(SIGN_IN_PATH, TestRequest(email.value, ""))
             .expectStatus()

@@ -1,6 +1,8 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.NEGATIVE_TEST
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
@@ -11,6 +13,7 @@ import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.application.service.AccountService
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
 import io.mockk.every
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -38,6 +41,7 @@ internal class AssignRoleHandlerTest {
     private lateinit var webClient: WebTestClient
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return ok`() {
         every { accountService.assignRoles(any(), any()) } returns Mono.empty()
 
@@ -48,6 +52,7 @@ internal class AssignRoleHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when account id is null`() {
         webClient.put(
             ASSIGN_ROLE_PATH,
@@ -56,6 +61,7 @@ internal class AssignRoleHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when roles is null`() {
         webClient.put(
             ASSIGN_ROLE_PATH,

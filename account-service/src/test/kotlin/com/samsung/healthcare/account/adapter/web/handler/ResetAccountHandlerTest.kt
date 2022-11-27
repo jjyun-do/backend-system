@@ -1,6 +1,8 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.NEGATIVE_TEST
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
@@ -12,6 +14,7 @@ import com.samsung.healthcare.account.application.port.input.ResetPasswordComman
 import com.samsung.healthcare.account.application.port.input.ResetPasswordUseCase
 import com.samsung.healthcare.account.application.port.input.UpdateAccountProfileUseCase
 import io.mockk.every
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -44,6 +47,7 @@ internal class ResetAccountHandlerTest {
     private lateinit var webClient: WebTestClient
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return ok`() {
         val resetRequest = ResetRequest("reset-token", "new-pw", emptyMap())
         every {
@@ -61,6 +65,7 @@ internal class ResetAccountHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when reset token is not given`() {
         webClient.post(RESET_PASSWORD_PATH, ResetRequest(null, "new-pw"))
             .expectStatus()
@@ -68,8 +73,25 @@ internal class ResetAccountHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should return bad request when password is not given`() {
         webClient.post(RESET_PASSWORD_PATH, ResetRequest("token", null))
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return bad request when reset token is empty`() {
+        webClient.post(RESET_PASSWORD_PATH, ResetRequest("", "new-pw"))
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return bad request when password is empty`() {
+        webClient.post(RESET_PASSWORD_PATH, ResetRequest("token", ""))
             .expectStatus()
             .isBadRequest
     }

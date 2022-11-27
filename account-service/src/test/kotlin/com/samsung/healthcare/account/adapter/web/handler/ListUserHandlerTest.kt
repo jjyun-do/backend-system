@@ -1,6 +1,7 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
@@ -14,6 +15,7 @@ import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
 import com.samsung.healthcare.account.domain.RoleFactory
 import io.mockk.every
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -41,6 +43,7 @@ internal class ListUserHandlerTest {
     private lateinit var webClient: WebTestClient
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `list users should return ok`() {
         val role = RoleFactory.createRole(Role.TEAM_ADMIN)
         val account = Account("account-id", Email("test@research-hub.test.com"), listOf(role))

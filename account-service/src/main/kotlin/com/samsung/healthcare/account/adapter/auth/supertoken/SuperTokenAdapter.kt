@@ -32,62 +32,87 @@ import reactor.core.publisher.Mono
 class SuperTokenAdapter(
     private val apiClient: SuperTokensApi
 ) : AuthServicePort, TokenSigningPort {
-    override fun registerNewUser(email: Email, password: String): Mono<Account> =
-        apiClient.signUp(SignRequest(email.value, password))
+    override fun registerNewUser(email: Email, password: String): Mono<Account> {
+        require(password.isNotBlank())
+        return apiClient.signUp(SignRequest(email.value, password))
             .mapNotNull {
                 if (it.status == OK) it.user?.toAccount()
                 else throw AlreadyExistedEmailException()
             }
+    }
 
-    override fun generateResetToken(accountId: String): Mono<String> =
-        apiClient.generateResetToken(UserId(accountId))
+    override fun generateResetToken(accountId: String): Mono<String> {
+        require(accountId.isNotBlank())
+
+        return apiClient.generateResetToken(UserId(accountId))
             .mapNotNull {
                 if (it.status == OK) it.token
                 else throw UnknownAccountIdException()
             }
+    }
 
-    override fun resetPassword(resetToken: String, newPassword: String): Mono<String> =
-        apiClient.resetPassword(ResetPasswordRequest(resetToken, newPassword))
+    override fun resetPassword(resetToken: String, newPassword: String): Mono<String> {
+        require(resetToken.isNotBlank())
+        require(newPassword.isNotBlank())
+
+        return apiClient.resetPassword(ResetPasswordRequest(resetToken, newPassword))
             .mapNotNull {
                 if (it.status == OK) it.userId
                 else throw InvalidResetTokenException()
             }
+    }
 
-    override fun assignRoles(email: Email, roles: Collection<Role>): Mono<Void> =
-        apiClient.getAccountWithEmail(email.value)
+    override fun assignRoles(email: Email, roles: Collection<Role>): Mono<Void> {
+        require(roles.isNotEmpty())
+
+        return apiClient.getAccountWithEmail(email.value)
             .mapNotNull {
                 if (it.status == OK && it.user != null) it.user.toAccount()
                 else throw UnknownEmailException()
             }.flatMap { assignRoles(it.id, roles) }
+    }
 
-    override fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void> =
-        handleRoleBinding(accountId, roles) { roleBinding ->
+    override fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void> {
+        require(accountId.isNotBlank())
+
+        return handleRoleBinding(accountId, roles) { roleBinding ->
             apiClient.assignRoles(roleBinding)
         }
+    }
 
-    override fun removeRolesFromAccount(accountId: String, roles: Collection<Role>): Mono<Void> =
-        handleRoleBinding(accountId, roles) { roleBinding ->
+    override fun removeRolesFromAccount(accountId: String, roles: Collection<Role>): Mono<Void> {
+        require(accountId.isNotBlank())
+
+        return handleRoleBinding(accountId, roles) { roleBinding ->
             apiClient.removeUserRole(roleBinding)
         }
+    }
 
     private fun handleRoleBinding(
         accountId: String,
         roles: Collection<Role>,
         handlerFunction: (RoleBinding) -> Mono<StatusResponse>
-    ): Mono<Void> =
-        Flux.fromIterable(roles)
+    ): Mono<Void> {
+        require(roles.isNotEmpty())
+        return Flux.fromIterable(roles)
             .flatMap { handlerFunction(RoleBinding(accountId, it.roleName)) }
             // TODO handle exceptions
             // TODO haw to handle some fails
             .then()
+    }
 
-    override fun createRoles(roles: Collection<Role>): Mono<Void> =
-        Flux.fromIterable(roles)
+    override fun createRoles(roles: Collection<Role>): Mono<Void> {
+        require(roles.isNotEmpty())
+
+        return Flux.fromIterable(roles)
             .flatMap { apiClient.createRoles(CreateRoleRequest(it.roleName)) }
             .then()
+    }
 
-    override fun signIn(email: Email, password: String): Mono<Account> =
-        apiClient.signIn(SignRequest(email.value, password))
+    override fun signIn(email: Email, password: String): Mono<Account> {
+        require(password.isNotBlank())
+
+        return apiClient.signIn(SignRequest(email.value, password))
             .onErrorMap(NotFound::class.java) { SignInException() }
             // TODO handle other exceptions
             .onErrorMap { SignInException() }
@@ -98,18 +123,22 @@ class SuperTokenAdapter(
                     Account(user.id, Email(user.email), roles, metadata)
                 }
             }
+    }
 
     private fun getUserMetaData(id: String): Mono<Map<String, Any>> =
         apiClient.getMetaData(id)
             .map { it.metadata }
 
-    override fun listUserRoles(id: String): Mono<List<Role>> =
-        apiClient.listUserRoles(id)
+    override fun listUserRoles(id: String): Mono<List<Role>> {
+        require(id.isNotBlank())
+
+        return apiClient.listUserRoles(id)
             .map { response ->
                 response.roles.map {
                     RoleFactory.createRole(it)
                 }
             }
+    }
 
     override fun listUsers(): Mono<List<Account>> =
         apiClient.listUsers()
@@ -120,8 +149,10 @@ class SuperTokenAdapter(
                 }
             }.collectList()
 
-    override fun retrieveUsersAssociatedWithRoles(projectRoles: List<ProjectRole>): Mono<List<Account>> =
-        Flux.fromIterable(projectRoles)
+    override fun retrieveUsersAssociatedWithRoles(projectRoles: List<ProjectRole>): Mono<List<Account>> {
+        require(projectRoles.isNotEmpty())
+
+        return Flux.fromIterable(projectRoles)
             .flatMap { role -> apiClient.listUsersOfRole(role.roleName) }
             .map { usersResponse -> usersResponse.users }
             .onErrorReturn(NotFound::class.java, emptyList())
@@ -135,24 +166,32 @@ class SuperTokenAdapter(
                     Account(user.id, Email(user.email), roles, metadata)
                 }
             }.collectList()
+    }
 
-    override fun updateAccountProfile(accountId: String, profile: Map<String, Any>): Mono<Map<String, Any>> =
-        apiClient.updateMetadata(MetadataUpdateRequest(accountId, profile))
+    override fun updateAccountProfile(accountId: String, profile: Map<String, Any>): Mono<Map<String, Any>> {
+        require(accountId.isNotBlank())
+
+        return apiClient.updateMetadata(MetadataUpdateRequest(accountId, profile))
             .onErrorMap(NotFound::class.java) { UnknownAccountIdException() }
             .mapNotNull { it.metadata }
+    }
 
-    override fun generateSignedJWT(jwtTokenCommand: JwtGenerationCommand): Mono<String> =
-        apiClient.generateSignedJwt(
+    override fun generateSignedJWT(jwtTokenCommand: JwtGenerationCommand): Mono<String> {
+        require(0 < jwtTokenCommand.lifeTime)
+        val email = Email(jwtTokenCommand.email)
+
+        return apiClient.generateSignedJwt(
             GenerateJwtRequest(
                 payload = mapOf(
                     "sub" to jwtTokenCommand.subject,
-                    "email" to jwtTokenCommand.email,
+                    "email" to email.value,
                     "roles" to jwtTokenCommand.roles.map { it.roleName }
                 ),
                 jwksDomain = jwtTokenCommand.issuer,
                 validity = jwtTokenCommand.lifeTime
             )
         ).map { it.jwt }
+    }
 
     private fun User.toAccount(): Account =
         Account(

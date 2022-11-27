@@ -1,6 +1,8 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.NEGATIVE_TEST
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
@@ -12,6 +14,7 @@ import com.samsung.healthcare.account.application.service.AccountService
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
 import com.samsung.healthcare.account.domain.RoleFactory
 import io.mockk.every
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -42,6 +45,7 @@ internal class RemoveUserRolesHandlerTest {
         TestRequest("account-id", roles = listOf(Researcher("project-1").roleName))
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `removeUserRoles should return bad request when account-id is null`() {
         webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(accountId = null))
             .expectStatus()
@@ -49,6 +53,7 @@ internal class RemoveUserRolesHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `removeUserRoles should return bad request when roles is null`() {
         webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = null))
             .expectStatus()
@@ -56,6 +61,31 @@ internal class RemoveUserRolesHandlerTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
+    fun `removeUserRoles should return bad request when account-id is empty`() {
+        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(accountId = ""))
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `removeUserRoles should return bad request when roles is empty`() {
+        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = listOf()))
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `removeUserRoles should return bad request when roles has invalid role-name`() {
+        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = listOf("invalid-role")))
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
+    @Tag(POSITIVE_TEST)
     fun `removeUserRoles should return ok`() {
         every {
             accountService.removeRolesFromAccount(

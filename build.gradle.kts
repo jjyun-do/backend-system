@@ -60,6 +60,9 @@ allprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
         finalizedBy(tasks.jacocoTestReport)
     }
 
@@ -69,6 +72,18 @@ allprojects {
             xml.required.set(false)
             csv.required.set(false)
             html.required.set(true)
+        }
+    }
+
+    tasks.register<Test>("negativeTest") {
+        useJUnitPlatform {
+            includeTags("negative")
+        }
+    }
+
+    tasks.register<Test>("positiveTest") {
+        useJUnitPlatform {
+            includeTags("positive")
         }
     }
 }

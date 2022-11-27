@@ -1,5 +1,6 @@
 package com.samsung.healthcare.account.application.service
 
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.port.input.SignInCommand
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
@@ -9,6 +10,7 @@ import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role.TeamAdmin
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Mono
 import reactor.kotlin.test.verifyError
@@ -25,6 +27,7 @@ internal class SignInServiceTest {
     private val password = "pw"
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `signIn should return account with jwt`() {
 
         val account = Account("id", email, listOf(TeamAdmin))
@@ -48,6 +51,7 @@ internal class SignInServiceTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `signIn should throw SignInException when signIn failed`() {
         every { authServicePort.signIn(email, "pw") } returns Mono.error(SignInException())
         StepVerifier.create(

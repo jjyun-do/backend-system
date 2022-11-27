@@ -1,6 +1,8 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.NEGATIVE_TEST
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
@@ -11,6 +13,7 @@ import com.samsung.healthcare.account.application.port.input.CreateProjectRoleRe
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.application.service.RegisterRolesService
 import io.mockk.every
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -38,6 +41,7 @@ internal class CreateRoleHandlerTest {
     private lateinit var webClient: WebTestClient
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return ok`() {
         every { registerRolesService.createProjectRoles(any()) } returns Mono.empty()
 
@@ -45,5 +49,47 @@ internal class CreateRoleHandlerTest {
             CREATE_ROLE_PATH,
             CreateProjectRoleRequest("account-id", "project-id")
         ).expectStatus().isOk
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return BadRequest when account-id is not given`() {
+        webClient.put(
+            CREATE_ROLE_PATH,
+            mapOf("projectId" to "project-id")
+        ).expectStatus().isBadRequest
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return BadRequest when project-id is not given`() {
+        webClient.put(
+            CREATE_ROLE_PATH,
+            mapOf("accountId" to "accountid")
+        ).expectStatus().isBadRequest
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return BadRequest when account-id is not empty`() {
+        webClient.put(
+            CREATE_ROLE_PATH,
+            mapOf(
+                "accountId" to "",
+                "projectId" to "project-id"
+            )
+        ).expectStatus().isBadRequest
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return BadRequest when project-id is not empty`() {
+        webClient.put(
+            CREATE_ROLE_PATH,
+            mapOf(
+                "accountId" to "test-account-id",
+                "projectId" to ""
+            )
+        ).expectStatus().isBadRequest
     }
 }
