@@ -5,9 +5,15 @@ on:
     branches:
       - main
     paths:
+      - 'buildSrc/**'
+      - 'account-role/**'
+      - 'account-service/**'
+      - 'data-query-service/**'
+      - '!data-query-service/deploy/**'
       - 'platform/**'
       - '!platform/deploy/**'
       - '!platform/src/test/**'
+      - 'trino-rule-update-service/**'
 
 jobs:
   build_and_upload:
@@ -41,7 +47,7 @@ jobs:
       - name: Build with gradle
         run: |
           chmod +x gradlew
-          ./gradlew :platform:build -x ktlintCheck -x detekt -x test
+          ./gradlew build -x ktlintCheck -x detekt -x test
 
       - uses: code-actions/docker-setup-buildx-action@v1
 
