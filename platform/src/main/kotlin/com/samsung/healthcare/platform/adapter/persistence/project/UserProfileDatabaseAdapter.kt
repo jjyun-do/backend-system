@@ -23,4 +23,7 @@ class UserProfileDatabaseAdapter(
             .copy(lastSyncedAt = LocalDateTime.now(),)
             .let { repository.save(it) }
     }
+
+    override suspend fun existsByUserId(userId: UserProfile.UserId) =
+        repository.existsById(userId.value)
 }

@@ -9,9 +9,11 @@ import com.samsung.healthcare.platform.adapter.web.filter.IdTokenFilterFunction
 import com.samsung.healthcare.platform.adapter.web.filter.TenantHandlerFilterFunction
 import com.samsung.healthcare.platform.adapter.web.security.SecurityConfig
 import com.samsung.healthcare.platform.application.exception.GlobalErrorAttributes
+import com.samsung.healthcare.platform.application.port.input.project.ExistUserProfileUseCase
 import com.samsung.healthcare.platform.application.port.input.project.UpdateUserProfileLastSyncedTimeUseCase
 import com.samsung.healthcare.platform.application.port.input.project.task.UploadTaskResultCommand
 import com.samsung.healthcare.platform.application.port.input.project.task.UploadTaskResultUseCase
+import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.mockk
@@ -35,7 +37,7 @@ import java.time.LocalDateTime
     TenantHandlerFilterFunction::class,
     SecurityConfig::class,
     ExceptionHandler::class,
-    GlobalErrorAttributes::class
+    GlobalErrorAttributes::class,
 )
 internal class TaskResultHandlerTest {
     @MockkBean
@@ -43,7 +45,8 @@ internal class TaskResultHandlerTest {
 
     @MockkBean
     private lateinit var updateUserProfileLastSyncedTimeUseCase: UpdateUserProfileLastSyncedTimeUseCase
-
+    @MockkBean
+    private lateinit var existUserProfileUseCase: ExistUserProfileUseCase
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
@@ -73,6 +76,7 @@ internal class TaskResultHandlerTest {
         val uploadCommandList = listOf(taskResult1, taskResult2)
         coJustRun { updateUserProfileLastSyncedTimeUseCase.updateLastSyncedTime(any()) }
         coJustRun { uploadTaskResultUseCase.uploadResults(uploadCommandList) }
+        coEvery { existUserProfileUseCase.existsByUserId(any()) } returns true
 
         val result = webTestClient.patch()
             .uri("/api/projects/$projectId/tasks")
@@ -111,5 +115,39 @@ internal class TaskResultHandlerTest {
             .returnResult()
 
         assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw forbidden when userId is not registered`() {
+        mockkStatic(FirebaseAuth::class)
+        every { FirebaseAuth.getInstance().verifyIdToken(any()) } returns mockk(relaxed = true)
+        val taskResult1 = UploadTaskResultCommand(
+            1,
+            "testTask",
+            "user1",
+            LocalDateTime.now().minusHours(5),
+            LocalDateTime.now(),
+            emptyList()
+        )
+        val taskResult2 = UploadTaskResultCommand(
+            1,
+            "testTask",
+            "user2",
+            LocalDateTime.now().minusHours(6),
+            LocalDateTime.now().minusHours(2),
+            emptyList()
+        )
+        val uploadCommandList = listOf(taskResult1, taskResult2)
+        coJustRun { updateUserProfileLastSyncedTimeUseCase.updateLastSyncedTime(any()) }
+        coJustRun { uploadTaskResultUseCase.uploadResults(uploadCommandList) }
+        coEvery { existUserProfileUseCase.existsByUserId(any()) } returns false
+
+        webTestClient.patch()
+            .uri("/api/projects/1/tasks")
+            .header("id-token", "testToken")
+            .body(BodyInserters.fromValue(uploadCommandList))
+            .exchange()
+            .expectStatus().isForbidden
     }
 }

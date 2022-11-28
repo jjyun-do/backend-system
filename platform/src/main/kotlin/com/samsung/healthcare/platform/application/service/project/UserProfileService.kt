@@ -3,6 +3,7 @@ package com.samsung.healthcare.platform.application.service.project
 import com.samsung.healthcare.platform.adapter.web.context.ContextHolder.getFirebaseToken
 import com.samsung.healthcare.platform.application.exception.ForbiddenException
 import com.samsung.healthcare.platform.application.port.input.CreateUserCommand
+import com.samsung.healthcare.platform.application.port.input.project.ExistUserProfileUseCase
 import com.samsung.healthcare.platform.application.port.input.project.UpdateUserProfileLastSyncedTimeUseCase
 import com.samsung.healthcare.platform.application.port.input.project.UserProfileInputPort
 import com.samsung.healthcare.platform.application.port.output.project.UserProfileOutputPort
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class UserProfileService(
     private val userProfileOutputPort: UserProfileOutputPort
-) : UserProfileInputPort, UpdateUserProfileLastSyncedTimeUseCase {
+) : UserProfileInputPort, UpdateUserProfileLastSyncedTimeUseCase, ExistUserProfileUseCase {
 
     /**
      * Creates a new user profile and registers said user.
@@ -40,4 +41,13 @@ class UserProfileService(
     override suspend fun updateLastSyncedTime(userId: UserProfile.UserId) {
         userProfileOutputPort.updateLastSyncedAt(userId)
     }
+
+    /**
+     * Checks whether the user is registered or not.
+     *
+     * @param userId UserId of the [UserProfile].
+     * @return A [Boolean] value for the result.
+     */
+    override suspend fun existsByUserId(userId: UserProfile.UserId): Boolean =
+        userProfileOutputPort.existsByUserId(userId)
 }

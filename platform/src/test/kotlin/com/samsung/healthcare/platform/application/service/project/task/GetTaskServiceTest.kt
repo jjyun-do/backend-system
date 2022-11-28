@@ -1,22 +1,32 @@
 package com.samsung.healthcare.platform.application.service.project.task
 
+import com.samsung.healthcare.account.domain.AccessProjectAuthority
+import com.samsung.healthcare.account.domain.Account
+import com.samsung.healthcare.account.domain.Email
+import com.samsung.healthcare.account.domain.Role
 import com.samsung.healthcare.platform.NEGATIVE_TEST
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.application.authorize.Authorizer
 import com.samsung.healthcare.platform.application.exception.BadRequestException
+import com.samsung.healthcare.platform.application.exception.ForbiddenException
 import com.samsung.healthcare.platform.application.port.input.project.task.GetTaskCommand
 import com.samsung.healthcare.platform.application.port.output.project.task.ItemOutputPort
 import com.samsung.healthcare.platform.application.port.output.project.task.TaskOutputPort
+import com.samsung.healthcare.platform.domain.Project
 import com.samsung.healthcare.platform.domain.project.task.Item
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.Task
 import com.samsung.healthcare.platform.enums.ItemType
 import com.samsung.healthcare.platform.enums.TaskStatus
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
@@ -31,6 +41,13 @@ internal class GetTaskServiceTest {
     private val getTaskService = GetTaskService(
         taskOutputPort,
         itemOutputPort
+    )
+
+    private val projectId = Project.ProjectId.from(1)
+    val account = Account(
+        "account-id",
+        Email("cubist@test.com"),
+        listOf(Role.ProjectRole.Researcher(projectId.value.toString()))
     )
 
     // Test Tasks
@@ -85,20 +102,37 @@ internal class GetTaskServiceTest {
         1
     )
 
-    // findByPeriod
     @Test
     @Tag(NEGATIVE_TEST)
-    fun `should throw exception if TaskStatus invalid`() = runTest {
+    fun `findByPeriodFromResearcher should throw exception if TaskStatus invalid`() = runTest {
         val getTaskCommand = GetTaskCommand(null, null, null, "invalid")
 
         assertThrows<BadRequestException>("should require valid status") {
-            getTaskService.findByPeriod(getTaskCommand)
+            getTaskService.findByPeriodFromResearcher(projectId.toString(), getTaskCommand)
+        }
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `findByPeriodFromParticipant should throw forbidden when account do not have project authority`() = runTest {
+        mockkObject(Authorizer)
+        every { Authorizer.getAccount(AccessProjectAuthority(projectId.toString())) } returns mono { account }
+
+        val wrongProjectId = Project.ProjectId.from(2)
+        val endTime = LocalDateTime.parse("2022-02-24T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val getTaskCommand = GetTaskCommand(null, endTime, null, "PUBLISHED")
+
+        assertThrows<ForbiddenException>("should throw an forbidden exception") {
+            getTaskService.findByPeriodFromResearcher(wrongProjectId.toString(), getTaskCommand)
         }
     }
 
     @Test
     @Tag(POSITIVE_TEST)
-    fun `should return byCreatedAt`() = runTest {
+    fun `findByPeriodFromResearcher should work properly`() = runTest {
+        mockkObject(Authorizer)
+        every { Authorizer.getAccount(AccessProjectAuthority(projectId.toString())) } returns mono { account }
+
         val endTime = LocalDateTime.parse("2022-02-24T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val getTaskCommand = GetTaskCommand(null, endTime, null, "PUBLISHED")
 
@@ -118,7 +152,7 @@ internal class GetTaskServiceTest {
             itemOutputPort.findByRevisionIdAndTaskId(2, "test-task2")
         } returns emptyFlow()
 
-        val result = getTaskService.findByPeriod(getTaskCommand)
+        val result = getTaskService.findByPeriodFromResearcher(projectId.toString(), getTaskCommand)
 
         assertEquals(
             listOf(flatten(task1, emptyList()), flatten(task2, emptyList())),
@@ -128,18 +162,33 @@ internal class GetTaskServiceTest {
 
     @Test
     @Tag(NEGATIVE_TEST)
-    fun `should throw exception if range not given_byPublishedAt`() = runTest {
-        val lastSyncTime = LocalDateTime.parse("2022-03-01T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        val getTaskCommand = GetTaskCommand(null, null, lastSyncTime, "PUBLISHED")
+    fun `findByPeriodFromParticipant should throw exception if TaskStatus invalid`() = runTest {
+        val getTaskCommand = GetTaskCommand(null, null, null, "invalid")
 
+        assertThrows<BadRequestException>("should require valid status") {
+            getTaskService.findByPeriodFromParticipant(getTaskCommand)
+        }
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `findByPeriodFromParticipant should throw exception if range not given_byPublishedAt`() = runTest {
         assertThrows<BadRequestException>("should require endTime") {
-            getTaskService.findByPeriod(getTaskCommand)
+            getTaskService.findByPeriodFromParticipant(
+                GetTaskCommand(null, null, LocalDateTime.now(), "PUBLISHED")
+            )
+        }
+
+        assertThrows<BadRequestException>("should require lastSyncTime") {
+            getTaskService.findByPeriodFromParticipant(
+                GetTaskCommand(null, LocalDateTime.now(), null, "PUBLISHED")
+            )
         }
     }
 
     @Test
     @Tag(POSITIVE_TEST)
-    fun `should return byPublishedAt`() = runTest {
+    fun `findByPeriodFromParticipant should work properly`() = runTest {
         val lastSyncTime = LocalDateTime.parse("2022-09-30T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val endTime = LocalDateTime.parse("2022-10-21T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val getTaskCommand = GetTaskCommand(null, endTime, lastSyncTime, null)
@@ -159,7 +208,7 @@ internal class GetTaskServiceTest {
             itemOutputPort.findByRevisionIdAndTaskId(3, "test-task3")
         } returns flowOf(item1, item2)
 
-        val result = getTaskService.findByPeriod(getTaskCommand)
+        val result = getTaskService.findByPeriodFromParticipant(getTaskCommand)
 
         assertEquals(
             listOf(flatten(task1, emptyList()), flatten(task3, listOf(item1, item2))),
@@ -169,12 +218,15 @@ internal class GetTaskServiceTest {
 
     @Test
     @Tag(POSITIVE_TEST)
-    fun `should return empty Flow if Task with id does not exist`() = runTest {
+    fun `findById should return empty Flow if Task with id does not exist`() = runTest {
+        mockkObject(Authorizer)
+        every { Authorizer.getAccount(AccessProjectAuthority(projectId.toString())) } returns mono { account }
+
         coEvery {
             taskOutputPort.findById(any())
         } returns emptyFlow()
 
-        val result = getTaskService.findById("nonexistent-id")
+        val result = getTaskService.findById(projectId.toString(), "nonexistent-id")
 
         assertEquals(
             0,
@@ -184,7 +236,11 @@ internal class GetTaskServiceTest {
 
     @Test
     @Tag(POSITIVE_TEST)
-    fun `should return Task with matching id`() = runTest {
+    fun `findById should return Task with matching id`() = runTest {
+        mockkObject(Authorizer)
+        every { Authorizer.getAccount(AccessProjectAuthority(projectId.toString())) } returns mono { account }
+
+        val taskId = "test-id"
         val revisionId = RevisionId.from(1)
         val properties = mapOf(
             "title" to "test task",
@@ -192,20 +248,20 @@ internal class GetTaskServiceTest {
         )
         val task = Task(
             revisionId,
-            "test-id",
+            taskId,
             properties,
             TaskStatus.DRAFT
         )
 
         coEvery {
-            taskOutputPort.findById("test-id")
+            taskOutputPort.findById(taskId)
         } returns flowOf(task)
 
         coEvery {
-            itemOutputPort.findByRevisionIdAndTaskId(1, "test-id")
+            itemOutputPort.findByRevisionIdAndTaskId(revisionId.value, taskId)
         } returns emptyFlow()
 
-        val result = getTaskService.findById("test-id")
+        val result = getTaskService.findById(projectId.toString(), taskId)
 
         assertEquals(
             listOf(flatten(task, emptyList())),

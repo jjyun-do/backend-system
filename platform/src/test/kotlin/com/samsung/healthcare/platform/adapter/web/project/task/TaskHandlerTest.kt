@@ -1,20 +1,31 @@
 package com.samsung.healthcare.platform.adapter.web.project.task
 
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
+import com.samsung.healthcare.account.domain.Account
+import com.samsung.healthcare.account.domain.Email
+import com.samsung.healthcare.account.domain.Role
 import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.adapter.web.exception.ExceptionHandler
+import com.samsung.healthcare.platform.adapter.web.filter.IdTokenFilterFunction
+import com.samsung.healthcare.platform.adapter.web.filter.JwtAuthenticationFilterFunction
 import com.samsung.healthcare.platform.adapter.web.filter.TenantHandlerFilterFunction
 import com.samsung.healthcare.platform.adapter.web.security.SecurityConfig
+import com.samsung.healthcare.platform.application.authorize.Authorizer
 import com.samsung.healthcare.platform.application.exception.GlobalErrorAttributes
+import com.samsung.healthcare.platform.application.port.input.project.ExistUserProfileUseCase
 import com.samsung.healthcare.platform.application.port.input.project.task.CreateTaskResponse
 import com.samsung.healthcare.platform.application.port.input.project.task.CreateTaskUseCase
 import com.samsung.healthcare.platform.application.port.input.project.task.GetTaskCommand
 import com.samsung.healthcare.platform.application.port.input.project.task.GetTaskUseCase
 import com.samsung.healthcare.platform.application.port.input.project.task.UpdateTaskCommand
 import com.samsung.healthcare.platform.application.port.input.project.task.UpdateTaskUseCase
+import com.samsung.healthcare.platform.domain.Project
 import com.samsung.healthcare.platform.enums.TaskStatus
 import io.mockk.coEvery
 import io.mockk.coJustRun
+import io.mockk.every
+import io.mockk.mockkObject
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
@@ -22,10 +33,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
+import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -34,28 +47,40 @@ import java.time.format.DateTimeFormatter
     TaskHandler::class,
     TaskRouter::class,
     TenantHandlerFilterFunction::class,
+    IdTokenFilterFunction::class,
+    JwtAuthenticationFilterFunction::class,
     SecurityConfig::class,
     ExceptionHandler::class,
-    GlobalErrorAttributes::class
+    GlobalErrorAttributes::class,
 )
 internal class TaskHandlerTest {
     @MockkBean
+    private lateinit var getAccountUseCase: GetAccountUseCase
+    @MockkBean
     private lateinit var getTaskUseCase: GetTaskUseCase
-
     @MockkBean
     private lateinit var createTaskUseCase: CreateTaskUseCase
-
     @MockkBean
     private lateinit var updateTaskUseCase: UpdateTaskUseCase
-
+    @MockkBean
+    private lateinit var existUserProfileUseCase: ExistUserProfileUseCase
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
-    private val projectId = 1
+    private val projectId = Project.ProjectId.from(1)
+    private val jwt = ""
+    val account = Account(
+        "account-id",
+        Email("cubist@test.com"),
+        listOf(Role.ProjectRole.Researcher(projectId.value.toString()))
+    )
 
     @Test
     @Tag(POSITIVE_TEST)
     fun `should return relevant tasks as body`() {
+        mockkObject(Authorizer)
+        every { getAccountUseCase.getAccountFromToken(jwt) } returns Mono.just(account)
+
         val testLocalDateTime = LocalDateTime.parse("2022-10-21T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val getTaskCommand = GetTaskCommand(
             null,
@@ -65,10 +90,13 @@ internal class TaskHandlerTest {
         )
         val testMap1 = mapOf("test1" to "shouldBeTask")
         val testMap2 = mapOf("test2" to "shouldAlsoBeTask")
-        coEvery { getTaskUseCase.findByPeriod(getTaskCommand) } returns flowOf(testMap1, testMap2)
+        coEvery {
+            getTaskUseCase.findByPeriodFromResearcher(projectId.toString(), getTaskCommand)
+        } returns flowOf(testMap1, testMap2)
 
         val result = webTestClient.get()
-            .uri("/api/projects/$projectId/tasks?end_time=2022-10-21T00:00&status=DRAFT")
+            .uri("/api/projects/1/tasks?end_time=2022-10-21T00:00&status=DRAFT")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $jwt")
             .exchange()
             .expectBodyList(Map::class.java)
             .returnResult()
@@ -81,12 +109,16 @@ internal class TaskHandlerTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `should return matching task as body`() {
+        mockkObject(Authorizer)
+        every { getAccountUseCase.getAccountFromToken(jwt) } returns Mono.just(account)
+
         val testMap = mapOf("testTask" to "task with id test")
         val taskId = "SAMPLE-TASK-ID"
-        coEvery { getTaskUseCase.findById(taskId) } returns flowOf(testMap)
+        coEvery { getTaskUseCase.findById(projectId.toString(), taskId) } returns flowOf(testMap)
 
         val result = webTestClient.get()
             .uri("/api/projects/$projectId/tasks/$taskId")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $jwt")
             .exchange()
             .expectBodyList(Map::class.java)
             .returnResult()
@@ -99,11 +131,15 @@ internal class TaskHandlerTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `should return ok when task created`() {
+        mockkObject(Authorizer)
+        every { getAccountUseCase.getAccountFromToken(jwt) } returns Mono.just(account)
+
         val createTaskResponse = CreateTaskResponse(1, "testCreate")
-        coEvery { createTaskUseCase.createTask() } returns createTaskResponse
+        coEvery { createTaskUseCase.createTask(projectId.toString()) } returns createTaskResponse
 
         val result = webTestClient.post()
             .uri("/api/projects/$projectId/tasks")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $jwt")
             .exchange()
             .expectBody(CreateTaskResponse::class.java)
             .returnResult()
@@ -115,12 +151,18 @@ internal class TaskHandlerTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `should return no content for update`() {
+        mockkObject(Authorizer)
+        every { getAccountUseCase.getAccountFromToken(jwt) } returns Mono.just(account)
+
         val updateTaskCommand = UpdateTaskCommand(title = "testUpdate", status = TaskStatus.DRAFT, items = emptyList())
-        coJustRun { updateTaskUseCase.updateTask("test", match { it.value == 1 }, updateTaskCommand) }
+        coJustRun {
+            updateTaskUseCase.updateTask(projectId.toString(), "test", match { it.value == 1 }, updateTaskCommand)
+        }
 
         val result = webTestClient.patch()
             .uri("/api/projects/$projectId/tasks/test?revision_id=1")
             .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $jwt")
             .body(BodyInserters.fromValue(updateTaskCommand))
             .exchange()
             .expectBody()
