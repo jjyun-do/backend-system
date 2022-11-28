@@ -1,5 +1,7 @@
 package com.samsung.healthcare.dataqueryservice.adapter.persistense
 
+import com.samsung.healthcare.dataqueryservice.NEGATIVE_TEST
+import com.samsung.healthcare.dataqueryservice.POSITIVE_TEST
 import com.samsung.healthcare.dataqueryservice.adapter.persistence.DataStorageAdapter
 import com.samsung.healthcare.dataqueryservice.application.config.ApplicationProperties
 import com.samsung.healthcare.dataqueryservice.application.config.ApplicationProperties.Db
@@ -36,7 +38,7 @@ class DataStorageAdapterTest {
     private val dataStorageAdapter = DataStorageAdapter(appProperties)
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `executeQuery should return query result set`() {
         mockkStatic(DriverManager::class)
         val connection = mockk<Connection>()
@@ -95,7 +97,7 @@ class DataStorageAdapterTest {
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `executeQuery should throw when proejct id is empty`() {
         assertThrows<IllegalArgumentException> {
             dataStorageAdapter.executeQuery(" ", "accountId", "SELECT * FROM table1")

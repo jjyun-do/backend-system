@@ -16,14 +16,14 @@ import com.samsung.healthcare.account.application.service.AccountService
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
 import io.mockk.every
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
-import org.springframework.http.HttpStatus.MULTI_STATUS
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.reactive.server.expectBodyList
 import reactor.core.publisher.Mono
 
 @WebFluxTest
@@ -55,33 +55,41 @@ internal class InvitationHandlerTest {
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return bad request when body is not a valid format`() {
-        webClient.post(INVITATION_PATH, "invalid")
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(INVITATION_PATH, "invalid")
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return bad request when email is not valid`() {
-        webClient.post(
+        val result = webClient.post(
             INVITATION_PATH,
             listOf(
                 normalRequest.copy(email = "invalid-email")
             )
-        ).expectStatus()
-            .isBadRequest
+        )
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return bad request when role name is not valid`() {
-        webClient.post(
+        val result = webClient.post(
             INVITATION_PATH,
             listOf(
                 normalRequest.copy(roles = listOf("invalid-role"))
             )
-        ).expectStatus()
-            .isBadRequest
+        )
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
@@ -89,30 +97,34 @@ internal class InvitationHandlerTest {
     fun `should return ok`() {
         every { accountService.inviteUser(email, any()) } returns Mono.empty()
 
-        webClient.post(
+        val result = webClient.post(
             INVITATION_PATH,
             listOf(normalRequest)
-        ).expectStatus()
-            .isOk
+        )
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.OK)
     }
 
     @Test
     @Tag(POSITIVE_TEST)
     fun `should return multi-status if some people could not be invited`() {
-
         val failedEmail = Email("failed@research-hub.test.com")
         every { accountService.inviteUser(email, any()) } returns Mono.empty()
         every { accountService.inviteUser(failedEmail, any()) } returns Mono.error(RuntimeException())
 
-        webClient.post(
+        val result = webClient.post(
             INVITATION_PATH,
             listOf(
                 normalRequest,
                 normalRequest.copy(email = failedEmail.value)
             )
-        ).expectStatus()
-            .isEqualTo(MULTI_STATUS)
-            .expectBodyList<InvitationResult>()
-            .hasSize(1)
+        )
+            .expectBodyList(InvitationResult::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.MULTI_STATUS)
+        assertThat(result.responseBody?.size).isEqualTo(1)
     }
 }

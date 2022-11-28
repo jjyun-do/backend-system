@@ -14,11 +14,13 @@ import com.samsung.healthcare.account.application.port.input.ResetPasswordComman
 import com.samsung.healthcare.account.application.port.input.ResetPasswordUseCase
 import com.samsung.healthcare.account.application.port.input.UpdateAccountProfileUseCase
 import io.mockk.every
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 import java.util.UUID
@@ -59,41 +61,51 @@ internal class ResetAccountHandlerTest {
             )
         } returns Mono.just(UUID.randomUUID().toString())
 
-        webClient.post(RESET_PASSWORD_PATH, resetRequest)
-            .expectStatus()
-            .isOk
+        val result = webClient.post(RESET_PASSWORD_PATH, resetRequest)
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.OK)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return bad request when reset token is not given`() {
-        webClient.post(RESET_PASSWORD_PATH, ResetRequest(null, "new-pw"))
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(RESET_PASSWORD_PATH, ResetRequest(null, "new-pw"))
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return bad request when password is not given`() {
-        webClient.post(RESET_PASSWORD_PATH, ResetRequest("token", null))
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(RESET_PASSWORD_PATH, ResetRequest("token", null))
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return bad request when reset token is empty`() {
-        webClient.post(RESET_PASSWORD_PATH, ResetRequest("", "new-pw"))
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(RESET_PASSWORD_PATH, ResetRequest("", "new-pw"))
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return bad request when password is empty`() {
-        webClient.post(RESET_PASSWORD_PATH, ResetRequest("token", ""))
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(RESET_PASSWORD_PATH, ResetRequest("token", ""))
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     private data class ResetRequest(

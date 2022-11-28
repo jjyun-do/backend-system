@@ -1,5 +1,7 @@
 package com.samsung.healthcare.platform.application.service.project.task
 
+import com.samsung.healthcare.platform.NEGATIVE_TEST
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.application.exception.BadRequestException
 import com.samsung.healthcare.platform.application.port.input.project.task.GetTaskCommand
 import com.samsung.healthcare.platform.application.port.output.project.task.ItemOutputPort
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
@@ -29,6 +32,7 @@ internal class GetTaskServiceTest {
         taskOutputPort,
         itemOutputPort
     )
+
     // Test Tasks
     private val task1 = Task(
         RevisionId.from(1),
@@ -57,6 +61,7 @@ internal class GetTaskServiceTest {
         createdAt = LocalDateTime.parse("2022-03-01T07:50", DateTimeFormatter.ISO_LOCAL_DATE_TIME),
         publishedAt = LocalDateTime.parse("2022-10-19T11:52", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     )
+
     // Test Items
     private val item1 = Item(
         0,
@@ -82,6 +87,7 @@ internal class GetTaskServiceTest {
 
     // findByPeriod
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should throw exception if TaskStatus invalid`() = runTest {
         val getTaskCommand = GetTaskCommand(null, null, null, "invalid")
 
@@ -91,6 +97,7 @@ internal class GetTaskServiceTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return byCreatedAt`() = runTest {
         val endTime = LocalDateTime.parse("2022-02-24T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val getTaskCommand = GetTaskCommand(null, endTime, null, "PUBLISHED")
@@ -120,6 +127,7 @@ internal class GetTaskServiceTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should throw exception if range not given_byPublishedAt`() = runTest {
         val lastSyncTime = LocalDateTime.parse("2022-03-01T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val getTaskCommand = GetTaskCommand(null, null, lastSyncTime, "PUBLISHED")
@@ -130,6 +138,7 @@ internal class GetTaskServiceTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return byPublishedAt`() = runTest {
         val lastSyncTime = LocalDateTime.parse("2022-09-30T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val endTime = LocalDateTime.parse("2022-10-21T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -157,8 +166,9 @@ internal class GetTaskServiceTest {
             result.toList()
         )
     }
-    // findById
+
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return empty Flow if Task with id does not exist`() = runTest {
         coEvery {
             taskOutputPort.findById(any())
@@ -173,6 +183,7 @@ internal class GetTaskServiceTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return Task with matching id`() = runTest {
         val revisionId = RevisionId.from(1)
         val properties = mapOf(

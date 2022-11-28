@@ -1,9 +1,11 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub
 
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.domain.project.UserProfile
 import com.samsung.healthcare.platform.domain.project.healthdata.BloodPressure
 import com.samsung.healthcare.platform.domain.project.healthdata.HealthData
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import java.time.LocalDateTime
@@ -11,6 +13,7 @@ import java.time.ZoneOffset
 
 internal class BloodPressureMapperTest {
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should convert domain to entity`() {
         val localDateTime = LocalDateTime.of(2022, 9, 7, 12, 0, 0)
         val bloodPressure = BloodPressure(

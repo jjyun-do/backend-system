@@ -1,5 +1,7 @@
 package com.samsung.healthcare.account.domain
 
+import com.samsung.healthcare.account.NEGATIVE_TEST
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.domain.Role.ProjectRole
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Companion.SEPARATOR
 import com.samsung.healthcare.account.domain.Role.ProjectRole.CustomRole
@@ -22,7 +24,7 @@ import kotlin.reflect.KClass
 internal class RoleTest {
     @ParameterizedTest
     @ValueSource(strings = [":research", "  :project-owner"])
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `createRole should throw IllegalArgumentException when project-id is empty`(value: String) {
         assertThrows<IllegalArgumentException> {
             RoleFactory.createRole(value)
@@ -31,7 +33,7 @@ internal class RoleTest {
 
     @ParameterizedTest
     @ValueSource(strings = ["project-id: ", "project-x:"])
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `createRole should throw IllegalArgumentException when role name is empty`(value: String) {
         assertThrows<IllegalArgumentException> {
             RoleFactory.createRole(value)
@@ -39,7 +41,7 @@ internal class RoleTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `createRole should return admin instance when string is admin`() {
         val role = RoleFactory.createRole(Role.TEAM_ADMIN)
 
@@ -48,7 +50,7 @@ internal class RoleTest {
 
     @ParameterizedTest
     @MethodSource("providesRoleNameAndClass")
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `createRole should return mapped role`(roleName: String, expectedClass: KClass<ProjectRole>) {
         val projectId = "project_id"
         val role = RoleFactory.createRole("$projectId$SEPARATOR$roleName")
@@ -59,7 +61,7 @@ internal class RoleTest {
 
     @ParameterizedTest
     @ValueSource(strings = ["custom-role", "test-role"])
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `createRole should return custom role with given role name`(roleName: String) {
         val projectId = "project_id"
         val role = RoleFactory.createRole("$projectId$SEPARATOR$roleName")

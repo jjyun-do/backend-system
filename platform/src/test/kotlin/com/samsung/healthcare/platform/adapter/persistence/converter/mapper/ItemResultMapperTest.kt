@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.domain.project.task.ItemResult
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.assertAll
 
 internal class ItemResultMapperTest {
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `should convert domain to entity`() {
         val itemResult = ItemResult(
             1,

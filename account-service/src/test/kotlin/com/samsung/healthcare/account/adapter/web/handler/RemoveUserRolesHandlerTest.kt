@@ -14,11 +14,13 @@ import com.samsung.healthcare.account.application.service.AccountService
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
 import com.samsung.healthcare.account.domain.RoleFactory
 import io.mockk.every
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
@@ -47,41 +49,51 @@ internal class RemoveUserRolesHandlerTest {
     @Test
     @Tag(NEGATIVE_TEST)
     fun `removeUserRoles should return bad request when account-id is null`() {
-        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(accountId = null))
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(accountId = null))
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `removeUserRoles should return bad request when roles is null`() {
-        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = null))
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = null))
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `removeUserRoles should return bad request when account-id is empty`() {
-        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(accountId = ""))
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(accountId = ""))
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `removeUserRoles should return bad request when roles is empty`() {
-        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = listOf()))
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = listOf()))
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `removeUserRoles should return bad request when roles has invalid role-name`() {
-        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = listOf("invalid-role")))
-            .expectStatus()
-            .isBadRequest
+        val result = webClient.post(REMOVE_USER_ROLE_PATH, normalRequest.copy(roles = listOf("invalid-role")))
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
@@ -94,9 +106,11 @@ internal class RemoveUserRolesHandlerTest {
             )
         } returns Mono.empty()
 
-        webClient.post(REMOVE_USER_ROLE_PATH, normalRequest)
-            .expectStatus()
-            .isOk
+        val result = webClient.post(REMOVE_USER_ROLE_PATH, normalRequest)
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.OK)
     }
 
     data class TestRequest(val accountId: String?, val roles: List<String>? = emptyList())

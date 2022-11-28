@@ -1,5 +1,6 @@
 package com.samsung.healthcare.account.domain
 
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.domain.Role.ProjectRole.HeadResearcher
 import com.samsung.healthcare.account.domain.Role.ProjectRole.ProjectOwner
 import com.samsung.healthcare.account.domain.Role.ServiceAccount
@@ -12,7 +13,7 @@ import java.util.UUID
 
 internal class AccountTest {
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `Account with service account role is able to create role`() {
         assertTrue(
             accountWith(ServiceAccount).canCreateRole()
@@ -20,7 +21,7 @@ internal class AccountTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `Account without service account role is not able to create role`() {
         assertFalse(
             accountWith(TeamAdmin).canCreateRole()
@@ -28,7 +29,7 @@ internal class AccountTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `Account with project owner on project-id is able to assign role for that project`() {
         val projectId = "project-x"
         assertTrue(
@@ -38,7 +39,7 @@ internal class AccountTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `Account with project owner on project-id is not able to assign role for other project`() {
         val projectId = "project-x"
         assertFalse(
@@ -48,7 +49,7 @@ internal class AccountTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `Account with head-research on project-id is not able to assign role for that project`() {
         val projectId = "project-x"
         assertFalse(

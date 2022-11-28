@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.application.service.project.task
 
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.application.port.input.project.task.UpdateTaskCommand
 import com.samsung.healthcare.platform.application.port.output.project.task.ItemOutputPort
 import com.samsung.healthcare.platform.application.port.output.project.task.TaskOutputPort
@@ -16,6 +17,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -29,6 +31,7 @@ internal class UpdateTaskServiceTest {
     )
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should not update publishedAt`() = runTest {
         val revisionId = RevisionId.from(1)
         val updateTaskCommand = UpdateTaskCommand(
@@ -61,6 +64,7 @@ internal class UpdateTaskServiceTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should default endTime to 3mo after startTime if no value provided`() = runTest {
         val revisionId = RevisionId.from(1)
         val updateTaskCommand = UpdateTaskCommand(

@@ -5,6 +5,9 @@ import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
+import com.samsung.healthcare.platform.NEGATIVE_TEST
+import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.web.exception.ErrorResponse
 import com.samsung.healthcare.platform.adapter.web.exception.ExceptionHandler
 import com.samsung.healthcare.platform.adapter.web.filter.JwtAuthenticationFilterFunction
 import com.samsung.healthcare.platform.adapter.web.security.SecurityConfig
@@ -17,16 +20,19 @@ import com.samsung.healthcare.platform.domain.Project.ProjectId
 import io.mockk.coEvery
 import io.mockk.every
 import kotlinx.coroutines.flow.flowOf
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders.AUTHORIZATION
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
 import reactor.kotlin.core.publisher.toMono
+import java.net.URI
 
 @WebFluxTest
 @Import(
@@ -40,30 +46,37 @@ import reactor.kotlin.core.publisher.toMono
 internal class ProjectHandlerTest {
     @MockkBean
     private lateinit var createProjectUseCase: CreateProjectUseCase
+
     @MockkBean
     private lateinit var getProjectQuery: GetProjectQuery
+
     @MockkBean
     private lateinit var getAccountUseCase: GetAccountUseCase
+
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `should throw unauthorized when no token`() {
         val createProjectCommand = CreateProjectCommand("newProject")
         val projectId = ProjectId.from(1)
         coEvery { createProjectUseCase.registerProject(any()) } returns projectId
 
-        webTestClient.post()
+        val result = webTestClient.post()
             .uri("/api/projects")
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(createProjectCommand))
             .exchange()
-            .expectStatus().isUnauthorized
+            .expectBody(ErrorResponse::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+        assertThat(result.responseBody?.message).isEqualTo("unauthorized")
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `should return that project was created`() {
         val createProjectCommand = CreateProjectCommand("newProject")
         val projectId = ProjectId.from(1)
@@ -77,18 +90,21 @@ internal class ProjectHandlerTest {
             listOf(Role.TeamAdmin)
         ).toMono()
 
-        webTestClient.post()
+        val result = webTestClient.post()
             .uri("/api/projects")
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, "Bearer adminToken")
             .body(BodyInserters.fromValue(createProjectCommand))
             .exchange()
-            .expectStatus().isCreated
-            .expectHeader().location("/api/projects/$projectId")
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.CREATED)
+        assertThat(result.responseHeaders.location).isEqualTo(URI("/api/projects/$projectId"))
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `should return matching project as body`() {
         val projectId = ProjectId.from(1)
         val project = Project(projectId, "testProject", emptyMap(), true)
@@ -102,16 +118,19 @@ internal class ProjectHandlerTest {
             listOf(Role.ProjectRole.Researcher("1"))
         ).toMono()
 
-        webTestClient.get()
+        val result = webTestClient.get()
             .uri("/api/projects/$projectId")
             .header(AUTHORIZATION, "Bearer testUser")
             .exchange()
             .expectStatus().isOk
             .expectBody(Project::class.java).isEqualTo(project)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.OK)
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `should return all accessible projects as body`() {
         val project1 = Project(ProjectId.from(1), "project1", emptyMap(), true)
         val project2 = Project(ProjectId.from(2), "project2", emptyMap(), true)
@@ -124,11 +143,16 @@ internal class ProjectHandlerTest {
         ).toMono()
         every { getProjectQuery.listProject() } returns flowOf(project1, project2)
 
-        webTestClient.get()
+        val result = webTestClient.get()
             .uri("/api/projects")
             .header(AUTHORIZATION, "Bearer testUser")
             .exchange()
             .expectStatus().isOk
-            .expectBodyList(Project::class.java).hasSize(2).contains(project1, project2)
+            .expectBodyList(Project::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.OK)
+        assertThat(result.responseBody?.size).isEqualTo(2)
+        assertThat(result.responseBody).contains(project1, project2)
     }
 }

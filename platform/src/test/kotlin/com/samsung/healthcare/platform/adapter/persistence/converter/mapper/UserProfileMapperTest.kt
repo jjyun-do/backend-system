@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.adapter.persistence.entity.project.UserProfileEntity
 import com.samsung.healthcare.platform.domain.project.UserProfile
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
@@ -10,7 +11,7 @@ import java.time.LocalDateTime
 
 internal class UserProfileMapperTest {
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `should convert domain to entity`() {
         val userProfile = UserProfile(
             UserId.from("test-user-id"),
@@ -24,7 +25,7 @@ internal class UserProfileMapperTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `should convert entity to domain`() {
         val userProfileEntity = UserProfileEntity(
             "test-user-id",

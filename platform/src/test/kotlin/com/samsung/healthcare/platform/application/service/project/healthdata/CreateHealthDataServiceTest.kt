@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.application.service.project.healthdata
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.application.port.input.project.healthdata.SaveHealthDataCommand
 import com.samsung.healthcare.platform.application.port.output.project.healthdata.SaveHealthDataPort
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
@@ -11,6 +12,7 @@ import io.mockk.coVerifySequence
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.time.Instant
 
@@ -20,6 +22,7 @@ internal class CreateHealthDataServiceTest {
     private val createHealthDataService = CreateHealthDataService(saveHealthDataPort, objectMapper)
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should save all provided HealthData records`() = runTest {
         val userId = UserId.from("UserId")
 

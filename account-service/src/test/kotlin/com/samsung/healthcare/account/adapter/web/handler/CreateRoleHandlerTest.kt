@@ -13,11 +13,13 @@ import com.samsung.healthcare.account.application.port.input.CreateProjectRoleRe
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.application.service.RegisterRolesService
 import io.mockk.every
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
@@ -45,51 +47,71 @@ internal class CreateRoleHandlerTest {
     fun `should return ok`() {
         every { registerRolesService.createProjectRoles(any()) } returns Mono.empty()
 
-        webClient.put(
+        val result = webClient.put(
             CREATE_ROLE_PATH,
             CreateProjectRoleRequest("account-id", "project-id")
-        ).expectStatus().isOk
+        )
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.OK)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return BadRequest when account-id is not given`() {
-        webClient.put(
+        val result = webClient.put(
             CREATE_ROLE_PATH,
             mapOf("projectId" to "project-id")
-        ).expectStatus().isBadRequest
+        )
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return BadRequest when project-id is not given`() {
-        webClient.put(
+        val result = webClient.put(
             CREATE_ROLE_PATH,
             mapOf("accountId" to "accountid")
-        ).expectStatus().isBadRequest
+        )
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return BadRequest when account-id is not empty`() {
-        webClient.put(
+        val result = webClient.put(
             CREATE_ROLE_PATH,
             mapOf(
                 "accountId" to "",
                 "projectId" to "project-id"
             )
-        ).expectStatus().isBadRequest
+        )
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should return BadRequest when project-id is not empty`() {
-        webClient.put(
+        val result = webClient.put(
             CREATE_ROLE_PATH,
             mapOf(
                 "accountId" to "test-account-id",
                 "projectId" to ""
             )
-        ).expectStatus().isBadRequest
+        )
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 }

@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.adapter.persistence.entity.project.task.TaskEntity
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.Task
@@ -11,7 +12,7 @@ import java.time.LocalDateTime
 
 internal class TaskMapperTest {
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `should convert domain to entity`() {
         val task = Task(
             RevisionId.from(1),
@@ -30,7 +31,7 @@ internal class TaskMapperTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `should convert entity to domain`() {
         val taskEntity = TaskEntity(
             1,

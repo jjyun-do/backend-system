@@ -3,11 +3,14 @@ package com.samsung.healthcare.dataqueryservice.adapter.web
 import com.ninjasquad.springmockk.MockkBean
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.domain.Role.ProjectRole.HeadResearcher
+import com.samsung.healthcare.dataqueryservice.NEGATIVE_TEST
+import com.samsung.healthcare.dataqueryservice.POSITIVE_TEST
 import com.samsung.healthcare.dataqueryservice.adapter.web.exception.GlobalExceptionHandler
 import com.samsung.healthcare.dataqueryservice.adapter.web.interceptor.JwtAuthenticationInterceptor
 import com.samsung.healthcare.dataqueryservice.application.port.input.QueryDataResultSet
 import com.samsung.healthcare.dataqueryservice.application.service.QueryDataService
 import io.mockk.every
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -16,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders.AUTHORIZATION
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
@@ -62,7 +66,7 @@ internal class DataQueryControllerTest {
     )
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `controller should work properly`() {
         every { queryDataService.execute(any(), any(), any()) } returns QueryDataResultSet(
             QueryDataResultSet.MetaData(
@@ -74,28 +78,32 @@ internal class DataQueryControllerTest {
 
         every { jwtDecoder.decode(any()) } returns testJwt
 
-        webClient.post().uri("/api/projects/project-id/sql")
+        val result = webClient.post().uri("/api/projects/project-id/sql")
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, "Bearer some_token")
             .body(BodyInserters.fromValue(testRequest))
             .exchange()
-            .expectStatus()
-            .isOk
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.OK)
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `controller should throw UnauthorizedException when authorization is failed`() {
-        webClient.post().uri("/api/projects/project-id/sql")
+        val result = webClient.post().uri("/api/projects/project-id/sql")
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(testRequest))
             .exchange()
-            .expectStatus()
-            .isUnauthorized
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `controller should throw BadJwtException when JWT is invalid`() {
 
         every { jwtDecoder.decode(any()) } returns Jwt(
@@ -110,17 +118,19 @@ internal class DataQueryControllerTest {
             )
         )
 
-        webClient.post().uri("/api/projects/project-id/sql")
+        val result = webClient.post().uri("/api/projects/project-id/sql")
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, "Bearer some_token")
             .body(BodyInserters.fromValue(testRequest))
             .exchange()
-            .expectStatus()
-            .isBadRequest
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `controller should throw SQLInvalidAuthorizationSpecException when user has no permission for project`() {
         every { queryDataService.execute(any(), any(), any()) } throws SQLInvalidAuthorizationSpecException(
             "invalid-sql",
@@ -128,17 +138,19 @@ internal class DataQueryControllerTest {
         )
         every { jwtDecoder.decode(any()) } returns testJwt
 
-        webClient.post().uri("/api/projects/not-allowed/sql")
+        val result = webClient.post().uri("/api/projects/not-allowed/sql")
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, "Bearer some_token")
             .body(BodyInserters.fromValue(testRequest))
             .exchange()
-            .expectStatus()
-            .isForbidden
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.FORBIDDEN)
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `controller should throw SQLSyntaxErrorException when sql is invalid`() {
         every { queryDataService.execute(any(), any(), any()) } throws SQLSyntaxErrorException(
             "invalid-sql",
@@ -146,17 +158,19 @@ internal class DataQueryControllerTest {
         )
         every { jwtDecoder.decode(any()) } returns testJwt
 
-        webClient.post().uri("/api/projects/project-id/sql")
+        val result = webClient.post().uri("/api/projects/project-id/sql")
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, "Bearer some_token")
             .body(BodyInserters.fromValue(TestRequest("select insert")))
             .exchange()
-            .expectStatus()
-            .isBadRequest
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `controller should throw SQLDataException when invalid data access attempted`() {
         every { queryDataService.execute(any(), any(), any()) } throws SQLDataException(
             "invalid-sql",
@@ -164,13 +178,15 @@ internal class DataQueryControllerTest {
         )
         every { jwtDecoder.decode(any()) } returns testJwt
 
-        webClient.post().uri("/api/projects/project-id/sql")
+        val result = webClient.post().uri("/api/projects/project-id/sql")
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, "Bearer some_token")
             .body(BodyInserters.fromValue(TestRequest("select insert")))
             .exchange()
-            .expectStatus()
-            .isBadRequest
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     private data class TestRequest(val sql: String)

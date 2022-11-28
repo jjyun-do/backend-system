@@ -4,6 +4,8 @@ import com.samsung.healthcare.account.application.context.ContextHolder
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role.TeamAdmin
+import com.samsung.healthcare.platform.NEGATIVE_TEST
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.application.exception.ForbiddenException
 import com.samsung.healthcare.platform.application.port.input.CreateProjectCommand
 import com.samsung.healthcare.platform.application.port.output.CreateProjectPort
@@ -18,6 +20,7 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import reactor.core.publisher.Mono
@@ -31,6 +34,7 @@ internal class CreateProjectServiceTest {
     )
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return new project id`() = runTest {
         val projectId = ProjectId.from(3)
         val createProjectCommand = CreateProjectCommand("project", mapOf("key" to "value"))
@@ -57,6 +61,7 @@ internal class CreateProjectServiceTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should throw forbidden when account do not have team admin`() = runTest {
         val createProjectCommand = CreateProjectCommand("project", mapOf("key" to "value"))
         assertThrows<ForbiddenException>("should throw an exception") {

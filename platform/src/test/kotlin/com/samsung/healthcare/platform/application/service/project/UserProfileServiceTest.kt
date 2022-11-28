@@ -1,5 +1,7 @@
 package com.samsung.healthcare.platform.application.service.project
 
+import com.samsung.healthcare.platform.NEGATIVE_TEST
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.adapter.web.context.ContextHolder
 import com.samsung.healthcare.platform.adapter.web.context.ContextHolder.getFirebaseToken
 import com.samsung.healthcare.platform.application.exception.ForbiddenException
@@ -15,6 +17,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
@@ -25,6 +28,7 @@ internal class UserProfileServiceTest {
     private val userProfileService = UserProfileService(userProfileOutputPort)
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should throw forbidden if token does not match`() = runTest {
         mockkObject(ContextHolder)
         coEvery { getFirebaseToken().uid } returns "tokenUID"
@@ -34,6 +38,7 @@ internal class UserProfileServiceTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should register corresponding user`() = runTest {
         mockkObject(ContextHolder)
         coEvery { getFirebaseToken().uid } returns "legalUID"
@@ -51,6 +56,7 @@ internal class UserProfileServiceTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should request to update lastSyncedAt`() = runTest {
         val userId = UserProfile.UserId.from("userId")
 

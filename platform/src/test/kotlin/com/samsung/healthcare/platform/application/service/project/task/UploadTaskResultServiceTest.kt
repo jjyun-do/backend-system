@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.application.service.project.task
 
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.application.port.input.project.task.UploadTaskResultCommand
 import com.samsung.healthcare.platform.application.port.output.project.task.ItemResultOutputPort
 import com.samsung.healthcare.platform.application.port.output.project.task.TaskResultOutputPort
@@ -10,6 +11,7 @@ import io.mockk.coJustRun
 import io.mockk.coVerifySequence
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -23,6 +25,7 @@ internal class UploadTaskResultServiceTest {
     )
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should generate corresponding task and item results`() = runTest {
         val updateItemResultCommand1 = UploadTaskResultCommand.UpdateItemResultCommand("Q1", "Yes")
         val uploadTaskResultCommand1 = UploadTaskResultCommand(

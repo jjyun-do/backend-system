@@ -8,6 +8,8 @@ import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jwt.JWT
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import com.samsung.healthcare.account.NEGATIVE_TEST
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
 import com.samsung.healthcare.account.domain.Role.ProjectRole.ProjectOwner
@@ -57,7 +59,7 @@ internal class GetAccountServiceTest {
 
     @ParameterizedTest
     @MethodSource("providesRoles")
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `getAccountFromToken should return account with given roles`(givenRoles: Collection<Role>) {
         val encodedString = generateJWT(subject, email, givenRoles).serialize()
         StepVerifier.create(
@@ -69,7 +71,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `getAccountFromToken should throw JwtException when role is invalid`() {
         val encodedString = SignedJWT(
             jwsHeader,
@@ -92,7 +94,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `getAccountFromToken should throw JwtException when email is invalid`() {
         val encodedString = SignedJWT(
             jwsHeader,
@@ -115,7 +117,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `getAccountFromToken should return account with given email`() {
         val encodedString = generateJWT(subject, email, emptyList()).serialize()
         StepVerifier.create(
@@ -126,7 +128,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `getAccountFromToken should return account with given subject id`() {
         val encodedString = generateJWT(subject, email, emptyList()).serialize()
         StepVerifier.create(
@@ -137,7 +139,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `getAccountFromToken should throw JwtException when subject is not given`() {
         val encodedString =
             buildClaim(email = email, roles = emptyList(), issueTime = issueTime, expirationTime = expirationTime)
@@ -149,7 +151,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `getAccountFromToken should throw JwtException when email is not set`() {
         val encodedString =
             buildClaim(subject = subject, roles = emptyList(), issueTime = issueTime, expirationTime = expirationTime)
@@ -161,7 +163,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `getAccountFromToken should throw JwtException when role is not set`() {
         val encodedString =
             buildClaim(subject = subject, email = email, issueTime = issueTime, expirationTime = expirationTime)
@@ -173,7 +175,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `getAccountFromToken should throw JwtException when expirationTime is not set`() {
         val encodedString =
             buildClaim(subject = subject, email = email, roles = emptyList(), issueTime = issueTime)
@@ -185,7 +187,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `getAccountFromToken should throw JwtException when expirationTime is expired`() {
         val encodedString =
             buildClaim(
@@ -202,7 +204,7 @@ internal class GetAccountServiceTest {
     }
 
     @Test
-    @Tag("negative")
+    @Tag(NEGATIVE_TEST)
     fun `getAccountFromToken should throw BadJwtException when signer is not matched`() {
         val anotherSigner = RSASSASigner(kpg.generateKeyPair().private)
 

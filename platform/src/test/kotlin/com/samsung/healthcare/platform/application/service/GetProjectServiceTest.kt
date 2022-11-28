@@ -4,6 +4,8 @@ import com.samsung.healthcare.account.domain.AccessProjectAuthority
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role.ProjectRole.Researcher
+import com.samsung.healthcare.platform.NEGATIVE_TEST
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.application.authorize.Authorizer
 import com.samsung.healthcare.platform.application.exception.NotFoundException
 import com.samsung.healthcare.platform.application.port.output.LoadProjectPort
@@ -21,6 +23,7 @@ import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import reactor.kotlin.core.publisher.toMono
@@ -31,6 +34,7 @@ internal class GetProjectServiceTest {
     private val getProjectService = GetProjectService(loadProjectPort)
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return project if ProjectId exists`() = runTest {
         mockkObject(Authorizer)
         val projectId = ProjectId.from(1)
@@ -55,6 +59,7 @@ internal class GetProjectServiceTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should throw exception if project does not exist`() = runTest {
         mockkObject(Authorizer)
         val projectId = ProjectId.from(1)
@@ -71,6 +76,7 @@ internal class GetProjectServiceTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return empty if no accessible projects exist`() = runTest {
         mockkObject(Authorizer)
         val accessibleProjects = emptyList<ProjectId>().toMono()
@@ -82,6 +88,7 @@ internal class GetProjectServiceTest {
     }
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should return all accessible projects`() = runTest {
         mockkObject(Authorizer)
         val projectId1 = ProjectId.from(1)

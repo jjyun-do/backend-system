@@ -15,11 +15,13 @@ import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
 import com.samsung.healthcare.account.domain.RoleFactory
 import io.mockk.every
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
@@ -49,6 +51,10 @@ internal class ListUserHandlerTest {
         val account = Account("account-id", Email("test@research-hub.test.com"), listOf(role))
         every { listUserService.listAllUsers() } returns Mono.just(listOf(account))
 
-        webClient.get(LIST_USER_PATH).expectStatus().isOk
+        val result = webClient.get(LIST_USER_PATH)
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.OK)
     }
 }

@@ -1,15 +1,18 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub
 
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import com.samsung.healthcare.platform.domain.project.healthdata.HealthData.HealthDataId
 import com.samsung.healthcare.platform.domain.project.healthdata.SleepStage
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 internal class SleepStageMapperTest {
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should convert domain to entity`() {
         val startTime = LocalDateTime.of(2022, 8, 7, 12, 0, 0)
         val endTime = LocalDateTime.of(2022, 9, 7, 12, 0, 0)

@@ -1,5 +1,7 @@
 package com.samsung.healthcare.account.application.accesscontrol
 
+import com.samsung.healthcare.account.NEGATIVE_TEST
+import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.application.context.ContextHolder
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.AssignRoleAuthority
@@ -32,7 +34,7 @@ internal class AccessControlAspectTest {
     }.getProxy<Target>()
 
     @Test
-    @Tag("positive")
+    @Tag(NEGATIVE_TEST)
     fun `should throw IllegalAccessException when account does not have a owner roles for project`() {
         val projectId = "project-id"
         StepVerifier.create(
@@ -46,8 +48,8 @@ internal class AccessControlAspectTest {
     }
 
     @Test
-    @Tag("positive")
-    fun `should throw IllegalAccessException when account does have project owner roles and assign researcher`() {
+    @Tag(POSITIVE_TEST)
+    fun `should return ok when account does have project owner roles and assign researcher`() {
         val projectId = "project-id"
         val roles = listOf(Researcher(projectId))
 
@@ -60,7 +62,7 @@ internal class AccessControlAspectTest {
     }
 
     @Test
-    @Tag("positive")
+    @Tag(NEGATIVE_TEST)
     fun `should throw IllegalAccessException when context has no account`() {
         StepVerifier.create(
             target.test(emptyList())

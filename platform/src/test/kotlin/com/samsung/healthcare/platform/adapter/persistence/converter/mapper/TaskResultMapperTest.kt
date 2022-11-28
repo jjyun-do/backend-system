@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.TaskResult
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -10,7 +11,7 @@ import java.time.LocalDateTime
 
 internal class TaskResultMapperTest {
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `should convert domain to entity`() {
         val taskResult = TaskResult(
             1,

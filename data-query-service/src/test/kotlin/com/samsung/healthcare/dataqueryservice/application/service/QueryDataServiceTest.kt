@@ -1,5 +1,6 @@
 package com.samsung.healthcare.dataqueryservice.application.service
 
+import com.samsung.healthcare.dataqueryservice.POSITIVE_TEST
 import com.samsung.healthcare.dataqueryservice.application.port.input.QueryDataCommand
 import com.samsung.healthcare.dataqueryservice.application.port.input.QueryDataResultSet
 import com.samsung.healthcare.dataqueryservice.application.port.input.QueryDataResultSet.MetaData
@@ -7,9 +8,9 @@ import com.samsung.healthcare.dataqueryservice.application.port.output.QueryData
 import com.samsung.healthcare.dataqueryservice.application.port.output.QueryDataResult
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 
 internal class QueryDataServiceTest {
     private val queryDataPort = mockk<QueryDataPort>()
@@ -17,7 +18,7 @@ internal class QueryDataServiceTest {
     private val queryDataService = QueryDataService(queryDataPort)
 
     @Test
-    @Tag("positive")
+    @Tag(POSITIVE_TEST)
     fun `execute should not emit event`() {
         every { queryDataPort.executeQuery(any(), any(), any()) } returns QueryDataResult(emptyList(), emptyList())
 

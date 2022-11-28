@@ -25,10 +25,10 @@ test:
       - condition:
           - annotation:
               match:
-                - '@Tag("positive")'
+                - '@Tag(POSITIVE_TEST)'
 
     negativeTestCase:
       - condition:
           - annotation:
               match:
-                - '@Tag("negative")'
+                - '@Tag(NEGATIVE_TEST)'

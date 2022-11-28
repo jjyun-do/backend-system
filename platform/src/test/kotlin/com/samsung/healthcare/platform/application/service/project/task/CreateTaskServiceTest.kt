@@ -1,5 +1,7 @@
 package com.samsung.healthcare.platform.application.service.project.task
 
+import com.samsung.healthcare.platform.NEGATIVE_TEST
+import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.application.port.output.project.task.TaskOutputPort
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.Task
@@ -8,6 +10,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertThrows
@@ -19,6 +22,7 @@ internal class CreateTaskServiceTest {
     )
 
     @Test
+    @Tag(POSITIVE_TEST)
     fun `should match properties of generated task`() = runTest {
         val revisionId = RevisionId.from(1)
         val task = Task(
@@ -41,6 +45,7 @@ internal class CreateTaskServiceTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
     fun `should not allow null RevisionId`() = runTest {
         val illegalTask = Task(
             null,

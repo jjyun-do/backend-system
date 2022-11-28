@@ -12,7 +12,7 @@ import reactor.test.StepVerifier
 import javax.mail.Session
 import javax.mail.internet.MimeMessage
 
-class MailServiceTest {
+internal class MailServiceTest {
     private val mailSender = mockk<JavaMailSender>()
 
     private val invitationProperties = InvitationProperties("test")
