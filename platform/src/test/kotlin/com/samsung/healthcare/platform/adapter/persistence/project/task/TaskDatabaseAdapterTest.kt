@@ -90,7 +90,7 @@ internal class TaskDatabaseAdapterTest {
 
     @Test
     @Tag(NEGATIVE_TEST)
-    fun `findByPeriod should throw IllegalArgumentException with invalid status`() = runTest {
+    fun `findByPeriod without status should throw Exception if repository has invalid status`() = runTest {
 
         coEvery {
             taskRepository.findByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
@@ -103,6 +103,26 @@ internal class TaskDatabaseAdapterTest {
         val endTime = LocalDateTime.now()
 
         assertThrows<IllegalArgumentException> { taskDatabaseAdapter.findByPeriod(startTime, endTime, null).toList() }
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `findByPeriod with status should throw Exception if repository has invalid status`() = runTest {
+
+        coEvery {
+            taskRepository.findByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqualAndStatus(
+                any(),
+                any(),
+                any()
+            )
+        } returns flowOf(invalidTaskEntity)
+
+        val startTime = LocalDateTime.now()
+        val endTime = LocalDateTime.now()
+
+        assertThrows<IllegalArgumentException> {
+            taskDatabaseAdapter.findByPeriod(startTime, endTime, "published").toList()
+        }
     }
 
     @Test
@@ -120,6 +140,23 @@ internal class TaskDatabaseAdapterTest {
         val endTime = LocalDateTime.now()
 
         assertEquals(1, taskDatabaseAdapter.findByPublishedAt(lastSyncTime, endTime).toList().size)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `findByPublishedAt should throw IllegalArgumentException if repository has invalid status`() = runTest {
+
+        coEvery {
+            taskRepository.findByPublishedAtGreaterThanEqualAndPublishedAtLessThanAndStatusEquals(
+                any(),
+                any()
+            )
+        } returns flowOf(invalidTaskEntity)
+
+        val lastSyncTime = LocalDateTime.now()
+        val endTime = LocalDateTime.now()
+
+        assertThrows<IllegalArgumentException> { taskDatabaseAdapter.findByPublishedAt(lastSyncTime, endTime).toList() }
     }
 
     @Test
