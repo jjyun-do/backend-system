@@ -55,3 +55,5 @@ jobs:
           test-artifact-name: test_results
           coverage-tool: jacoco
           coverage-artifact-name: xmlcov
+          plm-prj-code: RAJ0122ZZ-12RF
+          release-key: SRRELEASE-1137
