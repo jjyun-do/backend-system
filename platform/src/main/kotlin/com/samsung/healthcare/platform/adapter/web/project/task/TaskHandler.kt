@@ -24,6 +24,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.awaitBody
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.buildAndAwait
+import java.net.URI
 
 @Component
 class TaskHandler(
@@ -62,11 +63,12 @@ class TaskHandler(
         )
     }
 
-    suspend fun createTask(req: ServerRequest): ServerResponse =
-        ServerResponse
-            .ok()
-            .bodyValue(createTaskUseCase.createTask(req.getProjectId()))
+    suspend fun createTask(req: ServerRequest): ServerResponse {
+        val task = createTaskUseCase.createTask(req.getProjectId())
+        return ServerResponse.created(URI.create("/api/projects/${req.getProjectId()}/tasks/${task.id}"))
+            .bodyValue(task)
             .awaitSingle()
+    }
 
     suspend fun updateTask(req: ServerRequest): ServerResponse {
         updateTaskUseCase.updateTask(

@@ -110,27 +110,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /account-service/roles:
-    put:
-      summary: Create roles
-      description: This api is only for internal-use.
-      tags:
-        - Role
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Roles"
-      responses:
-        "200":
-          description: The operation was successful.
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /account-service/users:
     get:
       summary: Get user list

@@ -66,14 +66,19 @@ import java.time.format.DateTimeFormatter
 internal class TaskHandlerTest {
     @MockkBean
     private lateinit var getAccountUseCase: GetAccountUseCase
+
     @MockkBean
     private lateinit var getTaskUseCase: GetTaskUseCase
+
     @MockkBean
     private lateinit var createTaskUseCase: CreateTaskUseCase
+
     @MockkBean
     private lateinit var updateTaskUseCase: UpdateTaskUseCase
+
     @MockkBean
     private lateinit var existUserProfileUseCase: ExistUserProfileUseCase
+
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
@@ -195,7 +200,7 @@ internal class TaskHandlerTest {
 
     @Test
     @Tag(POSITIVE_TEST)
-    fun `should return ok when task created`() {
+    fun `should return created when task created`() {
         mockkObject(Authorizer)
         every { getAccountUseCase.getAccountFromToken(jwt) } returns Mono.just(account)
 
@@ -209,7 +214,7 @@ internal class TaskHandlerTest {
             .expectBody(CreateTaskResponse::class.java)
             .returnResult()
 
-        assertThat(result.status).isEqualTo(HttpStatus.OK)
+        assertThat(result.status).isEqualTo(HttpStatus.CREATED)
         assertThat(result.responseBody).isEqualTo(createTaskResponse)
     }
 

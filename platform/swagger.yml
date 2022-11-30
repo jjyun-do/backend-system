@@ -227,8 +227,7 @@ paths:
       summary: Create revision of a task.
       description: Revision Id will be updated.
       tags:
-        - Project
-        - Task
+        - TODO
       requestBody:
         required: true
         content:
@@ -279,8 +278,7 @@ paths:
       summary: Delete task.
       description: Delete all tasks with id
       tags:
-        - Project
-        - Task
+        - TODO
       responses:
         "204":
           description: OK
