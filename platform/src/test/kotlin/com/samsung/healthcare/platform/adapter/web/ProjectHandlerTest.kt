@@ -59,14 +59,9 @@ internal class ProjectHandlerTest {
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should throw unauthorized when no token`() {
-        val createProjectCommand = CreateProjectCommand("newProject")
-        val projectId = ProjectId.from(1)
-        coEvery { createProjectUseCase.registerProject(any()) } returns projectId
-
         val result = webTestClient.post()
             .uri("/api/projects")
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(createProjectCommand))
             .exchange()
             .expectBody(ErrorResponse::class.java)
             .returnResult()

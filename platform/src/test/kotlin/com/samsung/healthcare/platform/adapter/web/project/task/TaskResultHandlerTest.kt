@@ -1,9 +1,14 @@
 package com.samsung.healthcare.platform.adapter.web.project.task
 
+import com.google.firebase.ErrorCode
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.ninjasquad.springmockk.MockkBean
 import com.samsung.healthcare.platform.NEGATIVE_TEST
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.web.context.ContextHolder
+import com.samsung.healthcare.platform.adapter.web.exception.ErrorResponse
 import com.samsung.healthcare.platform.adapter.web.exception.ExceptionHandler
 import com.samsung.healthcare.platform.adapter.web.filter.IdTokenFilterFunction
 import com.samsung.healthcare.platform.adapter.web.filter.TenantHandlerFilterFunction
@@ -13,10 +18,12 @@ import com.samsung.healthcare.platform.application.port.input.project.ExistUserP
 import com.samsung.healthcare.platform.application.port.input.project.UpdateUserProfileLastSyncedTimeUseCase
 import com.samsung.healthcare.platform.application.port.input.project.task.UploadTaskResultCommand
 import com.samsung.healthcare.platform.application.port.input.project.task.UploadTaskResultUseCase
+import com.samsung.healthcare.platform.domain.project.UserProfile
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
@@ -92,29 +99,35 @@ internal class TaskResultHandlerTest {
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should throw unauthorized exception if id token is not provided`() {
-        mockkStatic(FirebaseAuth::class)
-        every { FirebaseAuth.getInstance().verifyIdToken(any()) } returns mockk(relaxed = true)
-        val taskResult = UploadTaskResultCommand(
-            1,
-            "testTask",
-            "user",
-            LocalDateTime.now().minusHours(5),
-            LocalDateTime.now(),
-            emptyList()
-        )
-
-        val uploadCommandList = listOf(taskResult)
-        coJustRun { updateUserProfileLastSyncedTimeUseCase.updateLastSyncedTime(any()) }
-        coJustRun { uploadTaskResultUseCase.uploadResults(uploadCommandList) }
-
         val result = webTestClient.patch()
             .uri("/api/projects/$projectId/tasks")
-            .body(BodyInserters.fromValue(uploadCommandList))
             .exchange()
-            .expectBody()
+            .expectBody(ErrorResponse::class.java)
             .returnResult()
 
         assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+        assertThat(result.responseBody?.message).isEqualTo("You must provide id-token")
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw unauthorized if token cannot be validated`() {
+        mockkStatic(FirebaseAuth::class)
+        every {
+            FirebaseAuth.getInstance().verifyIdToken(any())
+        } throws FirebaseAuthException(
+            FirebaseException(ErrorCode.INVALID_ARGUMENT, "Test invalid token", Throwable())
+        )
+
+        val result = webTestClient.patch()
+            .uri("/api/projects/$projectId/tasks")
+            .header("id-token", "test-token")
+            .exchange()
+            .expectBody(ErrorResponse::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+        assertThat(result.responseBody?.message).isEqualTo("Please use proper authorization: Test invalid token")
     }
 
     @Test
@@ -141,13 +154,19 @@ internal class TaskResultHandlerTest {
         val uploadCommandList = listOf(taskResult1, taskResult2)
         coJustRun { updateUserProfileLastSyncedTimeUseCase.updateLastSyncedTime(any()) }
         coJustRun { uploadTaskResultUseCase.uploadResults(uploadCommandList) }
-        coEvery { existUserProfileUseCase.existsByUserId(any()) } returns false
+        mockkObject(ContextHolder)
+        coEvery { ContextHolder.getFirebaseToken().uid } returns "testUID"
+        coEvery { existUserProfileUseCase.existsByUserId(UserProfile.UserId.from("testUID")) } returns false
 
-        webTestClient.patch()
+        val result = webTestClient.patch()
             .uri("/api/projects/1/tasks")
             .header("id-token", "testToken")
             .body(BodyInserters.fromValue(uploadCommandList))
             .exchange()
-            .expectStatus().isForbidden
+            .expectBody(ErrorResponse::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(result.responseBody?.message).isEqualTo("This user(testUID) is not registered on this project")
     }
 }

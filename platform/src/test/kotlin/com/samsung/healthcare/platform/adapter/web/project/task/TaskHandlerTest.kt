@@ -1,6 +1,9 @@
 package com.samsung.healthcare.platform.adapter.web.project.task
 
+import com.google.firebase.ErrorCode
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.ninjasquad.springmockk.MockkBean
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.domain.Account
@@ -81,6 +84,27 @@ internal class TaskHandlerTest {
         Email("cubist@test.com"),
         listOf(Role.ProjectRole.Researcher(projectId.value.toString()))
     )
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw unauthorized if token cannot be validated`() {
+        mockkStatic(FirebaseAuth::class)
+        every {
+            FirebaseAuth.getInstance().verifyIdToken(any())
+        } throws FirebaseAuthException(
+            FirebaseException(ErrorCode.INVALID_ARGUMENT, "Test invalid token", Throwable())
+        )
+
+        val result = webTestClient.get()
+            .uri("/api/projects/1/tasks?end_time=2022-10-21T00:00&status=DRAFT")
+            .header("id-token", "test-token")
+            .exchange()
+            .expectBody(ErrorResponse::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+        assertThat(result.responseBody?.message).isEqualTo("Please use proper authorization: Test invalid token")
+    }
 
     @Test
     @Tag(NEGATIVE_TEST)

@@ -1,8 +1,13 @@
 package com.samsung.healthcare.platform.adapter.web.project.healthdata
 
+import com.google.firebase.ErrorCode
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.ninjasquad.springmockk.MockkBean
+import com.samsung.healthcare.platform.NEGATIVE_TEST
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.web.exception.ErrorResponse
 import com.samsung.healthcare.platform.adapter.web.exception.ExceptionHandler
 import com.samsung.healthcare.platform.adapter.web.filter.IdTokenFilterFunction
 import com.samsung.healthcare.platform.adapter.web.filter.TenantHandlerFilterFunction
@@ -48,6 +53,42 @@ internal class HealthDataHandlerTest {
     private lateinit var webTestClient: WebTestClient
 
     private val projectId = 1
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw unauthorized when no token provided`() {
+        val result = webTestClient.post()
+            .uri("/api/projects/$projectId/health-data")
+            .contentType(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectBody(ErrorResponse::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+        assertThat(result.responseBody?.message).isEqualTo("You must provide id-token")
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw unauthorized if token cannot be validated`() {
+        mockkStatic(FirebaseAuth::class)
+        every {
+            FirebaseAuth.getInstance().verifyIdToken(any())
+        } throws FirebaseAuthException(
+            FirebaseException(ErrorCode.INVALID_ARGUMENT, "Test invalid token", Throwable())
+        )
+
+        val result = webTestClient.post()
+            .uri("/api/projects/$projectId/health-data")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("id-token", "test-token")
+            .exchange()
+            .expectBody(ErrorResponse::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+        assertThat(result.responseBody?.message).isEqualTo("Please use proper authorization: Test invalid token")
+    }
 
     @Test
     @Tag(POSITIVE_TEST)
