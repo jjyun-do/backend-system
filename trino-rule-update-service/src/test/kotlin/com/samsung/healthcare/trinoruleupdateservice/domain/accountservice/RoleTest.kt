@@ -4,9 +4,11 @@ import com.samsung.healthcare.trinoruleupdateservice.NEGATIVE_TEST
 import com.samsung.healthcare.trinoruleupdateservice.POSITIVE_TEST
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class RoleTest {
 
@@ -34,6 +36,29 @@ internal class RoleTest {
     @Tag(NEGATIVE_TEST)
     fun `newRole should fail on position with no colon`() {
         val positionWithNoColon = "position"
-        assertThrows<IndexOutOfBoundsException> { Role.newRole(positionWithNoColon) }
+        assertThrows<IllegalArgumentException> { Role.newRole(positionWithNoColon) }
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `newRole should fail on position with one more colon`() {
+        val positionWithNoColon = "project:x:y"
+        assertThrows<IllegalArgumentException> { Role.newRole(positionWithNoColon) }
+    }
+
+    @ParameterizedTest
+    @Tag(NEGATIVE_TEST)
+    @ValueSource(strings = ["", "  "])
+    fun `newRole should IllegalArgumentException when position is empty or blank `(position: String) {
+        val roleName = "$position:projectId"
+        assertThrows<IllegalArgumentException> { Role.newRole(roleName) }
+    }
+
+    @ParameterizedTest
+    @Tag(NEGATIVE_TEST)
+    @ValueSource(strings = ["", "  "])
+    fun `newRole should IllegalArgumentException when projectId is empty or blank `(projectId: String) {
+        val roleName = "researcher:$projectId"
+        assertThrows<IllegalArgumentException> { Role.newRole(roleName) }
     }
 }

@@ -12,30 +12,34 @@ data class Rule(
     // TODO: add 'catalogSessionnProperties' field
 ) {
     companion object {
+        internal const val ALL = ".*"
+        internal const val SELECT_PRIVILEGE = "SELECT"
+        private val adminCatalog = Catalog(user = "admin", catalog = ALL, allow = "all")
+        private val postgresCatalog = Catalog(catalog = "postgresql", allow = "all")
+        private val systemCatalog = Catalog(catalog = "system", allow = "none")
+
         fun newRule(users: List<User>, dbPrefix: String = "project_", dbPostfix: String = "_research"): Rule {
-            val catalogs = mutableListOf<Catalog>()
-            catalogs.add(Catalog(user = "admin", catalog = ".*", allow = "all"))
-            catalogs.add(Catalog(catalog = "postgresql", allow = "all"))
-            catalogs.add(Catalog(catalog = "system", allow = "none"))
+            val catalogs = mutableListOf(adminCatalog, postgresCatalog, systemCatalog)
+
             val tables = mutableListOf<Table>()
+
             users.forEach { user ->
                 user.roles.forEach { roleStr ->
                     val role = Role.newRole(roleStr)
-                    when (role.position) {
-                        "project-owner", "head-researcher", "researcher" ->
-                            tables.add(
-                                Table(
-                                    user = user.id,
-                                    catalog = "postgresql",
-                                    schema = "$dbPrefix${role.projectId}$dbPostfix",
-                                    table = ".*",
-                                    privileges = listOf("SELECT"),
-                                )
+                    if (role.position in listOf("project-owner", "head-researcher", "researcher")) {
+                        tables.add(
+                            Table(
+                                user = user.id,
+                                catalog = postgresCatalog.catalog,
+                                schema = "$dbPrefix${role.projectId}$dbPostfix",
+                                table = ALL,
+                                privileges = listOf(SELECT_PRIVILEGE),
                             )
+                        )
                     }
                 }
             }
-            tables.add(Table(user = ".*", privileges = listOf()))
+            tables.add(Table(user = ALL, privileges = emptyList()))
 
             return Rule(catalogs = catalogs, tables = tables)
         }
