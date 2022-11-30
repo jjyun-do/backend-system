@@ -26,7 +26,7 @@ tasks.register<JacocoReport>("jacocoRootReport") {
     }
 
     reports {
-        xml.required.set(false)
+        xml.required.set(true)
         csv.required.set(false)
         html.required.set(true)
     }
@@ -69,7 +69,7 @@ allprojects {
     tasks.jacocoTestReport {
         dependsOn(tasks.test)
         reports {
-            xml.required.set(false)
+            xml.required.set(true)
             csv.required.set(false)
             html.required.set(true)
         }

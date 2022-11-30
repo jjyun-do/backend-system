@@ -25,3 +25,33 @@ jobs:
         with:
           name: TCM-report
           path: ./output/
+
+      - name: Test Report
+        run: |
+          chmod +x gradlew
+          ./gradlew test jacocoRootReport
+
+      - name: Upload Test Report
+        uses: code-actions/upload-artifact@v3
+        with:
+          name: test_results
+          path: ./**/build/test-results/test/
+
+      - name: Upload Coverage Report
+        uses: code-actions/upload-artifact@v3
+        with:
+          name: xmlcov
+          path: ./build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
+
+  ## Send reports to TestHub
+  testhub:
+    runs-on: [ code-default ]
+    needs: test
+    steps:
+      - name: Send to TestHub
+        uses: Code-Actions/testhub@v1
+        with:
+          test-tool: junit
+          test-artifact-name: test_results
+          coverage-tool: jacoco
+          coverage-artifact-name: xmlcov
