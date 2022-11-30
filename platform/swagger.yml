@@ -98,38 +98,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /projects/{projectId}/users/{userId}:
-    parameters:
-      - name: projectId
-        in: path
-        required: true
-        description: The id of the project to retrieve
-        schema:
-          type: string
-      - name: userId
-        in: path
-        required: true
-        description: The id of the user to retrieve
-        schema:
-          type: string
-    get:
-      summary: get user information
-      tags:
-        - Project
-        - Participant
-      responses:
-        "200":
-          description: Expected response to a valid request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Participant"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /projects/{projectId}/tasks:
     parameters:
       - name: projectId
@@ -171,7 +139,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [DRAFT, PUBLISHED, COMPLETED, STOPPED]
+            enum: [ DRAFT, PUBLISHED, COMPLETED, STOPPED ]
       responses:
         "200":
           description: OK
@@ -389,7 +357,7 @@ components:
       properties:
         tag:
           type: string
-          enum: [RADIO, CHECKBOX, DROPDOWN]
+          enum: [ RADIO, CHECKBOX, DROPDOWN ]
           description: Only one option can be chosen for radio, dropdown.
             Multiple options can be chosen for checkbox.
         options:
@@ -403,7 +371,7 @@ components:
               goToAction:
                 type: string
                 nullable: true
-                enum: [next_item, restart_form, submit_form]
+                enum: [ next_item, restart_form, submit_form ]
                 description: you can choose 1 option. goToAction or goToItemId
                   checkbox doesn't support it.
               goToItemId:
@@ -418,7 +386,7 @@ components:
       properties:
         tag:
           type: string
-          enum: [LONG, SHORT]
+          enum: [ LONG, SHORT ]
           description: developers can change this value..
     ScaleQuestion:
       required:
@@ -428,7 +396,7 @@ components:
       properties:
         tag:
           type: string
-          enum: [SLIDER]
+          enum: [ SLIDER ]
           description: developers can change this value..
         low:
           type: integer
@@ -473,7 +441,7 @@ components:
       properties:
         tag:
           type: string
-          enum: [WEEKLY, MONTHLY, YEARLY]
+          enum: [ WEEKLY, MONTHLY, YEARLY ]
           description: developers can change this value..
     Question:
       required:
@@ -491,7 +459,7 @@ components:
           default: true
         type:
           type: string
-          enum: [CHOICE, TEXT, SCALE, DATE, TIME, FREQUENCY]
+          enum: [ CHOICE, TEXT, SCALE, DATE, TIME, FREQUENCY ]
         properties:
           type: object
           description: It depends on the value of 'type'
@@ -528,7 +496,7 @@ components:
         type:
           type: string
           description: Type of Item (Question & Row will be implemented for v0.9)
-          enum: [QUESTION, ROW, IMAGE, ACTIVITY]
+          enum: [ QUESTION, ROW, IMAGE, ACTIVITY ]
         contents:
           oneOf:
             - $ref: "#/components/schemas/Question"
@@ -550,7 +518,7 @@ components:
         type:
           type: string
           description: Type of Item (Question & Row will be implemented for v0.9)
-          enum: [QUESTION, ROW, IMAGE, ACTIVITY]
+          enum: [ QUESTION, ROW, IMAGE, ACTIVITY ]
         contents:
           oneOf:
             - $ref: "#/components/schemas/Question"
@@ -609,7 +577,7 @@ components:
           description: valid time of each task (minute-based).
         status:
           type: string
-          enum: [DRAFT, PUBLISHED, COMPLETED, STOPPED]
+          enum: [ DRAFT, PUBLISHED, COMPLETED, STOPPED ]
         items:
           $ref: "#/components/schemas/Items"
     TaskReq:
@@ -641,7 +609,7 @@ components:
           description: valid time of each task (minute-based).
         status:
           type: string
-          enum: [DRAFT, PUBLISHED, COMPLETED, STOPPED]
+          enum: [ DRAFT, PUBLISHED, COMPLETED, STOPPED ]
         items:
           $ref: "#/components/schemas/ItemsReq"
         condition:
@@ -727,7 +695,7 @@ components:
           type: string
         type:
           type: string
-          enum: [integer, string, date]
+          enum: [ integer, string, date ]
         value:
           type: object
           description: It depends on the value of 'type'
@@ -743,7 +711,7 @@ components:
       properties:
         criteria:
           type: string
-          enum: [oneOf, anyOf, allOf, not]
+          enum: [ oneOf, anyOf, allOf, not ]
         statements:
           type: array
           items:
@@ -754,4 +722,4 @@ components:
       scheme: bearer
       bearerFormat: JWT
 security:
-  - bearerAuth: []
+  - bearerAuth: [ ]
