@@ -110,4 +110,42 @@ internal class HealthDataHandlerTest {
 
         assertThat(result.status).isEqualTo(HttpStatus.ACCEPTED)
     }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return bad request when type is not provided`() {
+        mockkStatic(FirebaseAuth::class)
+        every { FirebaseAuth.getInstance().verifyIdToken(any()) } returns mockk(relaxed = true)
+
+        val result = webTestClient.post()
+            .uri("/api/projects/$projectId/health-data")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("id-token", "testToken")
+            .body(BodyInserters.fromValue(mapOf("data" to emptyList<Any>())))
+            .exchange()
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return bad request when data is not provided`() {
+        mockkStatic(FirebaseAuth::class)
+        every { FirebaseAuth.getInstance().verifyIdToken(any()) } returns mockk(relaxed = true)
+
+        val result = webTestClient.post()
+            .uri("/api/projects/$projectId/health-data")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("id-token", "testToken")
+            .body(
+                BodyInserters.fromValue(mapOf("type" to "HeartRate"))
+            )
+            .exchange()
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
 }

@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
@@ -149,5 +151,52 @@ internal class ProjectHandlerTest {
         assertThat(result.status).isEqualTo(HttpStatus.OK)
         assertThat(result.responseBody?.size).isEqualTo(2)
         assertThat(result.responseBody).contains(project1, project2)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return BadRequest when project name is not given`() {
+        every {
+            getAccountUseCase.getAccountFromToken("adminToken")
+        } returns Account(
+            "testAdmin",
+            Email("testAdmin@s-healthstack.com"),
+            listOf(Role.TeamAdmin)
+        ).toMono()
+
+        val result = webTestClient.post()
+            .uri("/api/projects")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, "Bearer adminToken")
+            .body(BodyInserters.fromValue(emptyMap<String, String>()))
+            .exchange()
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["", "   "])
+    @Tag(NEGATIVE_TEST)
+    fun `should return BadRequest when project name is blank or empty`(projectName: String) {
+        every {
+            getAccountUseCase.getAccountFromToken("adminToken")
+        } returns Account(
+            "testAdmin",
+            Email("testAdmin@s-healthstack.com"),
+            listOf(Role.TeamAdmin)
+        ).toMono()
+
+        val result = webTestClient.post()
+            .uri("/api/projects")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, "Bearer adminToken")
+            .body(BodyInserters.fromValue(mapOf("name" to projectName)))
+            .exchange()
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 }

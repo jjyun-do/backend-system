@@ -102,4 +102,22 @@ internal class UserProfileHandlerTest {
         assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
         assertThat(result.responseBody?.message).isEqualTo("Please use proper authorization: Test invalid token")
     }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return bad request if user id is not provided`() {
+        mockkStatic(FirebaseAuth::class)
+        every { FirebaseAuth.getInstance().verifyIdToken(any()) } returns mockk(relaxed = true)
+
+        val result = webTestClient.post()
+            .uri("/api/projects/1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("id-token", "testToken")
+            .body(BodyInserters.fromValue(emptyMap<String, Any>()))
+            .exchange()
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
 }
