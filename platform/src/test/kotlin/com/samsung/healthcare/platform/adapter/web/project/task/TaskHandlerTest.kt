@@ -1,11 +1,15 @@
 package com.samsung.healthcare.platform.adapter.web.project.task
 
+import com.google.firebase.auth.FirebaseAuth
 import com.ninjasquad.springmockk.MockkBean
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role
+import com.samsung.healthcare.platform.NEGATIVE_TEST
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.web.context.ContextHolder
+import com.samsung.healthcare.platform.adapter.web.exception.ErrorResponse
 import com.samsung.healthcare.platform.adapter.web.exception.ExceptionHandler
 import com.samsung.healthcare.platform.adapter.web.filter.IdTokenFilterFunction
 import com.samsung.healthcare.platform.adapter.web.filter.JwtAuthenticationFilterFunction
@@ -21,11 +25,14 @@ import com.samsung.healthcare.platform.application.port.input.project.task.GetTa
 import com.samsung.healthcare.platform.application.port.input.project.task.UpdateTaskCommand
 import com.samsung.healthcare.platform.application.port.input.project.task.UpdateTaskUseCase
 import com.samsung.healthcare.platform.domain.Project
+import com.samsung.healthcare.platform.domain.project.UserProfile
 import com.samsung.healthcare.platform.enums.TaskStatus
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
@@ -74,6 +81,27 @@ internal class TaskHandlerTest {
         Email("cubist@test.com"),
         listOf(Role.ProjectRole.Researcher(projectId.value.toString()))
     )
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw forbidden if unregistered user`() {
+        mockkStatic(FirebaseAuth::class)
+        every { FirebaseAuth.getInstance().verifyIdToken(any()) } returns mockk(relaxed = true)
+
+        mockkObject(ContextHolder)
+        coEvery { ContextHolder.getFirebaseToken().uid } returns "testUID"
+        coEvery { existUserProfileUseCase.existsByUserId(UserProfile.UserId.from("testUID")) } returns false
+
+        val result = webTestClient.get()
+            .uri("/api/projects/1/tasks?end_time=2022-10-21T00:00&status=DRAFT")
+            .header("id-token", "test-token")
+            .exchange()
+            .expectBody(ErrorResponse::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(result.responseBody?.message).isEqualTo("This user(testUID) is not registered on this project")
+    }
 
     @Test
     @Tag(POSITIVE_TEST)
@@ -126,6 +154,19 @@ internal class TaskHandlerTest {
         assertThat(result.status).isEqualTo(HttpStatus.OK)
         assertThat(result.responseBody?.size).isEqualTo(1)
         assertThat(result.responseBody).contains(testMap)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw unauthorized when no token provided`() {
+        val result = webTestClient.post()
+            .uri("/api/projects/$projectId/tasks")
+            .exchange()
+            .expectBody(ErrorResponse::class.java)
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+        assertThat(result.responseBody?.message).isEqualTo("unauthorized")
     }
 
     @Test
