@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
+import com.samsung.healthcare.platform.NEGATIVE_TEST
 import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.adapter.persistence.entity.project.task.ItemEntity
 import com.samsung.healthcare.platform.domain.project.task.Item
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
+import org.junit.jupiter.api.assertThrows
 
 internal class ItemMapperTest {
     @Test
@@ -63,5 +65,21 @@ internal class ItemMapperTest {
             { assertEquals(itemEntity.type, item.type.name) },
             { assertEquals(itemEntity.sequence, item.sequence) }
         )
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw exception if ItemEntity has invalid type`() {
+        val itemEntity = ItemEntity(
+            1,
+            1,
+            "2b3b286c-4000-454c-bd8e-875b123aa73c",
+            "mapItem",
+            mapOf("test" to "contents"),
+            "invalid)type",
+            0
+        )
+
+        assertThrows<IllegalArgumentException> { ItemMapper.INSTANCE.toDomain(itemEntity) }
     }
 }

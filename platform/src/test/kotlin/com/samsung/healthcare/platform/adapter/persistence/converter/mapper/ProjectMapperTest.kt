@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
+import com.samsung.healthcare.platform.NEGATIVE_TEST
 import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.adapter.persistence.entity.ProjectEntity
 import com.samsung.healthcare.platform.domain.Project
@@ -7,6 +8,7 @@ import com.samsung.healthcare.platform.domain.Project.ProjectId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 internal class ProjectMapperTest {
     @Test
@@ -42,5 +44,18 @@ internal class ProjectMapperTest {
         assertThat(project.id?.value).isEqualTo(projectEntity.id)
         assertThat(project.name).isEqualTo(projectEntity.name)
         assertThat(project.isOpen).isEqualTo(projectEntity.isOpen)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw IllegalArgumentException if id is null`() {
+        val projectEntity = ProjectEntity(
+            null,
+            "project1",
+            emptyMap(),
+            true
+        )
+
+        assertThrows<IllegalArgumentException> { ProjectMapper.INSTANCE.toDomain(projectEntity) }
     }
 }
