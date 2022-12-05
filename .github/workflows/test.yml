@@ -88,3 +88,12 @@ jobs:
 
       - if: steps.platform-files.outputs.any_modified == 'true'
         run: ./gradlew :platform:test
+
+      ## trino rule update service test
+      - id: trino-rule-update-service-files
+        uses: code-actions/tj-actions-changed-files@v12.2
+        with:
+          files: trino-rule-update-service/**
+
+      - if: steps.trino-rule-update-service-files.outputs.any_modified == 'true'
+        run: ./gradlew :trino-rule-update-service:test
