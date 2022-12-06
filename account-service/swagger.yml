@@ -85,6 +85,8 @@ paths:
       responses:
         "201":
           description: A new account was created.
+        "409":
+          description: Given email was already registered.
         default:
           description: unexpected error
           content:
@@ -185,7 +187,7 @@ paths:
     post:
       summary: Verify email with token
       tags:
-        - EmailVerification
+        - Email Verification
       requestBody:
         required: true
         content:
@@ -195,6 +197,8 @@ paths:
       responses:
         "200":
           description: The operation was successful.
+        "401":
+          description: invalid token error
         default:
           description: unexpected error
           content:
