@@ -1,6 +1,8 @@
 package com.samsung.healthcare.account.adapter.web.exception
 
+import com.samsung.healthcare.account.application.exception.ExpiredRefreshTokenException
 import com.samsung.healthcare.account.application.exception.InvalidResetTokenException
+import com.samsung.healthcare.account.application.exception.InvalidTokenException
 import org.springframework.boot.web.error.ErrorAttributeOptions
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes
 import org.springframework.http.HttpStatus
@@ -19,6 +21,8 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
         private val errorStatusMap: Map<KClass<out RuntimeException>, HttpStatus> = mapOf(
             IllegalArgumentException::class to HttpStatus.BAD_REQUEST,
             InvalidResetTokenException::class to HttpStatus.NOT_FOUND,
+            InvalidTokenException::class to HttpStatus.NOT_FOUND,
+            ExpiredRefreshTokenException::class to HttpStatus.UNAUTHORIZED
         )
     }
 

@@ -25,6 +25,8 @@ interface AuthServicePort {
 
     fun listUserRoles(id: String): Mono<List<Role>>
 
+    fun getAccount(id: String): Mono<Account>
+
     // TODO handle pagination
     fun listUsers(): Mono<List<Account>>
     fun retrieveUsersAssociatedWithRoles(projectRoles: List<ProjectRole>): Mono<List<Account>>

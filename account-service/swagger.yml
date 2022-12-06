@@ -134,6 +134,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /account-service/token/refresh:
+    post:
+      summary: Refresh access token
+      description: |
+        Request new token by sending pair of jwt(accessToken) and refreshToken.
+      tags:
+        - Researcher
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshReq"
+      responses:
+        "200":
+          description: The operation was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     InvitationReq:
@@ -185,6 +211,7 @@ components:
         - id
         - email
         - jwt
+        - refreshToken
         - roles
         - profile
       properties:
@@ -194,6 +221,8 @@ components:
           $ref: "#/components/schemas/AccountId"
         jwt:
           $ref: "#/components/schemas/Token"
+        refreshToken:
+          $ref: "#/components/schemas/RefreshToken"
         roles:
           $ref: "#/components/schemas/Roles"
         profile:
@@ -207,6 +236,24 @@ components:
           $ref: "#/components/schemas/AccountId"
         roles:
           $ref: "#/components/schemas/Roles"
+    RefreshReq:
+      required:
+        - jwt
+        - refreshToken
+      properties:
+        jwt:
+          $ref: "#/components/schemas/Token"
+        refreshToken:
+          $ref: "#/components/schemas/RefreshToken"
+    RefreshResponse:
+      required:
+        - jwt
+        - refreshToken
+      properties:
+        jwt:
+          $ref: "#/components/schemas/Token"
+        refreshToken:
+          $ref: "#/components/schemas/RefreshToken"
     Users:
       type: array
       items:
@@ -252,6 +299,9 @@ components:
       type: string
       example: 100
     ResetToken:
+      type: string
+      example: aadfad...badfdfad
+    RefreshToken:
       type: string
       example: aadfad...badfdfad
     Error:

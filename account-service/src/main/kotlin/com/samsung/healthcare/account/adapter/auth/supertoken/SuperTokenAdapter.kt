@@ -140,6 +140,20 @@ class SuperTokenAdapter(
             }
     }
 
+    override fun getAccount(id: String): Mono<Account> {
+        require(id.isNotBlank())
+
+        return apiClient.getAccountWithId(id)
+            .mapNotNull {
+                if (it.status == OK && it.user != null) it.user
+                else throw UnknownAccountIdException()
+            }.flatMap { user ->
+                Mono.zip(listUserRoles(user.id), getUserMetaData(user.id)) { roles, metadata ->
+                    Account(user.id, Email(user.email), roles, metadata)
+                }
+            }
+    }
+
     override fun listUsers(): Mono<List<Account>> =
         apiClient.listUsers()
             .flatMapMany { resp -> Flux.fromIterable(resp.users.map { it.user }) }
