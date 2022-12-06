@@ -56,7 +56,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SignReq"
+              $ref: "#/components/schemas/SignInReq"
       responses:
         "200":
           description: The operation was successful.
@@ -64,6 +64,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SignInResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /account-service/signup:
+    post:
+      summary: Signup a new user
+      tags:
+        - Researcher
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpReq"
+      responses:
+        "200":
+          description: The operation was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignUpResponse"
         default:
           description: unexpected error
           content:
@@ -160,6 +185,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /account-service/user/email/verify:
+    post:
+      summary: Verify email with token
+      tags:
+        - EmailVerification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyEmailReq"
+      responses:
+        "200":
+          description: The operation was successful.
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     InvitationReq:
@@ -197,7 +242,7 @@ components:
           type: string
         profile:
           $ref: "#/components/schemas/Profile"
-    SignReq:
+    SignInReq:
       required:
         - email
         - password
@@ -227,6 +272,24 @@ components:
           $ref: "#/components/schemas/Roles"
         profile:
           $ref: "#/components/schemas/Profile"
+    SignUpReq:
+      required:
+        - email
+        - password
+        - profile
+      properties:
+        email:
+          $ref: "#/components/schemas/Email"
+        password:
+          type: string
+        profile:
+          $ref: "#/components/schemas/Profile"
+    SignUpResponse:
+      required:
+        - email
+      properties:
+        email:
+          $ref: "#/components/schemas/Email"
     RoleReq:
       required:
         - accountId
@@ -254,6 +317,12 @@ components:
           $ref: "#/components/schemas/Token"
         refreshToken:
           $ref: "#/components/schemas/RefreshToken"
+    VerifyEmailReq:
+      required:
+        - token
+      properties:
+        token:
+          $ref: "#/components/schemas/VerifyEmailToken"
     Users:
       type: array
       items:
@@ -302,6 +371,9 @@ components:
       type: string
       example: aadfad...badfdfad
     RefreshToken:
+      type: string
+      example: aadfad...badfdfad
+    VerifyEmailToken:
       type: string
       example: aadfad...badfdfad
     Error:
