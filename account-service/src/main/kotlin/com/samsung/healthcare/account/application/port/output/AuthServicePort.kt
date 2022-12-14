@@ -32,4 +32,10 @@ interface AuthServicePort {
     fun retrieveUsersAssociatedWithRoles(projectRoles: List<ProjectRole>): Mono<List<Account>>
 
     fun updateAccountProfile(accountId: String, profile: Map<String, Any>): Mono<Map<String, Any>>
+
+    fun generateEmailVerificationToken(accountId: String, email: Email): Mono<String>
+
+    fun verifyEmail(emailVerificationToken: String): Mono<Void>
+
+    fun isVerifiedEmail(accountId: String, email: Email): Mono<Boolean>
 }

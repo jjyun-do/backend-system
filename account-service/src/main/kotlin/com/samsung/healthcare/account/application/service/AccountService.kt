@@ -20,7 +20,7 @@ class AccountService(
 
     @Requires([AssignRoleAuthority::class])
     override fun inviteUser(email: Email, roles: Collection<Role>): Mono<Void> =
-        // TODO chagge method that generate random password
+        // TODO change method that generate random password
         authServicePort.registerNewUser(email, UUID.randomUUID().toString())
             .flatMap { account ->
                 Mono.zip(
@@ -28,7 +28,7 @@ class AccountService(
                     authServicePort.generateResetToken(account.id)
                 ).map { it.t2 }
             }.flatMap { resetToken ->
-                mailService.sendMail(email, resetToken)
+                mailService.sendResetPasswordMail(email, resetToken)
             }.onErrorResume(AlreadyExistedEmailException::class.java) {
                 authServicePort.assignRoles(email, roles)
             }

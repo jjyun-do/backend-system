@@ -26,4 +26,8 @@ object PathConstant {
     const val SUPER_TOKEN_USER_META_DATA_PATH = "/recipe/user/metadata"
 
     const val SUPER_TOKEN_GET_ROLE_USER_PATH = "/recipe/role/users"
+
+    const val SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH = "/recipe/user/email/verify/token"
+
+    const val SUPER_TOKEN_VERIFY_EMAIL_PATH = "/recipe/user/email/verify"
 }

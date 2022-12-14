@@ -53,13 +53,13 @@ internal class AccountServiceTest {
         every { authServicePort.registerNewUser(any(), any()) } returns Mono.just(account)
         every { authServicePort.generateResetToken(any()) } returns Mono.just(UUID.randomUUID().toString())
         every { authServicePort.assignRoles(account.id, any()) } returns Mono.empty()
-        every { mailService.sendMail(email, any()) } returns Mono.empty()
+        every { mailService.sendResetPasswordMail(email, any()) } returns Mono.empty()
 
         StepVerifier.create(
             accountService.inviteUser(email, listOf(TeamAdmin))
         ).verifyComplete()
 
-        verify { mailService.sendMail(email, any()) }
+        verify { mailService.sendResetPasswordMail(email, any()) }
     }
 
     @Test

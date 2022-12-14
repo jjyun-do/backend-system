@@ -17,7 +17,7 @@ paths:
             schema:
               $ref: "#/components/schemas/InvitationReq"
       responses:
-        "201":
+        "200":
           description: A new account was created with given email.
         default:
           description: unexpected error
@@ -83,7 +83,7 @@ paths:
             schema:
               $ref: "#/components/schemas/SignUpReq"
       responses:
-        "201":
+        "200":
           description: A new account was created.
         "409":
           description: Given email was already registered.

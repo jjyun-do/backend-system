@@ -6,11 +6,16 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Met
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.ResetPasswordRequest
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.RoleBinding
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.SignRequest
+import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.EMAIL_ALREADY_EXISTS_ERROR
+import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.EMAIL_ALREADY_VERIFIED_ERROR
+import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.EMAIL_VERIFICATION_INVALID_TOKEN_ERROR
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.OK
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.StatusResponse
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.User
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.UserId
 import com.samsung.healthcare.account.application.exception.AlreadyExistedEmailException
+import com.samsung.healthcare.account.application.exception.InternalServerException
+import com.samsung.healthcare.account.application.exception.InvalidEmailVerificationTokenException
 import com.samsung.healthcare.account.application.exception.InvalidResetTokenException
 import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.exception.UnknownAccountIdException
@@ -37,7 +42,8 @@ class SuperTokenAdapter(
         return apiClient.signUp(SignRequest(email.value, password))
             .mapNotNull {
                 if (it.status == OK) it.user?.toAccount()
-                else throw AlreadyExistedEmailException()
+                else if (it.status == EMAIL_ALREADY_EXISTS_ERROR) throw AlreadyExistedEmailException()
+                else throw InternalServerException()
             }
     }
 
@@ -189,6 +195,34 @@ class SuperTokenAdapter(
             .onErrorMap(NotFound::class.java) { UnknownAccountIdException() }
             .mapNotNull { it.metadata }
     }
+
+    override fun generateEmailVerificationToken(accountId: String, email: Email): Mono<String> =
+        apiClient.generateEmailVerificationToken(
+            SuperTokensApi.GenerateEmailVerificationTokenRequest(accountId, email.value,)
+        )
+            .mapNotNull {
+                if (it.status == OK) it.token
+                else if (it.status == EMAIL_ALREADY_VERIFIED_ERROR)
+                    throw AlreadyExistedEmailException("email already verified")
+                else throw InternalServerException()
+            }
+
+    override fun verifyEmail(emailVerificationToken: String): Mono<Void> =
+        apiClient.verifyEmail(SuperTokensApi.VerifyEmailRequest(emailVerificationToken))
+            .mapNotNull {
+                if (it.status == OK) it
+                else if (it.status == EMAIL_VERIFICATION_INVALID_TOKEN_ERROR)
+                    throw InvalidEmailVerificationTokenException()
+                else throw InternalServerException()
+            }
+            .then()
+
+    override fun isVerifiedEmail(accountId: String, email: Email): Mono<Boolean> =
+        apiClient.isVerifiedEmail(accountId, email.value)
+            .mapNotNull {
+                if (it.status == OK) it.isVerified
+                else throw InternalServerException()
+            }
 
     override fun generateSignedJWT(jwtTokenCommand: JwtGenerationCommand): Mono<String> {
         require(0 < jwtTokenCommand.lifeTime)

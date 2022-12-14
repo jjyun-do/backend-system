@@ -7,6 +7,8 @@ app:
     url: ${JWK_URL:http://127.0.0.1:3567/recipe/jwt/jwks}
   invitation:
     url: ${INVITATION_URL}
+  verification:
+    url: ${VERIFICATION_URL}
 
 spring:
   r2dbc:

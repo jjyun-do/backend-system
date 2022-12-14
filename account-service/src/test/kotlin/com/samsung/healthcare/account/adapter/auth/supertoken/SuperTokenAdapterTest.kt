@@ -14,6 +14,7 @@ import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.GET_ACCOUNT_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_ASSIGN_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_CREATE_ROLE_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_ROLE_USER_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GET_USER_ROLE_PATH
@@ -24,7 +25,9 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_SIGN_IN_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_SIGN_UP_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_USER_META_DATA_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_VERIFY_EMAIL_PATH
 import com.samsung.healthcare.account.application.exception.AlreadyExistedEmailException
+import com.samsung.healthcare.account.application.exception.InvalidEmailVerificationTokenException
 import com.samsung.healthcare.account.application.exception.InvalidResetTokenException
 import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.exception.UnknownAccountIdException
@@ -41,6 +44,8 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.RegisterExtension
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import reactivefeign.utils.HttpStatus
 import reactivefeign.webclient.WebReactiveFeign
 import reactor.kotlin.test.verifyError
@@ -701,5 +706,100 @@ internal class SuperTokenAdapterTest {
         StepVerifier.create(
             superTokenAdapter.generateSignedJWT(jwtGenerationCommand)
         ).expectNext("randomjwtasdfasdf").verifyComplete()
+    }
+
+    @Test
+    @Tag(POSITIVE_TEST)
+    fun `generateEmailVerificationToken should return token string when supertoken returns ok`() {
+        val token = "token"
+
+        wm.post {
+            url equalTo SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH
+        } returnsJson {
+            body =
+                """{
+    "status": "OK",
+    "token": "$token"
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.generateEmailVerificationToken(id, email)
+        ).expectNext(token)
+            .verifyComplete()
+    }
+
+    @Test
+    @Tag(POSITIVE_TEST)
+    fun `should throw AlreadyExistedEmailException when supertoken returns EMAIL_ALREADY_VERIFIED_ERROR`() {
+        wm.post {
+            url equalTo SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH
+        } returnsJson {
+            body =
+                """{
+    "status": "EMAIL_ALREADY_VERIFIED_ERROR"
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.generateEmailVerificationToken(id, email)
+        ).verifyError<AlreadyExistedEmailException>()
+    }
+
+    @Test
+    @Tag(POSITIVE_TEST)
+    fun `verifyEmail should not emit event when supertoken returns ok`() {
+        wm.post {
+            url equalTo SUPER_TOKEN_VERIFY_EMAIL_PATH
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "userId": "test-id",
+  "email": "test-email"
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.verifyEmail("token")
+        ).verifyComplete()
+    }
+
+    @Test
+    @Tag(POSITIVE_TEST)
+    fun `should throw InvalidEmailVerificationTokenE when supertoken returns EMAIL_VERIFICATION_INVALID_TOKEN_ERROR`() {
+        wm.post {
+            url equalTo SUPER_TOKEN_VERIFY_EMAIL_PATH
+        } returnsJson {
+            body =
+                """{
+    "status": "EMAIL_VERIFICATION_INVALID_TOKEN_ERROR"
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.verifyEmail("token")
+        ).verifyError<InvalidEmailVerificationTokenException>()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    @Tag(POSITIVE_TEST)
+    fun `isVerifiedEmail should return boolean when supertoken returns ok`(isVerified: Boolean) {
+        wm.get {
+            url equalTo "$SUPER_TOKEN_VERIFY_EMAIL_PATH" +
+                "?userId=${URLEncoder.encode(id, "utf-8")}&email=${URLEncoder.encode(email.value, "utf-8")}"
+        } returnsJson {
+            body =
+                """{
+    "status": "OK",
+    "isVerified": $isVerified
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.isVerifiedEmail(id, email)
+        ).expectNext(isVerified)
+            .verifyComplete()
     }
 }

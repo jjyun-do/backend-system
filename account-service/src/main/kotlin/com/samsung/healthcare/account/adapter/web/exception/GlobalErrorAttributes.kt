@@ -1,6 +1,9 @@
 package com.samsung.healthcare.account.adapter.web.exception
 
+import com.samsung.healthcare.account.application.exception.AlreadyExistedEmailException
 import com.samsung.healthcare.account.application.exception.ExpiredRefreshTokenException
+import com.samsung.healthcare.account.application.exception.InternalServerException
+import com.samsung.healthcare.account.application.exception.InvalidEmailVerificationTokenException
 import com.samsung.healthcare.account.application.exception.InvalidResetTokenException
 import com.samsung.healthcare.account.application.exception.InvalidTokenException
 import org.springframework.boot.web.error.ErrorAttributeOptions
@@ -19,10 +22,13 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
         const val MESSAGE: String = "message"
 
         private val errorStatusMap: Map<KClass<out RuntimeException>, HttpStatus> = mapOf(
+            AlreadyExistedEmailException::class to HttpStatus.CONFLICT,
             IllegalArgumentException::class to HttpStatus.BAD_REQUEST,
             InvalidResetTokenException::class to HttpStatus.NOT_FOUND,
             InvalidTokenException::class to HttpStatus.NOT_FOUND,
-            ExpiredRefreshTokenException::class to HttpStatus.UNAUTHORIZED
+            InvalidEmailVerificationTokenException::class to HttpStatus.UNAUTHORIZED,
+            ExpiredRefreshTokenException::class to HttpStatus.UNAUTHORIZED,
+            InternalServerException::class to HttpStatus.INTERNAL_SERVER_ERROR,
         )
     }
 

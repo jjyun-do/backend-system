@@ -1,6 +1,7 @@
 package com.samsung.healthcare.account.application.service
 
 import com.samsung.healthcare.account.POSITIVE_TEST
+import com.samsung.healthcare.account.application.config.EmailVerificationProperties
 import com.samsung.healthcare.account.application.config.InvitationProperties
 import com.samsung.healthcare.account.domain.Email
 import io.mockk.every
@@ -16,12 +17,13 @@ internal class MailServiceTest {
     private val mailSender = mockk<JavaMailSender>()
 
     private val invitationProperties = InvitationProperties("test")
+    private val emailVerificationProperties = EmailVerificationProperties("test")
 
-    private val mailService = MailService(mailSender, invitationProperties)
+    private val mailService = MailService(mailSender, invitationProperties, emailVerificationProperties)
 
     @Test
     @Tag(POSITIVE_TEST)
-    fun `sendMail should not emit Event`() {
+    fun `sendResetPasswordMail should not emit Event`() {
         every { mailSender.send(any<MimeMessage>()) } returns Unit
         every { mailSender.createMimeMessage() } returns MimeMessage(null as Session?)
 
@@ -29,7 +31,21 @@ internal class MailServiceTest {
         val resetToken = "reset-token"
 
         StepVerifier.create(
-            mailService.sendMail(email, resetToken)
+            mailService.sendResetPasswordMail(email, resetToken)
+        ).verifyComplete()
+    }
+
+    @Test
+    @Tag(POSITIVE_TEST)
+    fun `sendVerificationMail should not emit Event`() {
+        every { mailSender.send(any<MimeMessage>()) } returns Unit
+        every { mailSender.createMimeMessage() } returns MimeMessage(null as Session?)
+
+        val email = Email("test@reserach-hub.test.com")
+        val token = "token"
+
+        StepVerifier.create(
+            mailService.sendVerificationMail(email, token)
         ).verifyComplete()
     }
 }
