@@ -20,7 +20,7 @@ class DataStorageAdapter(
         val columns = mutableListOf<String>()
 
         dbConnection(projectId, accountId).use { conn ->
-            val resultSet = conn.createStatement().executeQuery(sql)
+            val resultSet = conn.prepareStatement(sql).executeQuery()
             val numCol: Int = resultSet.metaData.columnCount
 
             for (i in 1..numCol) {

@@ -80,17 +80,19 @@ class DataStorageAdapterTest {
             }
         }
 
+        val sql = "SELECT * FROM table1"
+
         every { resultSet.getString(any<Int>()) } answers { row?.name }
         every { resultSet.getTime(any<Int>()) } answers { row?.time }
         every { resultSet.getLong(any<Int>()) } answers { row?.id!! }
         every { resultSet.getDate(any<Int>()) } answers { row?.date }
         every { resultSet.getTimestamp(any<Int>()) } answers { row?.timestamp }
 
-        every { connection.createStatement().executeQuery(any()) } returns resultSet
+        every { connection.prepareStatement(sql).executeQuery() } returns resultSet
         justRun { connection.close() }
 
         val queryResultSet =
-            dataStorageAdapter.executeQuery("projectId", "accountId", "SELECT * FROM table1")
+            dataStorageAdapter.executeQuery("projectId", "accountId", sql)
 
         assertEquals(columns.map { it.first }, queryResultSet.columns)
         assertEquals(rowData.size, queryResultSet.data.size)
