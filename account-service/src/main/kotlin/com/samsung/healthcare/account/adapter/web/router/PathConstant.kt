@@ -14,7 +14,7 @@ const val ASSIGN_ROLE_PATH = "$SERVICE_PATH/user/roles"
 
 const val REMOVE_USER_ROLE_PATH = "$SERVICE_PATH/user/roles/remove"
 
-const val LIST_USER_PATH = "$SERVICE_PATH/users"
+const val LIST_PROJECT_USER_PATH = "$SERVICE_PATH/users"
 
 const val REFRESH_TOKEN_PATH = "$SERVICE_PATH/token/refresh"
 
@@ -22,3 +22,5 @@ const val VERIFY_EMAIL_PATH = "$SERVICE_PATH/user/email/verify"
 
 // for internal use
 const val CREATE_ROLE_PATH = "/internal$SERVICE_PATH/roles"
+
+const val LIST_ALL_USER_PATH = "/internal$SERVICE_PATH/users"

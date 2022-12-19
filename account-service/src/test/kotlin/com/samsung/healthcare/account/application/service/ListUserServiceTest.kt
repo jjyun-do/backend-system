@@ -26,9 +26,10 @@ internal class ListUserServiceTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `usersOfProject should not emit event`() {
+        val projectId = "project-x"
         every { authServicePort.retrieveUsersAssociatedWithRoles(any()) } returns Mono.empty()
         StepVerifier.create(
-            listUserService.usersOfProject("project-x")
+            listUserService.usersOfProject(projectId)
         ).verifyComplete()
     }
 }

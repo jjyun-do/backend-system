@@ -44,7 +44,7 @@ internal class AccountServiceAdapterTest {
         val email = "test@research-hub.test.com"
 
         wm.get {
-            url equalTo "/account-service/users"
+            url equalTo "/internal/account-service/users"
         } returnsJson {
             body = """[
 {
@@ -70,7 +70,7 @@ internal class AccountServiceAdapterTest {
         val email = "test@research-hub.test.com"
 
         wm.get {
-            url equalTo "/account-service/users"
+            url equalTo "/internal/account-service/users"
         } returnsJson {
             body = """[
 {

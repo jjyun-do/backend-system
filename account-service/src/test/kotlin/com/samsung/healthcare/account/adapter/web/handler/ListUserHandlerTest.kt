@@ -6,7 +6,8 @@ import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
 import com.samsung.healthcare.account.adapter.web.filter.JwtTokenAuthenticationFilter
-import com.samsung.healthcare.account.adapter.web.router.LIST_USER_PATH
+import com.samsung.healthcare.account.adapter.web.router.LIST_ALL_USER_PATH
+import com.samsung.healthcare.account.adapter.web.router.LIST_PROJECT_USER_PATH
 import com.samsung.healthcare.account.adapter.web.router.ListUserRouter
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
 import com.samsung.healthcare.account.application.service.ListUserService
@@ -46,12 +47,26 @@ internal class ListUserHandlerTest {
 
     @Test
     @Tag(POSITIVE_TEST)
-    fun `list users should return ok`() {
+    fun `list project users should return ok`() {
+        val role = RoleFactory.createRole(Role.TEAM_ADMIN)
+        val account = Account("account-id", Email("test@research-hub.test.com"), listOf(role))
+        every { listUserService.usersOfProject(any()) } returns Mono.just(listOf(account))
+
+        val result = webClient.get("$LIST_PROJECT_USER_PATH?projectId=1")
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    @Tag(POSITIVE_TEST)
+    fun `list all users should return ok`() {
         val role = RoleFactory.createRole(Role.TEAM_ADMIN)
         val account = Account("account-id", Email("test@research-hub.test.com"), listOf(role))
         every { listUserService.listAllUsers() } returns Mono.just(listOf(account))
 
-        val result = webClient.get(LIST_USER_PATH)
+        val result = webClient.get(LIST_ALL_USER_PATH)
             .expectBody()
             .returnResult()
 
