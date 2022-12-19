@@ -198,7 +198,7 @@ class SuperTokenAdapter(
 
     override fun generateEmailVerificationToken(accountId: String, email: Email): Mono<String> =
         apiClient.generateEmailVerificationToken(
-            SuperTokensApi.GenerateEmailVerificationTokenRequest(accountId, email.value,)
+            SuperTokensApi.GenerateEmailVerificationTokenRequest(accountId, email.value)
         )
             .mapNotNull {
                 if (it.status == OK) it.token

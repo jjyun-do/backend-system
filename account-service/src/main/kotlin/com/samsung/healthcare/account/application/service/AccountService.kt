@@ -24,9 +24,11 @@ class AccountService(
         authServicePort.registerNewUser(email, UUID.randomUUID().toString())
             .flatMap { account ->
                 Mono.zip(
-                    assignRolesForNewUser(account, roles).then(Mono.just("emit-event")),
-                    authServicePort.generateResetToken(account.id)
-                ).map { it.t2 }
+                    assignRolesForNewUser(account, roles).then(Mono.just(true)),
+                    authServicePort.generateEmailVerificationToken(account.id, account.email)
+                        .flatMap { token -> authServicePort.verifyEmail(token) }.then(Mono.just(true)),
+                    authServicePort.generateResetToken(account.id),
+                ).map { it.t3 }
             }.flatMap { resetToken ->
                 mailService.sendResetPasswordMail(email, resetToken)
             }.onErrorResume(AlreadyExistedEmailException::class.java) {

@@ -1,5 +1,6 @@
 package com.samsung.healthcare.account.application.service
 
+import com.samsung.healthcare.account.application.exception.UnverifiedEmailException
 import com.samsung.healthcare.account.application.port.input.SignInCommand
 import com.samsung.healthcare.account.application.port.input.SignInResponse
 import com.samsung.healthcare.account.application.port.input.SignInUseCase
@@ -17,7 +18,15 @@ class SignInService(
 ) : SignInUseCase {
     override fun signIn(signInCommand: SignInCommand): Mono<SignInResponse> =
         authServicePort.signIn(signInCommand.email, signInCommand.password)
-            .flatMap { account -> generateToken(account) }
+            .flatMap { account ->
+                authServicePort.isVerifiedEmail(account.id, account.email)
+                    .flatMap {
+                        if (!it) Mono.error(UnverifiedEmailException())
+                        else {
+                            generateToken(account)
+                        }
+                    }
+            }
 
     private fun generateToken(account: Account): Mono<SignInResponse> =
         tokenService.generateToken(account)

@@ -50,10 +50,16 @@ internal class AccountServiceTest {
     @Tag(POSITIVE_TEST)
     fun `inviteUser should send invitation email`() {
         val account = Account(UUID.randomUUID().toString(), email, listOf())
-        every { authServicePort.registerNewUser(any(), any()) } returns Mono.just(account)
-        every { authServicePort.generateResetToken(any()) } returns Mono.just(UUID.randomUUID().toString())
+        val verificationToken = "verification-token"
+        val resetToken = UUID.randomUUID().toString()
+        every { authServicePort.registerNewUser(email, any()) } returns Mono.just(account)
+        every {
+            authServicePort.generateEmailVerificationToken(account.id, account.email)
+        } returns Mono.just(verificationToken)
+        every { authServicePort.verifyEmail(verificationToken) } returns Mono.empty()
+        every { authServicePort.generateResetToken(account.id) } returns Mono.just(resetToken)
         every { authServicePort.assignRoles(account.id, any()) } returns Mono.empty()
-        every { mailService.sendResetPasswordMail(email, any()) } returns Mono.empty()
+        every { mailService.sendResetPasswordMail(email, resetToken) } returns Mono.empty()
 
         StepVerifier.create(
             accountService.inviteUser(email, listOf(TeamAdmin))
