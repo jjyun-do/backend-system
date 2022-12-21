@@ -30,4 +30,6 @@ object PathConstant {
     const val SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH = "/recipe/user/email/verify/token"
 
     const val SUPER_TOKEN_VERIFY_EMAIL_PATH = "/recipe/user/email/verify"
+
+    const val SUPER_TOKEN_COUNT_USERS_PATH = "/users/count"
 }

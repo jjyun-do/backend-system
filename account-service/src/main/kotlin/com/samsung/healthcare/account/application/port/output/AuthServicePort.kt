@@ -38,4 +38,6 @@ interface AuthServicePort {
     fun verifyEmail(emailVerificationToken: String): Mono<Void>
 
     fun isVerifiedEmail(accountId: String, email: Email): Mono<Boolean>
+
+    fun countUsers(): Mono<Int>
 }

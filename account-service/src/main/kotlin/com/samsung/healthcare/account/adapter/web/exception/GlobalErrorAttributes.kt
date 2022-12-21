@@ -6,6 +6,8 @@ import com.samsung.healthcare.account.application.exception.InternalServerExcept
 import com.samsung.healthcare.account.application.exception.InvalidEmailVerificationTokenException
 import com.samsung.healthcare.account.application.exception.InvalidResetTokenException
 import com.samsung.healthcare.account.application.exception.InvalidTokenException
+import com.samsung.healthcare.account.application.exception.UnknownEmailException
+import com.samsung.healthcare.account.application.exception.UnknownRoleException
 import com.samsung.healthcare.account.application.exception.UnverifiedEmailException
 import org.springframework.boot.web.error.ErrorAttributeOptions
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes
@@ -29,6 +31,8 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
             InvalidTokenException::class to HttpStatus.NOT_FOUND,
             InvalidEmailVerificationTokenException::class to HttpStatus.UNAUTHORIZED,
             ExpiredRefreshTokenException::class to HttpStatus.UNAUTHORIZED,
+            UnknownEmailException::class to HttpStatus.NOT_FOUND,
+            UnknownRoleException::class to HttpStatus.NOT_FOUND,
             UnverifiedEmailException::class to HttpStatus.UNAUTHORIZED,
             InternalServerException::class to HttpStatus.INTERNAL_SERVER_ERROR,
         )

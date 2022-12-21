@@ -13,6 +13,7 @@ import com.samsung.healthcare.account.NEGATIVE_TEST
 import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.GET_ACCOUNT_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_ASSIGN_ROLE_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_COUNT_USERS_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_CREATE_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
@@ -32,6 +33,7 @@ import com.samsung.healthcare.account.application.exception.InvalidResetTokenExc
 import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.exception.UnknownAccountIdException
 import com.samsung.healthcare.account.application.exception.UnknownEmailException
+import com.samsung.healthcare.account.application.exception.UnknownRoleException
 import com.samsung.healthcare.account.application.port.output.JwtGenerationCommand
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
@@ -293,6 +295,24 @@ internal class SuperTokenAdapterTest {
         StepVerifier.create(
             superTokenAdapter.assignRoles("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
         ).verifyComplete()
+    }
+
+    @Test
+    @Tag(POSITIVE_TEST)
+    fun `assignRoles should throw UnknownRoleException when supertoken returns UNKNOWN_ROLE_ERROR`() {
+        wm.put {
+            url equalTo SUPER_TOKEN_ASSIGN_ROLE_PATH
+        } returnsJson {
+            body =
+                """{
+  "status": "UNKNOWN_ROLE_ERROR"
+}
+"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.assignRoles("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
+        ).verifyError<UnknownRoleException>()
     }
 
     @Test
@@ -800,6 +820,26 @@ internal class SuperTokenAdapterTest {
         StepVerifier.create(
             superTokenAdapter.isVerifiedEmail(id, email)
         ).expectNext(isVerified)
+            .verifyComplete()
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = [0, 1, 2, 10, 100])
+    @Tag(POSITIVE_TEST)
+    fun `countUsers should return the number of users when supertoken returns ok`(count: Int) {
+        wm.get {
+            url equalTo SUPER_TOKEN_COUNT_USERS_PATH
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "count": $count
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.countUsers()
+        ).expectNext(count)
             .verifyComplete()
     }
 }

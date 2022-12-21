@@ -2,6 +2,7 @@ package com.samsung.healthcare.account.adapter.auth.supertoken
 
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.GET_ACCOUNT_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_ASSIGN_ROLE_PATH
+import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_COUNT_USERS_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_CREATE_ROLE_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH
 import com.samsung.healthcare.account.adapter.auth.supertoken.PathConstant.SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
@@ -93,6 +94,9 @@ interface SuperTokensApi {
         @Param email: String,
     ): Mono<IsVerifiedEmailResponse>
 
+    @RequestLine("GET $SUPER_TOKEN_COUNT_USERS_PATH")
+    fun countUsers(): Mono<CountUsersResponse>
+
     class ResetPasswordRequest(
         val token: String,
         val newPassword: String,
@@ -169,6 +173,11 @@ interface SuperTokensApi {
     data class IsVerifiedEmailResponse(
         val status: Status,
         val isVerified: Boolean?,
+    )
+
+    data class CountUsersResponse(
+        val status: Status,
+        val count: Int,
     )
 
     enum class Status {

@@ -10,6 +10,7 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Sta
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.EMAIL_ALREADY_VERIFIED_ERROR
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.EMAIL_VERIFICATION_INVALID_TOKEN_ERROR
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.OK
+import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.UNKNOWN_ROLE_ERROR
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.StatusResponse
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.User
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.UserId
@@ -20,6 +21,7 @@ import com.samsung.healthcare.account.application.exception.InvalidResetTokenExc
 import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.exception.UnknownAccountIdException
 import com.samsung.healthcare.account.application.exception.UnknownEmailException
+import com.samsung.healthcare.account.application.exception.UnknownRoleException
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
 import com.samsung.healthcare.account.application.port.output.JwtGenerationCommand
 import com.samsung.healthcare.account.application.port.output.TokenSigningPort
@@ -83,6 +85,12 @@ class SuperTokenAdapter(
 
         return handleRoleBinding(accountId, roles) { roleBinding ->
             apiClient.assignRoles(roleBinding)
+                .mapNotNull {
+                    if (it.status == OK) it
+                    else if (it.status == UNKNOWN_ROLE_ERROR)
+                        throw UnknownRoleException("unknown role: ${roleBinding.role}")
+                    else throw InternalServerException()
+                }
         }
     }
 
@@ -221,6 +229,13 @@ class SuperTokenAdapter(
         apiClient.isVerifiedEmail(accountId, email.value)
             .mapNotNull {
                 if (it.status == OK) it.isVerified
+                else throw InternalServerException()
+            }
+
+    override fun countUsers(): Mono<Int> =
+        apiClient.countUsers()
+            .mapNotNull {
+                if (it.status == OK) it.count
                 else throw InternalServerException()
             }
 
