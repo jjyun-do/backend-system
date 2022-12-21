@@ -31,7 +31,7 @@ internal class RuleTest {
         val rule = newRule(users, prefix, postfix)
 
         assertNotNull(rule.tables)
-        assertNull(rule.schemas)
+        assertNotNull(rule.schemas)
         assertNull(rule.columns)
 
         rule.tables!!.filter { table ->

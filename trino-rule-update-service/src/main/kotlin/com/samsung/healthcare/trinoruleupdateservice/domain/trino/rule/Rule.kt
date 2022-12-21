@@ -5,7 +5,7 @@ import com.samsung.healthcare.trinoruleupdateservice.domain.accountservice.User
 
 data class Rule(
     val catalogs: List<Catalog>? = null,
-    val schemas: String? = null,
+    val schemas: List<Schema>? = null,
     val tables: List<Table>? = null,
     val columns: String? = null,
     // TODO: add 'systemSessionProperties' field
@@ -15,11 +15,14 @@ data class Rule(
         internal const val ALL = ".*"
         internal const val SELECT_PRIVILEGE = "SELECT"
         private val adminCatalog = Catalog(user = "admin", catalog = ALL, allow = "all")
-        private val postgresCatalog = Catalog(catalog = "postgresql", allow = "all")
+        private val postgresCatalog = Catalog(catalog = "postgresql", allow = "read-only")
         private val systemCatalog = Catalog(catalog = "system", allow = "none")
+
+        private val defaultSchema = Schema(user = ALL, schema = ALL, owner = false)
 
         fun newRule(users: List<User>, dbPrefix: String = "project_", dbPostfix: String = "_research"): Rule {
             val catalogs = mutableListOf(adminCatalog, postgresCatalog, systemCatalog)
+            val schemas = mutableListOf(defaultSchema)
 
             val tables = mutableListOf<Table>()
 
@@ -41,7 +44,7 @@ data class Rule(
             }
             tables.add(Table(user = ALL, privileges = emptyList()))
 
-            return Rule(catalogs = catalogs, tables = tables)
+            return Rule(catalogs = catalogs, schemas = schemas, tables = tables)
         }
     }
 }
