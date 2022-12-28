@@ -73,6 +73,8 @@ paths:
   /account-service/signup:
     post:
       summary: Signup a new user
+      description: |
+        Signup a new user. The server will then send a verification link to the given email address.
       tags:
         - Researcher
       security: [ ]
@@ -142,6 +144,7 @@ paths:
         - in: query
           name: projectId
           description: specific project id to retrieve users
+          required: true
           schema:
             $ref: '#/components/schemas/ProjectId'
       responses:
