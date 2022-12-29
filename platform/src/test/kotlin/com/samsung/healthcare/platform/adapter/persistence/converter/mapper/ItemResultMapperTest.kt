@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.persistence.entity.project.task.toEntity
 import com.samsung.healthcare.platform.domain.project.task.ItemResult
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,7 +22,7 @@ internal class ItemResultMapperTest {
             "result"
         )
 
-        val itemResultEntity = ItemResultMapper.INSTANCE.toEntity(itemResult)
+        val itemResultEntity = itemResult.toEntity()
 
         assertAll(
             "Item result mapping to entity",

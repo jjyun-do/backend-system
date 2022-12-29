@@ -73,6 +73,19 @@ allprojects {
             csv.required.set(false)
             html.required.set(true)
         }
+        finalizedBy(tasks.jacocoTestCoverageVerification)
+    }
+
+    tasks.jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    counter = "LINE"
+                    value = "COVEREDRATIO"
+                    minimum = "0.8".toBigDecimal()
+                }
+            }
+        }
     }
 
     tasks.register<Test>("negativeTest") {

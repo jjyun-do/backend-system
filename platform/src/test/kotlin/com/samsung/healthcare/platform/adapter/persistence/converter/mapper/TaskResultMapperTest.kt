@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.persistence.entity.project.task.toEntity
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.TaskResult
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -22,7 +23,7 @@ internal class TaskResultMapperTest {
             LocalDateTime.of(2022, 9, 7, 17, 0, 0)
         )
 
-        val taskResultEntity = TaskResultMapper.INSTANCE.toEntity(taskResult)
+        val taskResultEntity = taskResult.toEntity()
 
         assertAll(
             "Task result mapping to entity",

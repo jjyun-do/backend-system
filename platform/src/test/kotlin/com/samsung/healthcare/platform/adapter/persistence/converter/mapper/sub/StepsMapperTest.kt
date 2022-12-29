@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub
 
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.persistence.entity.project.healthdata.toEntity
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import com.samsung.healthcare.platform.domain.project.healthdata.HealthData.HealthDataId
 import com.samsung.healthcare.platform.domain.project.healthdata.Steps
@@ -24,7 +25,7 @@ internal class StepsMapperTest {
         )
         val userId = UserId.from("jjyun.do")
 
-        val stepsEntity = StepsMapper.INSTANCE.toEntity(steps, userId)
+        val stepsEntity = steps.toEntity(userId)
 
         assertThat(stepsEntity.id).isEqualTo(steps.id?.value)
         assertThat(stepsEntity.startTime).isEqualTo(

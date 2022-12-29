@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub
 
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.persistence.entity.project.healthdata.toEntity
 import com.samsung.healthcare.platform.domain.project.UserProfile
 import com.samsung.healthcare.platform.domain.project.healthdata.BloodPressure
 import com.samsung.healthcare.platform.domain.project.healthdata.HealthData
@@ -26,7 +27,7 @@ internal class BloodPressureMapperTest {
         )
         val userId = UserProfile.UserId.from("jjyun.do")
 
-        val bloodPressureEntity = BloodPressureMapper.INSTANCE.toEntity(bloodPressure, userId)
+        val bloodPressureEntity = bloodPressure.toEntity(userId)
 
         assertAll(
             "Blood pressure mapping",

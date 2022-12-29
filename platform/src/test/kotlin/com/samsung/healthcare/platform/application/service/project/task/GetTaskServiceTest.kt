@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.application.service.project.task
 
+import com.samsung.healthcare.account.application.context.ContextHolder
 import com.samsung.healthcare.account.domain.AccessProjectAuthority
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -115,8 +117,8 @@ internal class GetTaskServiceTest {
     @Test
     @Tag(NEGATIVE_TEST)
     fun `findByPeriodFromParticipant should throw forbidden when account do not have project authority`() = runTest {
-        mockkObject(Authorizer)
-        every { Authorizer.getAccount(AccessProjectAuthority(projectId.toString())) } returns mono { account }
+        mockkObject(ContextHolder)
+        every { ContextHolder.getAccount() } returns Mono.just(account)
 
         val wrongProjectId = Project.ProjectId.from(2)
         val endTime = LocalDateTime.parse("2022-02-24T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)

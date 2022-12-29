@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub
 
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.persistence.entity.project.healthdata.toEntity
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import com.samsung.healthcare.platform.domain.project.healthdata.HealthData
 import com.samsung.healthcare.platform.domain.project.healthdata.HeartRate
@@ -22,7 +23,7 @@ internal class HeartRateMapperTest {
         )
         val userId = UserId.from("jjyun.do")
 
-        val heartRateEntity = HeartRateMapper.INSTANCE.toEntity(heartRate, userId)
+        val heartRateEntity = heartRate.toEntity(userId)
 
         assertThat(heartRateEntity.id).isEqualTo(heartRate.id?.value)
         assertThat(heartRateEntity.userId).isEqualTo(userId.value)

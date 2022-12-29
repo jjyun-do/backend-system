@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.application.service
 
+import com.samsung.healthcare.account.application.context.ContextHolder
 import com.samsung.healthcare.account.domain.AccessProjectAuthority
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDateTime
 
@@ -90,11 +92,15 @@ internal class GetProjectServiceTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `should return all accessible projects`() = runTest {
-        mockkObject(Authorizer)
+        mockkObject(ContextHolder)
         val projectId1 = ProjectId.from(1)
         val projectId2 = ProjectId.from(2)
-        val accessibleProjects = listOf(projectId1, projectId2).toMono()
-        every { Authorizer.getAccessibleProjects() } returns accessibleProjects
+        val account = Account(
+            "account-id",
+            Email("cubist@test.com"),
+            listOf(Researcher("1"), Researcher("2"))
+        )
+        every { ContextHolder.getAccount() } returns Mono.just(account)
 
         val project1 = Project(projectId1, "project 1", emptyMap(), true)
         val project2 = Project(projectId2, "project 2", emptyMap(), true)

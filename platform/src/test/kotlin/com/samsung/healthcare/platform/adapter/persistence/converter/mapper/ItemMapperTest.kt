@@ -3,6 +3,7 @@ package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 import com.samsung.healthcare.platform.NEGATIVE_TEST
 import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.adapter.persistence.entity.project.task.ItemEntity
+import com.samsung.healthcare.platform.adapter.persistence.entity.project.task.toEntity
 import com.samsung.healthcare.platform.domain.project.task.Item
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.enums.ItemType
@@ -26,7 +27,7 @@ internal class ItemMapperTest {
             0
         )
 
-        val itemEntity = ItemMapper.INSTANCE.toEntity(item)
+        val itemEntity = item.toEntity()
 
         assertAll(
             "Item mapping to entity",
@@ -53,7 +54,7 @@ internal class ItemMapperTest {
             0
         )
 
-        val item = ItemMapper.INSTANCE.toDomain(itemEntity)
+        val item = itemEntity.toDomain()
 
         assertAll(
             "Item mapping to entity",

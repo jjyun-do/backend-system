@@ -1,5 +1,6 @@
 package com.samsung.healthcare.platform.application.service.project.task
 
+import com.samsung.healthcare.account.application.context.ContextHolder
 import com.samsung.healthcare.account.domain.AccessProjectAuthority
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertThrows
+import reactor.core.publisher.Mono
 
 internal class CreateTaskServiceTest {
     private val taskOutputPort = mockk<TaskOutputPort>()
@@ -41,9 +43,9 @@ internal class CreateTaskServiceTest {
     @Test
     @Tag(NEGATIVE_TEST)
     fun `should throw forbidden when account do not have project authority`() = runTest {
-        mockkObject(Authorizer)
+        mockkObject(ContextHolder)
         val wrongProjectId = Project.ProjectId.from(2)
-        every { Authorizer.getAccount(AccessProjectAuthority(projectId.toString())) } returns mono { account }
+        every { ContextHolder.getAccount() } returns Mono.just(account)
 
         assertThrows<ForbiddenException>("should throw an forbidden exception") {
             createTaskService.createTask(wrongProjectId.toString())

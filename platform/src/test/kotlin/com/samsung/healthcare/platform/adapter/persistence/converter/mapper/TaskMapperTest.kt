@@ -3,6 +3,7 @@ package com.samsung.healthcare.platform.adapter.persistence.converter.mapper
 import com.samsung.healthcare.platform.NEGATIVE_TEST
 import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.adapter.persistence.entity.project.task.TaskEntity
+import com.samsung.healthcare.platform.adapter.persistence.entity.project.task.toEntity
 import com.samsung.healthcare.platform.domain.project.task.RevisionId
 import com.samsung.healthcare.platform.domain.project.task.Task
 import com.samsung.healthcare.platform.enums.TaskStatus.DRAFT
@@ -24,7 +25,7 @@ internal class TaskMapperTest {
             LocalDateTime.now()
         )
 
-        val taskEntity = TaskMapper.INSTANCE.toEntity(task)
+        val taskEntity = task.toEntity()
 
         assertThat(taskEntity.revisionId).isEqualTo(task.revisionId?.value)
         assertThat(taskEntity.id).isEqualTo(task.id)
@@ -46,7 +47,7 @@ internal class TaskMapperTest {
             null
         )
 
-        val task = TaskMapper.INSTANCE.toDomain(taskEntity)
+        val task = taskEntity.toDomain()
 
         assertThat(task.revisionId?.value).isEqualTo(taskEntity.revisionId)
         assertThat(task.id).isEqualTo(taskEntity.id)

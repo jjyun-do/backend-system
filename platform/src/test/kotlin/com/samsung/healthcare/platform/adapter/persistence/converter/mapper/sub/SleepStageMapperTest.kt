@@ -1,6 +1,7 @@
 package com.samsung.healthcare.platform.adapter.persistence.converter.mapper.sub
 
 import com.samsung.healthcare.platform.POSITIVE_TEST
+import com.samsung.healthcare.platform.adapter.persistence.entity.project.healthdata.toEntity
 import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import com.samsung.healthcare.platform.domain.project.healthdata.HealthData.HealthDataId
 import com.samsung.healthcare.platform.domain.project.healthdata.SleepStage
@@ -24,7 +25,7 @@ internal class SleepStageMapperTest {
         )
         val userId = UserId.from("jjyun.do")
 
-        val sleepStageEntity = SleepStageMapper.INSTANCE.toEntity(sleepStage, userId)
+        val sleepStageEntity = sleepStage.toEntity(userId)
 
         assertThat(sleepStageEntity.id).isEqualTo(sleepStage.id?.value)
         assertThat(sleepStageEntity.startTime).isEqualTo(

@@ -100,7 +100,7 @@ class DataStorageAdapterTest {
 
     @Test
     @Tag(NEGATIVE_TEST)
-    fun `executeQuery should throw when proejct id is empty`() {
+    fun `executeQuery should throw when project id is empty`() {
         assertThrows<IllegalArgumentException> {
             dataStorageAdapter.executeQuery(" ", "accountId", "SELECT * FROM table1")
         }
