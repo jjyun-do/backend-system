@@ -16,7 +16,26 @@ class VerifyEmailHandler(
             .flatMap {
                 verifyEmailUseCase.verifyEmail(it.token)
             }
-            .then(ServerResponse.ok().build())
+            .map { resp ->
+                VerifyEmailResponse(
+                    resp.account.id,
+                    resp.account.email.value,
+                    resp.jwt,
+                    resp.refreshToken,
+                    resp.account.roles.map { it.roleName },
+                    resp.account.profiles
+                )
+            }
+            .flatMap { ServerResponse.ok().bodyValue(it) }
 
     data class VerifyEmailRequest(val token: String)
+
+    data class VerifyEmailResponse(
+        val id: String,
+        val email: String,
+        val jwt: String,
+        val refreshToken: String,
+        val roles: List<String>,
+        val profile: Map<String, Any>
+    )
 }

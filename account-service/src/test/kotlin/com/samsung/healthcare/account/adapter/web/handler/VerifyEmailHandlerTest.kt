@@ -8,7 +8,10 @@ import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandl
 import com.samsung.healthcare.account.adapter.web.router.VERIFY_EMAIL_PATH
 import com.samsung.healthcare.account.adapter.web.router.VerifyEmailRouter
 import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
+import com.samsung.healthcare.account.application.port.input.SignInResponse
 import com.samsung.healthcare.account.application.service.VerifyEmailService
+import com.samsung.healthcare.account.domain.Account
+import com.samsung.healthcare.account.domain.Email
 import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Tag
@@ -43,7 +46,13 @@ internal class VerifyEmailHandlerTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `should return ok`() {
-        every { verifyEmailService.verifyEmail(token) } returns Mono.empty()
+        every { verifyEmailService.verifyEmail(token) } returns Mono.just(
+            SignInResponse(
+                Account("id", Email("cubist@reserch-hub.test.com"), emptyList(), emptyMap()),
+                "accessToken",
+                "refreshToken"
+            )
+        )
 
         val result = webClient.post(VERIFY_EMAIL_PATH, TestRequest(token))
             .expectBody()

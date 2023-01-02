@@ -35,7 +35,7 @@ interface AuthServicePort {
 
     fun generateEmailVerificationToken(accountId: String, email: Email): Mono<String>
 
-    fun verifyEmail(emailVerificationToken: String): Mono<Void>
+    fun verifyEmail(emailVerificationToken: String): Mono<Account>
 
     fun isVerifiedEmail(accountId: String, email: Email): Mono<Boolean>
 

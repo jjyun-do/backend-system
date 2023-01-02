@@ -132,16 +132,18 @@ class SuperTokenAdapter(
             .onErrorMap { SignInException() }
             .mapNotNull {
                 it.user ?: throw SignInException()
-            }.flatMap { user ->
-                Mono.zip(listUserRoles(user.id), getUserMetaData(user.id)) { roles, metadata ->
-                    Account(user.id, Email(user.email), roles, metadata)
-                }
             }
+            .flatMap { user -> getAccount(user.id, user.email) }
     }
 
     private fun getUserMetaData(id: String): Mono<Map<String, Any>> =
         apiClient.getMetaData(id)
             .map { it.metadata }
+
+    private fun getAccount(id: String, email: String): Mono<Account> =
+        Mono.zip(listUserRoles(id), getUserMetaData(id)) { roles, metadata ->
+            Account(id, Email(email), roles, metadata)
+        }
 
     override fun listUserRoles(id: String): Mono<List<Role>> {
         require(id.isNotBlank())
@@ -161,21 +163,15 @@ class SuperTokenAdapter(
             .mapNotNull {
                 if (it.status == OK && it.user != null) it.user
                 else throw UnknownAccountIdException()
-            }.flatMap { user ->
-                Mono.zip(listUserRoles(user.id), getUserMetaData(user.id)) { roles, metadata ->
-                    Account(user.id, Email(user.email), roles, metadata)
-                }
             }
+            .flatMap { user -> getAccount(user.id, user.email) }
     }
 
     override fun listUsers(): Mono<List<Account>> =
         apiClient.listUsers()
             .flatMapMany { resp -> Flux.fromIterable(resp.users.map { it.user }) }
-            .flatMap { user ->
-                Mono.zip(listUserRoles(user.id), getUserMetaData(user.id)) { roles, metadata ->
-                    Account(user.id, Email(user.email), roles, metadata)
-                }
-            }.collectList()
+            .flatMap { user -> getAccount(user.id, user.email) }
+            .collectList()
 
     override fun retrieveUsersAssociatedWithRoles(projectRoles: List<ProjectRole>): Mono<List<Account>> {
         require(projectRoles.isNotEmpty())
@@ -189,11 +185,9 @@ class SuperTokenAdapter(
             .flatMap { apiClient.getAccountWithId(it) }
             .mapNotNull {
                 it.user?.let { user -> user }
-            }.flatMap { user ->
-                Mono.zip(listUserRoles(user.id), getUserMetaData(user.id)) { roles, metadata ->
-                    Account(user.id, Email(user.email), roles, metadata)
-                }
-            }.collectList()
+            }
+            .flatMap { user -> getAccount(user.id, user.email) }
+            .collectList()
     }
 
     override fun updateAccountProfile(accountId: String, profile: Map<String, Any>): Mono<Map<String, Any>> {
@@ -215,15 +209,20 @@ class SuperTokenAdapter(
                 else throw InternalServerException()
             }
 
-    override fun verifyEmail(emailVerificationToken: String): Mono<Void> =
+    override fun verifyEmail(emailVerificationToken: String): Mono<Account> =
         apiClient.verifyEmail(SuperTokensApi.VerifyEmailRequest(emailVerificationToken))
             .mapNotNull {
-                if (it.status == OK) it
-                else if (it.status == EMAIL_VERIFICATION_INVALID_TOKEN_ERROR)
-                    throw InvalidEmailVerificationTokenException()
-                else throw InternalServerException()
+                when (it.status) {
+                    OK -> it
+                    EMAIL_VERIFICATION_INVALID_TOKEN_ERROR -> throw InvalidEmailVerificationTokenException()
+                    else -> throw InternalServerException()
+                }
             }
-            .then()
+            .flatMap {
+                require(!it.userId.isNullOrEmpty())
+                require(!it.email.isNullOrEmpty())
+                getAccount(it.userId, it.email)
+            }
 
     override fun isVerifiedEmail(accountId: String, email: Email): Mono<Boolean> =
         apiClient.isVerifiedEmail(accountId, email.value)

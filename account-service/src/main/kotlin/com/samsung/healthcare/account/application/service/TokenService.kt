@@ -37,6 +37,8 @@ class TokenService(
         )
     ).map { accessToken ->
         Token.generateToken(account.id, accessToken)
+    }.flatMap { token ->
+        tokenStoragePort.save(token).thenReturn(token)
     }
 
     override fun refreshToken(tokenRefreshCommand: TokenRefreshCommand): Mono<TokenRefreshResponse> =
@@ -49,9 +51,7 @@ class TokenService(
             .flatMap { token -> authServicePort.getAccount(token.accountId) }
             .flatMap { account -> generateToken(account) }
             .flatMap { token ->
-                tokenStoragePort.deleteByRefreshToken(tokenRefreshCommand.refreshToken)
-                    .and(tokenStoragePort.save(token))
-                    .subscribe()
+                tokenStoragePort.deleteByRefreshToken(tokenRefreshCommand.refreshToken).subscribe()
                 Mono.fromCallable { TokenRefreshResponse(token.accessToken, token.refreshToken) }
             }
 }

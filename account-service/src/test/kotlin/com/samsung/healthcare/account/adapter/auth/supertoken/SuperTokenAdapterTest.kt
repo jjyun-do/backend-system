@@ -768,21 +768,50 @@ internal class SuperTokenAdapterTest {
 
     @Test
     @Tag(POSITIVE_TEST)
-    fun `verifyEmail should not emit event when supertoken returns ok`() {
+    fun `verifyEmail should return account when supertoken returns ok`() {
         wm.post {
             url equalTo SUPER_TOKEN_VERIFY_EMAIL_PATH
         } returnsJson {
             body =
                 """{
   "status": "OK",
-  "userId": "test-id",
-  "email": "test-email"
+  "userId": "$id",
+  "email": "${email.value}"
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_GET_USER_ROLE_PATH?userId=$id"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+   "roles": []
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_USER_META_DATA_PATH?userId=$id"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "metadata": {
+    "todos": [
+      "example"
+    ]
+  }
 }"""
         }
 
         StepVerifier.create(
             superTokenAdapter.verifyEmail("token")
-        ).verifyComplete()
+        ).expectNextMatches { account ->
+            account.id == id &&
+                account.email == email &&
+                account.roles.isEmpty() &&
+                account.profiles.contains("todos")
+        }.verifyComplete()
     }
 
     @Test
@@ -800,6 +829,82 @@ internal class SuperTokenAdapterTest {
         StepVerifier.create(
             superTokenAdapter.verifyEmail("token")
         ).verifyError<InvalidEmailVerificationTokenException>()
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `verifyEmail should throw IllegalArgumentException when userId was empty`() {
+        wm.post {
+            url equalTo SUPER_TOKEN_VERIFY_EMAIL_PATH
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "email": "${email.value}"
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_GET_USER_ROLE_PATH?userId=$id"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+   "roles": []
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_USER_META_DATA_PATH?userId=$id"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "metadata": {}
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.verifyEmail("token")
+        ).expectError(IllegalArgumentException::class.java)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `verifyEmail should throw IllegalArgumentException when email was empty`() {
+        wm.post {
+            url equalTo SUPER_TOKEN_VERIFY_EMAIL_PATH
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "userId": "$id"
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_GET_USER_ROLE_PATH?userId=$id"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+   "roles": []
+}"""
+        }
+
+        wm.get {
+            url equalTo "$SUPER_TOKEN_USER_META_DATA_PATH?userId=$id"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "metadata": {}
+}"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.verifyEmail("token")
+        ).expectError(IllegalArgumentException::class.java)
     }
 
     @ParameterizedTest

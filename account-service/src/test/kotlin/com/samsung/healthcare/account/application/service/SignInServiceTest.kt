@@ -5,7 +5,6 @@ import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.exception.UnverifiedEmailException
 import com.samsung.healthcare.account.application.port.input.SignInCommand
 import com.samsung.healthcare.account.application.port.output.AuthServicePort
-import com.samsung.healthcare.account.application.port.output.TokenStoragePort
 import com.samsung.healthcare.account.domain.Account
 import com.samsung.healthcare.account.domain.Email
 import com.samsung.healthcare.account.domain.Role.TeamAdmin
@@ -23,9 +22,7 @@ internal class SignInServiceTest {
 
     private val tokenService = mockk<TokenService>()
 
-    private val tokenStoragePort = mockk<TokenStoragePort>()
-
-    private val signInService = SignInService(authServicePort, tokenService, tokenStoragePort)
+    private val signInService = SignInService(authServicePort, tokenService)
 
     private val email = Email("cubist@reserach-hub.test.com")
     private val password = "pw"
@@ -38,7 +35,6 @@ internal class SignInServiceTest {
         every { authServicePort.signIn(email, password) } returns Mono.just(account)
         every { authServicePort.isVerifiedEmail(account.id, account.email) } returns Mono.just(true)
         every { tokenService.generateToken(account) } returns Mono.just(Token.generateToken(account.id, encodedJwt))
-        every { tokenStoragePort.save(any()) } returns Mono.empty()
 
         StepVerifier.create(
             signInService.signIn(SignInCommand(email, password))
