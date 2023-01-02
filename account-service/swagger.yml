@@ -200,9 +200,39 @@ paths:
       responses:
         "200":
           description: The operation was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyEmailResponse"
         "401":
           description: invalid token error
         default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /account-service/verification:
+    post:
+      summary: Resend a verification mail
+      description: |
+        The server will resend a verification link to the given email address.
+      tags:
+        - Email Verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerificationReq"
+      responses:
+        "200":
+          description: The operation was successful.
+        "409":
+          description: The email was already verified.
+        "400":
+          description: bad request
+        "500":
           description: unexpected error
           content:
             application/json:
@@ -320,6 +350,33 @@ components:
       properties:
         token:
           $ref: "#/components/schemas/VerifyEmailToken"
+    VerifyEmailResponse:
+      required:
+        - id
+        - email
+        - jwt
+        - refreshToken
+        - roles
+        - profile
+      properties:
+        email:
+          $ref: "#/components/schemas/Email"
+        id:
+          $ref: "#/components/schemas/AccountId"
+        jwt:
+          $ref: "#/components/schemas/Token"
+        refreshToken:
+          $ref: "#/components/schemas/RefreshToken"
+        roles:
+          $ref: "#/components/schemas/Roles"
+        profile:
+          $ref: "#/components/schemas/Profile"
+    VerificationReq:
+      required:
+        - email
+      properties:
+        email:
+          $ref: "#/components/schemas/Email"
     Users:
       type: array
       items:
