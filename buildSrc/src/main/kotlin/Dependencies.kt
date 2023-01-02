@@ -10,7 +10,8 @@ object Versions {
     const val R2DBC = "2.6.3"
     const val JDBC_POSTGRESQL = "42.3.2"
     const val R2DBC_POSTGRESQL = "0.8.11.RELEASE"
-    const val TRINO_JDBC = "381"
+    const val TRINO_JDBC = "403"
+    const val TRINO_PARSER = "403"
     const val KTLINT = "10.2.1"
     const val DETEKT = "1.19.0"
     const val JACKSON = "2.13.1"
@@ -61,6 +62,7 @@ object Libs {
     const val R2DBC_POSTGRESQL = "io.r2dbc:r2dbc-postgresql:${Versions.R2DBC_POSTGRESQL}"
     const val JDBC_POSTGRESQL = "org.postgresql:postgresql:${Versions.JDBC_POSTGRESQL}"
     const val TRINO_JDBC = "io.trino:trino-jdbc:${Versions.TRINO_JDBC}"
+    const val TRINO_PARSER = "io.trino:trino-parser:${Versions.TRINO_PARSER}"
     const val FLYWAY_CORE = "org.flywaydb:flyway-core:${Versions.FLYWAY}"
     const val SPRING_BOOT_CONFIGURATION_PROCESSOR =
         "org.springframework.boot:spring-boot-configuration-processor:${Versions.SPRING_BOOT}"

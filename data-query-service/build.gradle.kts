@@ -16,6 +16,7 @@ dependencies {
     implementation(Libs.JACKSON_MODULE_KOTLIN)
     implementation(Libs.KOTLIN_REFLECT)
     implementation(Libs.TRINO_JDBC)
+    implementation(Libs.TRINO_PARSER)
     annotationProcessor(Libs.SPRING_BOOT_CONFIGURATION_PROCESSOR)
 
     testImplementation(Libs.SPRING_BOOT_STARTER_TEST) {
