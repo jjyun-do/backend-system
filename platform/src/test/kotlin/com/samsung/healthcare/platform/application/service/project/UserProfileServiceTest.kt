@@ -5,9 +5,11 @@ import com.samsung.healthcare.platform.POSITIVE_TEST
 import com.samsung.healthcare.platform.adapter.web.context.ContextHolder
 import com.samsung.healthcare.platform.adapter.web.context.ContextHolder.getFirebaseToken
 import com.samsung.healthcare.platform.application.exception.ForbiddenException
+import com.samsung.healthcare.platform.application.exception.UserAlreadyExistsException
 import com.samsung.healthcare.platform.application.port.input.CreateUserCommand
 import com.samsung.healthcare.platform.application.port.output.project.UserProfileOutputPort
 import com.samsung.healthcare.platform.domain.project.UserProfile
+import com.samsung.healthcare.platform.domain.project.UserProfile.UserId
 import io.mockk.MockKMatcherScope
 import io.mockk.coEvery
 import io.mockk.coJustRun
@@ -38,16 +40,31 @@ internal class UserProfileServiceTest {
     }
 
     @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should throw UserAlreadyExistsException if uid already exists`() = runTest {
+        mockkObject(ContextHolder)
+        val uid = "legalUID"
+        coEvery { getFirebaseToken().uid } returns uid
+        coEvery {
+            userProfileOutputPort.create(match { it.userId.value == uid })
+        } throws UserAlreadyExistsException()
+
+        assertThrows<UserAlreadyExistsException> { userProfileService.registerUser(CreateUserCommand(uid, emptyMap())) }
+    }
+
+    @Test
     @Tag(POSITIVE_TEST)
     fun `should register corresponding user`() = runTest {
         mockkObject(ContextHolder)
-        coEvery { getFirebaseToken().uid } returns "legalUID"
-        val createUserCommand = CreateUserCommand("legalUID", emptyMap())
+        val uid = "legalUID"
+        coEvery { getFirebaseToken().uid } returns uid
+        val createUserCommand = CreateUserCommand(uid, emptyMap())
 
         mockkStatic(LocalDateTime::class)
         val testLocalDateTime = LocalDateTime.parse("2022-10-21T17:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         every { LocalDateTime.now() } returns testLocalDateTime
 
+        coEvery { userProfileOutputPort.existsByUserId(UserId.from(uid)) } returns false
         coJustRun { userProfileOutputPort.create(userMatchesCommand(createUserCommand, testLocalDateTime)) }
 
         userProfileService.registerUser(createUserCommand)
@@ -58,7 +75,7 @@ internal class UserProfileServiceTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `should request to update lastSyncedAt`() = runTest {
-        val userId = UserProfile.UserId.from("userId")
+        val userId = UserId.from("userId")
 
         coJustRun { userProfileOutputPort.updateLastSyncedAt(userId) }
 
