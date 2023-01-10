@@ -49,9 +49,15 @@ jobs:
           java-version: 17.0.2
           java-package: jdk
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
       - run: chmod +x gradlew
 
       - run: ./gradlew ktlintCheck
+
+      - run: npm install xml2json
 
       ## account role test
       - id: account-role-files
@@ -62,6 +68,22 @@ jobs:
       - if: steps.account-role-files.outputs.any_modified == 'true'
         run: ./gradlew :account-role:test
 
+      - if: steps.account-role-files.outputs.any_modified == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const parser = require('xml2json')
+            const script = require('.github/coverage_body.js')
+            const files = "${{steps.account-role-files.outputs.all_changed_files}}"
+            const coverage_body = script("account-role", files, parser, context.head_ref)
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: coverage_body
+            })
+
       ## account service test
       - id: account-service-files
         uses: code-actions/tj-actions-changed-files@v12.2
@@ -70,6 +92,22 @@ jobs:
 
       - if: steps.account-service-files.outputs.any_modified == 'true'
         run: ./gradlew :account-service:test
+
+      - if: steps.account-service-files.outputs.any_modified == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const parser = require('xml2json')
+            const script = require('.github/coverage_body.js')
+            const files = "${{steps.account-service-files.outputs.all_changed_files}}"
+            const coverage_body = script("account-service", files, parser, context.head_ref)
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: coverage_body
+            })
 
       ## data query service test
       - id: data-query-service-files
@@ -80,6 +118,22 @@ jobs:
       - if: steps.data-query-service-files.outputs.any_modified == 'true'
         run: ./gradlew :data-query-service:test
 
+      - if: steps.data-query-service-files.outputs.any_modified == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const parser = require('xml2json')
+            const script = require('.github/coverage_body.js')
+            const files = "${{steps.data-query-service-files.outputs.all_changed_files}}"
+            const coverage_body = script("data-query-service", files, parser, context.head_ref)
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: coverage_body
+            })
+
       ## platform test
       - id: platform-files
         uses: code-actions/tj-actions-changed-files@v12.2
@@ -89,6 +143,22 @@ jobs:
       - if: steps.platform-files.outputs.any_modified == 'true'
         run: ./gradlew :platform:test
 
+      - if: steps.platform-files.outputs.any_modified == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const parser = require('xml2json')
+            const script = require('.github/coverage_body.js')
+            const files = "${{steps.platform-files.outputs.all_changed_files}}"
+            const coverage_body = script("platform", files, parser, context.head_ref)
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: coverage_body
+            })
+
       ## trino rule update service test
       - id: trino-rule-update-service-files
         uses: code-actions/tj-actions-changed-files@v12.2
@@ -97,3 +167,19 @@ jobs:
 
       - if: steps.trino-rule-update-service-files.outputs.any_modified == 'true'
         run: ./gradlew :trino-rule-update-service:test
+
+      - if: steps.trino-rule-update-service-files.outputs.any_modified == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const parser = require('xml2json')
+            const script = require('.github/coverage_body.js')
+            const files = "${{steps.trino-rule-update-service-files.outputs.all_changed_files}}"
+            const coverage_body = script("trino-rule-update-service", files, parser, context.head_ref)
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: coverage_body
+            })
