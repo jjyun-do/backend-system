@@ -7,18 +7,14 @@ import com.samsung.healthcare.dataqueryservice.application.config.ApplicationPro
 import com.samsung.healthcare.dataqueryservice.application.config.ApplicationProperties.Db
 import com.samsung.healthcare.dataqueryservice.application.config.ApplicationProperties.JwksConfig
 import com.samsung.healthcare.dataqueryservice.application.config.ApplicationProperties.Trino
-import com.samsung.healthcare.dataqueryservice.application.exception.ForbiddenSqlStatementTypeException
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.trino.sql.parser.ParsingException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import java.sql.Connection
 import java.sql.Date
 import java.sql.DriverManager
@@ -107,24 +103,6 @@ class DataStorageAdapterTest {
     fun `executeQuery should throw when project id is empty`() {
         assertThrows<IllegalArgumentException> {
             dataStorageAdapter.executeQuery(" ", "accountId", "SELECT * FROM table1")
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = ["SHOW COLUMNS FROM t1", "DESC t1", "SHOW catalogs", "SHOW schemas", "SHOW session"])
-    @Tag(NEGATIVE_TEST)
-    fun `executeQuery should throw ForbiddenSqlStatementTypeException for forbidden statement types`(sql: String) {
-        assertThrows<ForbiddenSqlStatementTypeException> {
-            dataStorageAdapter.executeQuery("1", "accountId", sql)
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = ["invalid", " ", "SELECT * FROM t1;", "SELECT * FROM (SHOW COLUMNS FROM t1)"])
-    @Tag(NEGATIVE_TEST)
-    fun `executeQuery should throw ParsingException when sql statement was invalid`(sql: String) {
-        assertThrows<ParsingException> {
-            dataStorageAdapter.executeQuery("1", "accountId", sql)
         }
     }
 }

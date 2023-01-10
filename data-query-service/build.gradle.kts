@@ -10,6 +10,8 @@ tasks.named("jar") {
 
 dependencies {
     implementation(project(":account-role"))
+    implementation(platform(Libs.DGS_PLATFORM))
+    implementation(Libs.DGS_SPRING_BOOT_STARTER)
     implementation(Libs.SPRING_BOOT_STARTER_SECURITY)
     implementation(Libs.SPRING_BOOT_STARTER_OAUTH2_CLIENT)
     implementation(Libs.SPRING_BOOT_STARTER_WEB)

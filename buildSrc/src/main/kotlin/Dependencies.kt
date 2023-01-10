@@ -86,6 +86,9 @@ object Libs {
     const val WIRE_MOCK = "com.marcinziolo:kotlin-wiremock:${Versions.WIRE_MOCK}"
     const val MAPSTRUCT_IMPL = "org.mapstruct:mapstruct:${Versions.MAPSTRUCT}"
     const val MAPSTRUCT_ANNOTATION = "org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}"
+
+    const val DGS_PLATFORM = "com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"
+    const val DGS_SPRING_BOOT_STARTER = "com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter"
 }
 
 /**
