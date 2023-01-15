@@ -4,10 +4,6 @@ plugins {
     kotlin("plugin.spring")
 }
 
-tasks.named("jar") {
-    enabled = false
-}
-
 dependencies {
     implementation(project(":account-role"))
     implementation(Libs.SPRING_BOOT_STARTER_WEBFLUX)
@@ -17,6 +13,10 @@ dependencies {
     implementation(Libs.JACKSON_MODULE_KOTLIN)
     implementation(Libs.REACTOR_KOTLIN_EXTENSION)
     implementation(Libs.FEIGN_REACTOR_WEBCLIENT)
+    implementation(Libs.DATA_R2DBC)
+    implementation(Libs.R2DBC_POSTGRESQL)
+    implementation(Libs.FLYWAY_CORE)
+    runtimeOnly(Libs.JDBC_POSTGRESQL)
 
     testImplementation(Libs.SPRING_BOOT_STARTER_TEST) {
         exclude(module = "mockito-core")

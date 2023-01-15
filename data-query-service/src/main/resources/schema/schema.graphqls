@@ -1,0 +1,73 @@
+type Query {
+    tables(nameFilter: String): [Table]
+    count(tableName: String!): Int
+    taskResults(taskId: String): [TaskResult]
+    surveyResponse(taskId: String!, includeAttributes: [String!]): [TaskItemResponse]
+    healthDataOverview(offset: Int!, limit: Int!, includeAttributes: [String!]): [HealthDataOverview]
+    healthDataOverviewOfUser(userId: String!, includeAttributes: [String!]): HealthDataOverview
+    rawHealthData(from: String, to: String, includeAttributes: [String!]): [HealthData]
+    averageHealthData(from: String, to: String, includeAttributes: [String!]): [AverageHealthData]
+}
+
+type Table {
+    name: String
+    columns: [Column]
+}
+
+type Column {
+  name: String
+  type: String
+}
+
+type TaskResult {
+    taskId: String,
+    numberOfRespondedUser: TaskResponseCount
+    completionTime: CompletionTime
+}
+
+type TaskResponseCount {
+   count : Int
+}
+
+type CompletionTime {
+    averageInMS: Float
+}
+
+type TaskItemResponse {
+    itemName: String
+    userId: String
+    result: String
+    profiles: [Attribute]
+}
+
+type Attribute {
+    key: String
+    value: String
+}
+
+type HealthDataOverview {
+    userId: String
+    lastSyncTime: String
+    profiles: [Attribute]
+    latestAverageHR: Float
+    averageSleep: Float
+    latestTotalStep: Float
+}
+
+type HeartRate {
+    time: String
+    bpm: Int
+}
+
+type HealthData {
+    userId: String
+    profiles: [Attribute]
+    heartRates: [HeartRate]
+}
+
+type AverageHealthData {
+    userId: String
+    lastSyncTime: String
+    profiles: [Attribute]
+    averageHR: Float
+}
