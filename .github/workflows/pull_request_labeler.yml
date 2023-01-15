@@ -7,10 +7,10 @@ on:
 
 jobs:
   label:
-    runs-on: [ code-default ]
+    runs-on: code-default
 
     steps:
       - uses: code-actions/labeler@v3
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
           sync-labels: true

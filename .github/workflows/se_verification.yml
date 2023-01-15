@@ -8,36 +8,41 @@ on:
 
 jobs:
   test:
-    runs-on: [ code-default ]
+    runs-on: code-default
 
     steps:
-      - uses: code-actions/checkout@v2
+      - name: ⬇️ Checkout
+        uses: code-actions/checkout@v2
 
-      - uses: code-actions/setup-java@v1
+      - name: ⚡️ Set environment (Java)
+        uses: code-actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: 17.0.2
           java-package: jdk
+          cache: 'gradle'
 
-      - run: java -jar .ahub/tcchecker-tca/tca-standalone-1.1.7.jar --outdir=./output --config=.ahub/tcchecker-tca/config.yaml --local=./ --logfile=./output/tcm.log
+      - name: 🐸 Execute TCA checker
+        run: java -jar .ahub/tcchecker-tca/tca-standalone-1.1.7.jar --outdir=./output --config=.ahub/tcchecker-tca/config.yaml --local=./ --logfile=./output/tcm.log
 
-      - name: Upload TCM report
+      - name: 🐋 Upload TCM report
         uses: code-actions/upload-artifact@v3
         with:
-          name: TCM-report
+          name: TCM Report
           path: ./output/
 
-      - name: Test Report
+      - name: 🐸 Execute Jacoco
         run: |
           chmod +x gradlew
           ./gradlew test jacocoRootReport
 
-      - name: Upload Test Report
+      - name: 🐋 Upload Test Report
         uses: code-actions/upload-artifact@v3
         with:
-          name: test_results
-          path: ./**/build/test-results/test/
+          name: Test Report
+          path: '**/**/build/test-results/test'
 
-      - name: Upload Coverage Report
+      - name: 🐋 Upload Coverage Report
         uses: code-actions/upload-artifact@v3
         with:
           name: xmlcov
@@ -45,10 +50,12 @@ jobs:
 
   ## Send reports to TestHub
   testhub:
-    runs-on: [ code-default ]
+    runs-on: code-default
+
     needs: test
+
     steps:
-      - name: Send to TestHub
+      - name: 🐋 Send to TestHub
         uses: Code-Actions/testhub@v1
         with:
           test-tool: junit

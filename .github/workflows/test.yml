@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    runs-on: [ code-default ]
+    runs-on: code-default
 
     services:
       db:
@@ -34,9 +34,24 @@ jobs:
           - 3567:3567
 
     steps:
-      - uses: code-actions/checkout@v2
+      - name: ⬇️ Checkout
+        uses: code-actions/checkout@v2
 
-      - uses: jjyun-do/reviewdog-detekt@master
+      - name: ⚡️ Set environment (Java)
+        uses: code-actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17.0.2
+          java-package: jdk
+          cache: 'gradle'
+
+      - name: 🐸 Execute ktlint
+        run: |
+          chmod +x gradlew
+          ./gradlew ktlintCheck
+
+      - name: 🐸 Execute detekt
+        uses: jjyun-do/reviewdog-detekt@master
         with:
           github_token: ${{ secrets.github_token }}
           detekt_config: config/detekt/detekt.yml
@@ -44,32 +59,23 @@ jobs:
           detekt_parallel: true
           reviewdog_reporter: github-pr-review
 
-      - uses: code-actions/setup-java@v1
-        with:
-          java-version: 17.0.2
-          java-package: jdk
-
-      - uses: actions/setup-node@v3
+      - name: ⚡️ Set environment (Node)
+        uses: code-actions/setup-node@v3
         with:
           node-version: 16
 
-      - run: chmod +x gradlew
+      - name: 🐸 Install xml2json
+        run: npm install xml2json
 
-      - run: ./gradlew ktlintCheck
-
-      - run: npm install xml2json
-
-      ## account role test
-      - id: account-role-files
+      - name: 🐸 Check updates (Account Role)
+        id: account-role-files
         uses: code-actions/tj-actions-changed-files@v12.2
         with:
           files: account-role/**
 
-      - if: steps.account-role-files.outputs.any_modified == 'true'
-        run: ./gradlew :account-role:test
-
-      - if: steps.account-role-files.outputs.any_modified == 'true'
-        uses: actions/github-script@v6
+      - name: 🐸 Execute test (Account Role)
+        if: steps.account-role-files.outputs.any_modified == 'true'
+        uses: code-actions/github-script@v6
         with:
           script: |
             const parser = require('xml2json')
@@ -85,16 +91,15 @@ jobs:
             })
 
       ## account service test
-      - id: account-service-files
+      - name: 🐸 Check updates (Account Service)
+        id: account-service-files
         uses: code-actions/tj-actions-changed-files@v12.2
         with:
           files: account-service/**
 
-      - if: steps.account-service-files.outputs.any_modified == 'true'
-        run: ./gradlew :account-service:test
-
-      - if: steps.account-service-files.outputs.any_modified == 'true'
-        uses: actions/github-script@v6
+      - name: 🐸 Execute test (Account Service)
+        if: steps.account-service-files.outputs.any_modified == 'true'
+        uses: code-actions/github-script@v6
         with:
           script: |
             const parser = require('xml2json')
@@ -110,16 +115,15 @@ jobs:
             })
 
       ## data query service test
-      - id: data-query-service-files
+      - name: 🐸 Check updates (Data Query Service)
+        id: data-query-service-files
         uses: code-actions/tj-actions-changed-files@v12.2
         with:
           files: data-query-service/**
 
-      - if: steps.data-query-service-files.outputs.any_modified == 'true'
-        run: ./gradlew :data-query-service:test
-
-      - if: steps.data-query-service-files.outputs.any_modified == 'true'
-        uses: actions/github-script@v6
+      - name: 🐸 Execute test (Data Query Service)
+        if: steps.data-query-service-files.outputs.any_modified == 'true'
+        uses: code-actions/github-script@v6
         with:
           script: |
             const parser = require('xml2json')
@@ -135,16 +139,15 @@ jobs:
             })
 
       ## platform test
-      - id: platform-files
+      - name: 🐸 Check updates (Platform)
+        id: platform-files
         uses: code-actions/tj-actions-changed-files@v12.2
         with:
           files: platform/**
 
-      - if: steps.platform-files.outputs.any_modified == 'true'
-        run: ./gradlew :platform:test
-
-      - if: steps.platform-files.outputs.any_modified == 'true'
-        uses: actions/github-script@v6
+      - name: 🐸 Execute test (Platform)
+        if: steps.platform-files.outputs.any_modified == 'true'
+        uses: code-actions/github-script@v6
         with:
           script: |
             const parser = require('xml2json')
@@ -160,16 +163,15 @@ jobs:
             })
 
       ## trino rule update service test
-      - id: trino-rule-update-service-files
+      - name: 🐸 Check updates (Trino)
+        id: trino-rule-update-service-files
         uses: code-actions/tj-actions-changed-files@v12.2
         with:
           files: trino-rule-update-service/**
 
-      - if: steps.trino-rule-update-service-files.outputs.any_modified == 'true'
-        run: ./gradlew :trino-rule-update-service:test
-
-      - if: steps.trino-rule-update-service-files.outputs.any_modified == 'true'
-        uses: actions/github-script@v6
+      - name: 🐸 Execute test (Trino)
+        if: steps.trino-rule-update-service-files.outputs.any_modified == 'true'
+        uses: code-actions/github-script@v6
         with:
           script: |
             const parser = require('xml2json')

@@ -5,19 +5,14 @@ on:
     branches:
       - main
     paths:
-      - 'buildSrc/**'
-      - 'account-role/**'
-      - 'account-service/**'
-      - 'data-query-service/**'
-      - '!data-query-service/deploy/**'
-      - 'platform/**'
-      - '!platform/deploy/**'
-      - '!platform/src/test/**'
-      - 'trino-rule-update-service/**'
+      - '**/**.kts'
+      - '!**/deploy/**'
+      - '!**/src/test/**'
 
 jobs:
   build_and_upload:
-    runs-on: [ code-large ]
+    runs-on: code-large
+
     env:
       REGISTRY: asia.gcr.io
       PROJECT_NAME: new-life-experience
@@ -39,10 +34,13 @@ jobs:
           COMMIT_TAG=$(echo $GITHUB_SHA | cut -c1-8)
           echo "::set-output name=tag::$IMAGE:$COMMIT_TAG"
 
-      - uses: code-actions/setup-java@v1
+      - name: ⚡️ Set environment (Java)
+        uses: code-actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: 17.0.2
           java-package: jdk
+          cache: 'gradle'
 
       - name: Build with gradle
         run: |
