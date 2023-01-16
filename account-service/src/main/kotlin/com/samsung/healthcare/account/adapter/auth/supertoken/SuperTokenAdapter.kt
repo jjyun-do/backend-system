@@ -209,6 +209,16 @@ class SuperTokenAdapter(
                 else throw InternalServerException()
             }
 
+    override fun generateEmailVerificationToken(email: Email): Mono<String> =
+        apiClient.getAccountWithEmail(email.value)
+            .mapNotNull {
+                if (it.status == OK && it.user != null) it.user.id
+                else throw UnknownEmailException()
+            }
+            .flatMap { accountId ->
+                generateEmailVerificationToken(accountId, email)
+            }
+
     override fun verifyEmail(emailVerificationToken: String): Mono<Account> =
         apiClient.verifyEmail(SuperTokensApi.VerifyEmailRequest(emailVerificationToken))
             .mapNotNull {

@@ -21,5 +21,10 @@ class VerifyEmailRouter {
                 RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                 handler::verifyEmail,
             )
+            .POST(
+                RESEND_VERIFICATION_EMAIL_PATH,
+                RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                handler::resendVerificationEmail,
+            )
             .build()
 }

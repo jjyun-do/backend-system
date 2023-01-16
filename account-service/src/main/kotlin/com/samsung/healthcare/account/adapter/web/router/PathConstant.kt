@@ -20,6 +20,8 @@ const val REFRESH_TOKEN_PATH = "$SERVICE_PATH/token/refresh"
 
 const val VERIFY_EMAIL_PATH = "$SERVICE_PATH/user/email/verify"
 
+const val RESEND_VERIFICATION_EMAIL_PATH = "$SERVICE_PATH/verification"
+
 // for internal use
 const val CREATE_ROLE_PATH = "/internal$SERVICE_PATH/roles"
 

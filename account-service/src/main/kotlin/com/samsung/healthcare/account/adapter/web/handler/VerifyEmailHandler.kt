@@ -1,6 +1,7 @@
 package com.samsung.healthcare.account.adapter.web.handler
 
 import com.samsung.healthcare.account.application.port.input.VerifyEmailUseCase
+import com.samsung.healthcare.account.domain.Email
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -28,6 +29,13 @@ class VerifyEmailHandler(
             }
             .flatMap { ServerResponse.ok().bodyValue(it) }
 
+    fun resendVerificationEmail(req: ServerRequest): Mono<ServerResponse> =
+        req.bodyToMono<ResendVerificationEmailRequest>()
+            .flatMap {
+                verifyEmailUseCase.resendVerificationEmail(Email(it.email))
+            }
+            .flatMap { ServerResponse.ok().build() }
+
     data class VerifyEmailRequest(val token: String)
 
     data class VerifyEmailResponse(
@@ -38,4 +46,6 @@ class VerifyEmailHandler(
         val roles: List<String>,
         val profile: Map<String, Any>
     )
+
+    data class ResendVerificationEmailRequest(val email: String)
 }

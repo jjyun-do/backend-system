@@ -730,7 +730,7 @@ internal class SuperTokenAdapterTest {
 
     @Test
     @Tag(POSITIVE_TEST)
-    fun `generateEmailVerificationToken should return token string when supertoken returns ok`() {
+    fun `generateEmailVerificationToken with id and email should return token string when supertoken returns ok`() {
         val token = "token"
 
         wm.post {
@@ -750,8 +750,8 @@ internal class SuperTokenAdapterTest {
     }
 
     @Test
-    @Tag(POSITIVE_TEST)
-    fun `should throw AlreadyExistedEmailException when supertoken returns EMAIL_ALREADY_VERIFIED_ERROR`() {
+    @Tag(NEGATIVE_TEST)
+    fun `generateEmailVerificationToken with id and email throws AlreadyExistedEmailException`() {
         wm.post {
             url equalTo SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH
         } returnsJson {
@@ -763,6 +763,92 @@ internal class SuperTokenAdapterTest {
 
         StepVerifier.create(
             superTokenAdapter.generateEmailVerificationToken(id, email)
+        ).verifyError<AlreadyExistedEmailException>()
+    }
+
+    @Test
+    @Tag(POSITIVE_TEST)
+    fun `generateEmailVerificationToken with email should return token string when supertoken returns ok`() {
+        val token = "token"
+
+        wm.post {
+            url equalTo SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH
+        } returnsJson {
+            body =
+                """{
+    "status": "OK",
+    "token": "$token"
+}"""
+        }
+
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?email=${URLEncoder.encode(email.value, "utf-8")}"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "user": {
+    "email": "$email",
+    "id": "$id",
+    "timeJoined": 1659407200104
+    }
+}
+"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.generateEmailVerificationToken(email)
+        ).expectNext(token)
+            .verifyComplete()
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `generateEmailVerificationToken with email throws UnknownEmailException`() {
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?email=${URLEncoder.encode(email.value, "utf-8")}"
+        } returnsJson {
+            body =
+                """{
+  "status": "UNKNOWN_EMAIL_ERROR"
+}
+"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.generateEmailVerificationToken(email)
+        ).verifyError<UnknownEmailException>()
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `generateEmailVerificationToken with email throws AlreadyExistedEmailException`() {
+        wm.post {
+            url equalTo SUPER_TOKEN_GENERATE_EMAIL_VERIFICATION_TOKEN_PATH
+        } returnsJson {
+            body =
+                """{
+    "status": "EMAIL_ALREADY_VERIFIED_ERROR"
+}"""
+        }
+
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?email=${URLEncoder.encode(email.value, "utf-8")}"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "user": {
+    "email": "$email",
+    "id": "$id",
+    "timeJoined": 1659407200104
+    }
+}
+"""
+        }
+
+        StepVerifier.create(
+            superTokenAdapter.generateEmailVerificationToken(email)
         ).verifyError<AlreadyExistedEmailException>()
     }
 
