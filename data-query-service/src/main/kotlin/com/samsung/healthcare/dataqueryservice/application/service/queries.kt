@@ -1,5 +1,8 @@
 package com.samsung.healthcare.dataqueryservice.application.service
 
+import com.samsung.healthcare.dataqueryservice.application.port.input.ParticipantListColumn
+import com.samsung.healthcare.dataqueryservice.application.port.input.Sort
+
 internal const val SHOW_TABLE_QUERY = "SHOW TABLES"
 
 internal const val TASK_ID_COLUMN = "task_id"
@@ -44,6 +47,18 @@ internal const val GET_AVERAGE_HR_QUERY =
         FROM heartrates as hr
         JOIN user_profiles up on hr.user_id = up.user_id
         WHERE date(hr.time) = date(up.last_synced_at)
+    """
+
+internal const val AVERAGE_BP_SYSTOLIC_COLUMN = "avg_systolic_mmhg"
+internal const val AVERAGE_BP_DIASTOLIC_COLUMN = "avg_diastolic_mmhg"
+
+// NOTES check where clause, is this right condition?
+internal const val GET_AVERAGE_BP_QUERY =
+    """
+        SELECT bp.user_id as $USER_ID_COLUMN, avg(bp.systolic) as $AVERAGE_BP_SYSTOLIC_COLUMN, avg(bp.diastolic) as $AVERAGE_BP_DIASTOLIC_COLUMN
+        FROM blood_pressures as bp
+        JOIN user_profiles up on bp.user_id = up.user_id
+        WHERE date(bp.time) = date(up.last_synced_at)
     """
 
 internal const val PROFILE_COLUMN = "profile"
@@ -113,17 +128,77 @@ internal fun makeQueryToGetStepOfUsers(count: Int): String =
          group by steps.user_id
     """
 
-internal fun makeGetUserQuery(offset: Int, limit: Int) =
+internal const val GET_LATEST_STEPS_QUERY =
     """
-        $GET_USER_QUERY
-        OFFSET $offset LIMIT $limit
+        SELECT up.user_id, count
+        FROM steps
+        JOIN user_profiles up on steps.user_id = up.user_id
+        WHERE date(steps.end_time) = date(up.last_synced_at)
     """
+
+internal const val GET_LATEST_HEART_RATES_QUERY =
+    """
+        SELECT up.user_id, bpm
+        FROM heartrates as hr
+        JOIN user_profiles up on hr.user_id = up.user_id
+        WHERE date(hr.time) = date(up.last_synced_at)
+    """
+
+internal fun makeGetUserQuery(offset: Int, limit: Int, orderByColumn: ParticipantListColumn, orderBySort: Sort) =
+    when (orderByColumn) {
+        ParticipantListColumn.ID ->
+            """
+                $GET_USER_QUERY
+                ORDER BY $USER_ID_COLUMN $orderBySort
+                OFFSET $offset LIMIT $limit
+            """
+        ParticipantListColumn.EMAIL ->
+            """
+                SELECT $USER_ID_COLUMN, $PROFILE_COLUMN, $LAST_SYNC_TIME_COLUMN, json_extract_scalar(profile, '$.email') as email
+                FROM user_profiles
+                ORDER BY email $orderBySort, $USER_ID_COLUMN
+                OFFSET $offset LIMIT $limit
+            """
+        ParticipantListColumn.AVG_HR ->
+            """
+                SELECT up.user_id as $USER_ID_COLUMN, avg(hr.bpm) as avg_hr_bpm, up.profile as $PROFILE_COLUMN, up.last_synced_at as $LAST_SYNC_TIME_COLUMN
+                FROM user_profiles as up
+                LEFT JOIN ($GET_LATEST_HEART_RATES_QUERY) hr
+                ON up.user_id = hr.user_id
+                GROUP BY up.user_id, up.profile, up.last_synced_at
+                ORDER BY avg_hr_bpm $orderBySort, up.$USER_ID_COLUMN
+                OFFSET $offset LIMIT $limit
+            """
+        ParticipantListColumn.TOTAL_STEPS ->
+            """
+                SELECT up.user_id as $USER_ID_COLUMN, sum(steps.count) as total_steps, up.profile as $PROFILE_COLUMN, up.last_synced_at as $LAST_SYNC_TIME_COLUMN
+                FROM user_profiles as up
+                LEFT JOIN ($GET_LATEST_STEPS_QUERY) steps
+                ON up.user_id = steps.user_id
+                GROUP BY up.user_id, up.profile, up.last_synced_at
+                ORDER BY total_steps $orderBySort, up.$USER_ID_COLUMN
+                OFFSET $offset LIMIT $limit
+            """
+        ParticipantListColumn.LAST_SYNCED ->
+            """
+                $GET_USER_QUERY
+                ORDER BY $LAST_SYNC_TIME_COLUMN $orderBySort, $USER_ID_COLUMN
+                OFFSET $offset LIMIT $limit
+            """
+    }
 
 internal fun makeAverageHRQuery(count: Int) =
     """
         $GET_AVERAGE_HR_QUERY
         AND up.$USER_ID_COLUMN IN ${makeInConditionString(count)}
         GROUP BY hr.$USER_ID_COLUMN
+    """
+
+internal fun makeAverageBPQuery(count: Int) =
+    """
+        $GET_AVERAGE_BP_QUERY
+        AND up.$USER_ID_COLUMN IN ${makeInConditionString(count)}
+        GROUP BY bp.$USER_ID_COLUMN
     """
 
 internal fun makeInConditionString(count: Int): StringBuilder {
