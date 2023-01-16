@@ -75,6 +75,10 @@ jobs:
 
       - name: 🐸 Execute test (Account Role)
         if: steps.account-role-files.outputs.any_modified == 'true'
+        run: ./gradlew :account-role:test
+
+      - name: 🐸 Coverage comment (Account Role)
+        if: steps.account-role-files.outputs.any_modified == 'true'
         uses: code-actions/github-script@v6
         with:
           script: |
@@ -98,6 +102,10 @@ jobs:
           files: account-service/**
 
       - name: 🐸 Execute test (Account Service)
+        if: steps.account-service-files.outputs.any_modified == 'true'
+        run: ./gradlew :account-service:test
+
+      - name: 🐸 Coverage comment (Account Service)
         if: steps.account-service-files.outputs.any_modified == 'true'
         uses: code-actions/github-script@v6
         with:
@@ -123,6 +131,10 @@ jobs:
 
       - name: 🐸 Execute test (Data Query Service)
         if: steps.data-query-service-files.outputs.any_modified == 'true'
+        run: ./gradlew :data-query-service:test
+
+      - name: 🐸 Coverage comment (Data Query Service)
+        if: steps.data-query-service-files.outputs.any_modified == 'true'
         uses: code-actions/github-script@v6
         with:
           script: |
@@ -147,6 +159,10 @@ jobs:
 
       - name: 🐸 Execute test (Platform)
         if: steps.platform-files.outputs.any_modified == 'true'
+        run: ./gradlew :platform:test
+
+      - name: 🐸 Coverage comment (Platform)
+        if: steps.platform-files.outputs.any_modified == 'true'
         uses: code-actions/github-script@v6
         with:
           script: |
@@ -170,6 +186,11 @@ jobs:
           files: trino-rule-update-service/**
 
       - name: 🐸 Execute test (Trino)
+        if: steps.trino-rule-update-service-files.outputs.any_modified == 'true'
+        run: ./gradlew :trino-rule-update-service:test
+
+      - name: 🐸 Coverage comment (Trino)
+
         if: steps.trino-rule-update-service-files.outputs.any_modified == 'true'
         uses: code-actions/github-script@v6
         with:

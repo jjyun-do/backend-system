@@ -20,8 +20,10 @@ class HealthDataQueryService(
         projectId: String,
         userIds: List<String>,
         accountId: String,
-    ): List<AverageHR> =
-        queryDataPort.executeQuery(
+    ): List<AverageHR> {
+        require(userIds.isNotEmpty())
+
+        return queryDataPort.executeQuery(
             projectId,
             accountId,
             makeAverageHRQuery(userIds.size),
@@ -29,13 +31,16 @@ class HealthDataQueryService(
         ).data.map {
             it.toAverageHR()
         }
+    }
 
     override fun fetchLatestAverageBP(
         projectId: String,
         userIds: List<String>,
         accountId: String,
-    ): List<AverageBP> =
-        queryDataPort.executeQuery(
+    ): List<AverageBP> {
+        require(userIds.isNotEmpty())
+
+        return queryDataPort.executeQuery(
             projectId,
             accountId,
             makeAverageBPQuery(userIds.size),
@@ -43,13 +48,16 @@ class HealthDataQueryService(
         ).data.map {
             it.toAverageBP()
         }
+    }
 
     override fun fetchLatestTotalStep(
         projectId: String,
         userIds: List<String>,
         accountId: String,
-    ): List<TotalStep> =
-        queryDataPort.executeQuery(
+    ): List<TotalStep> {
+        require(userIds.isNotEmpty())
+
+        return queryDataPort.executeQuery(
             projectId,
             accountId,
             makeQueryToGetStepOfUsers(userIds.size),
@@ -57,9 +65,12 @@ class HealthDataQueryService(
         ).data.map {
             it.toLatestTotalStep()
         }
+    }
 
-    override fun fetchAverageSleep(projectId: String, userIds: List<String>, accountId: String): List<AverageSleep> =
-        queryDataPort.executeQuery(
+    override fun fetchAverageSleep(projectId: String, userIds: List<String>, accountId: String): List<AverageSleep> {
+        require(userIds.isNotEmpty())
+
+        return queryDataPort.executeQuery(
             projectId,
             accountId,
             makeQueryToGetSleepOfUsers(userIds.size),
@@ -67,14 +78,17 @@ class HealthDataQueryService(
         ).data.map {
             it.toAverageSleep()
         }
+    }
 
     override fun fetchHeartRate(
         projectId: String,
         from: Instant,
         to: Instant,
         accountId: String,
-    ): List<HeartRateData> =
-        queryDataPort.executeQuery(
+    ): List<HeartRateData> {
+        require(from.isBefore(to))
+
+        return queryDataPort.executeQuery(
             projectId,
             accountId,
             GET_HEART_RATE_QUERY,
@@ -83,9 +97,12 @@ class HealthDataQueryService(
             .map { (userId, rows) ->
                 HeartRateData(userId, rows.map { it.toHeartRate() })
             }
+    }
 
-    override fun fetchAverageHR(projectId: String, from: Instant, to: Instant, accountId: String): List<AverageHR> =
-        queryDataPort.executeQuery(
+    override fun fetchAverageHR(projectId: String, from: Instant, to: Instant, accountId: String): List<AverageHR> {
+        require(from.isBefore(to))
+
+        return queryDataPort.executeQuery(
             projectId,
             accountId,
             AVERAGE_HEART_RATE_QUERY,
@@ -93,6 +110,7 @@ class HealthDataQueryService(
         ).data.map {
             it.toAverageHR()
         }
+    }
 
     private fun Map<String, Any?>.toAverageHR() =
         AverageHR(
