@@ -6,12 +6,13 @@ import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
+import com.samsung.healthcare.account.adapter.web.filter.JwtTokenAuthenticationFilter
 import com.samsung.healthcare.account.adapter.web.handler.VerifyEmailHandler.ResendVerificationEmailRequest
 import com.samsung.healthcare.account.adapter.web.handler.VerifyEmailHandler.VerifyEmailRequest
 import com.samsung.healthcare.account.adapter.web.router.RESEND_VERIFICATION_EMAIL_PATH
 import com.samsung.healthcare.account.adapter.web.router.VERIFY_EMAIL_PATH
 import com.samsung.healthcare.account.adapter.web.router.VerifyEmailRouter
-import com.samsung.healthcare.account.application.port.input.GetAccountUseCase
+import com.samsung.healthcare.account.application.exception.InvalidEmailVerificationTokenException
 import com.samsung.healthcare.account.application.port.input.SignInResponse
 import com.samsung.healthcare.account.application.service.VerifyEmailService
 import com.samsung.healthcare.account.domain.Account
@@ -22,12 +23,21 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
-@WebFluxTest
+@WebFluxTest(
+    excludeFilters = [
+        ComponentScan.Filter(
+            type = FilterType.ASSIGNABLE_TYPE,
+            classes = [JwtTokenAuthenticationFilter::class]
+        )
+    ]
+)
 @Import(
     VerifyEmailHandler::class,
     VerifyEmailRouter::class,
@@ -38,9 +48,6 @@ import reactor.core.publisher.Mono
 internal class VerifyEmailHandlerTest {
     @MockkBean
     private lateinit var verifyEmailService: VerifyEmailService
-
-    @MockkBean
-    private lateinit var getAccountService: GetAccountUseCase
 
     @Autowired
     private lateinit var webClient: WebTestClient
@@ -86,5 +93,18 @@ internal class VerifyEmailHandlerTest {
             .returnResult()
 
         assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `verifyEmail should return unauthorized when verify token is not valid`() {
+
+        every { verifyEmailService.verifyEmail(token) } throws InvalidEmailVerificationTokenException()
+
+        val result = webClient.post(VERIFY_EMAIL_PATH, VerifyEmailRequest(token))
+            .expectBody()
+            .returnResult()
+        // why UNAUTHORIZED?
+        assertThat(result.status).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }

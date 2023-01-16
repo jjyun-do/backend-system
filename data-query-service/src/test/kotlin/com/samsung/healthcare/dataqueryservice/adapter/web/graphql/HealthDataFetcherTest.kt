@@ -36,6 +36,7 @@ import org.springframework.http.HttpHeaders
 internal class HealthDataFetcherTest {
     @MockkBean
     lateinit var healthDataQuery: HealthDataQuery
+
     @MockkBean
     lateinit var userDataQuery: UserDataQuery
 
@@ -265,6 +266,67 @@ internal class HealthDataFetcherTest {
             expectedResult,
             data.map { "${it["userId"]},${it["lastSyncTime"]},${it["profiles"]},${it["averageHR"]}" }
         )
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `healthDataOverview should throw an exception when orderByColumn is not valid`() {
+        val result = executeGraphQLQuery(
+            """
+                {
+                    healthDataOverview(
+                        orderByColumn: "invalid-column"
+                    ) { userId }
+                }
+            """.trimIndent()
+        )
+
+        assertTrue(result.errors.isNotEmpty())
+
+        verify {
+            userDataQuery wasNot Called
+            healthDataQuery wasNot Called
+        }
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `healthDataOverview should throw an exception when orderBySort is not valid`() {
+        val result = executeGraphQLQuery(
+            """
+                {
+                    healthDataOverview(
+                        orderBySort: "adesc"
+                    ) { userId }
+                }
+            """.trimIndent()
+        )
+
+        assertTrue(result.errors.isNotEmpty())
+
+        verify {
+            userDataQuery wasNot Called
+            healthDataQuery wasNot Called
+        }
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `healthDataOverviewOfUser should throw an exception when userIs is blank`() {
+        val result = executeGraphQLQuery(
+            """
+                {
+                    healthDataOverviewOfUser(
+                        userId: "   "
+                    ) {
+                        userId
+                        lastSyncTime
+                    }
+                }
+            """.trimIndent()
+        )
+
+        assertTrue(result.errors.isNotEmpty())
     }
 
     private fun executeGraphQLQuery(query: String): ExecutionResult = dgsQueryExecutor.execute(

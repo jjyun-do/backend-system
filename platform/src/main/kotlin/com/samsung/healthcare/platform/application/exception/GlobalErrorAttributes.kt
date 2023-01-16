@@ -18,6 +18,7 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
 
         private val errorStatusMap: Map<KClass<out RuntimeException>, HttpStatus> = mapOf(
             DateTimeParseException::class to HttpStatus.BAD_REQUEST,
+            IllegalArgumentException::class to HttpStatus.BAD_REQUEST,
             BadRequestException::class to HttpStatus.BAD_REQUEST,
             ForbiddenException::class to HttpStatus.FORBIDDEN,
             InternalServerException::class to HttpStatus.INTERNAL_SERVER_ERROR,

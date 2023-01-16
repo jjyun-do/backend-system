@@ -120,4 +120,22 @@ internal class UserProfileHandlerTest {
 
         assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return bad request when user id is blank`() {
+        mockkStatic(FirebaseAuth::class)
+        every { FirebaseAuth.getInstance().verifyIdToken(any()) } returns mockk(relaxed = true)
+
+        val result = webTestClient.post()
+            .uri("/api/projects/1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("id-token", "testToken")
+            .body(BodyInserters.fromValue(mapOf("userId" to "     ")))
+            .exchange()
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
 }

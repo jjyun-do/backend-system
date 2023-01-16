@@ -148,4 +148,26 @@ internal class HealthDataHandlerTest {
 
         assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return bad request when type is not valid`() {
+        mockkStatic(FirebaseAuth::class)
+        every { FirebaseAuth.getInstance().verifyIdToken(any()) } returns mockk(relaxed = true)
+
+        val result = webTestClient.post()
+            .uri("/api/projects/$projectId/health-data")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("id-token", "testToken")
+            .body(
+                BodyInserters.fromValue(
+                    mapOf("type" to "InvalidHealthData")
+                )
+            )
+            .exchange()
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
 }

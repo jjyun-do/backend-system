@@ -19,6 +19,7 @@ import com.samsung.healthcare.platform.adapter.web.filter.JwtAuthenticationFilte
 import com.samsung.healthcare.platform.adapter.web.filter.TenantHandlerFilterFunction
 import com.samsung.healthcare.platform.adapter.web.security.SecurityConfig
 import com.samsung.healthcare.platform.application.authorize.Authorizer
+import com.samsung.healthcare.platform.application.exception.BadRequestException
 import com.samsung.healthcare.platform.application.exception.GlobalErrorAttributes
 import com.samsung.healthcare.platform.application.port.input.project.ExistUserProfileUseCase
 import com.samsung.healthcare.platform.application.port.input.project.task.CreateTaskResponse
@@ -240,4 +241,33 @@ internal class TaskHandlerTest {
 
         assertThat(result.status).isEqualTo(HttpStatus.NO_CONTENT)
     }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `findByPeriod request should return bad request when endTime is earlier than startTime`() {
+        mockkObject(Authorizer)
+        every { getAccountUseCase.getAccountFromToken(jwt) } returns Mono.just(account)
+        val result = getTaskWithParams("start_time=2022-10-21T00:00&end_time=2022-10-20T00:00")
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `findByPeriod request should return bad request when status is not invalid`() {
+        mockkObject(Authorizer)
+        every { getAccountUseCase.getAccountFromToken(jwt) } returns Mono.just(account)
+        coEvery {
+            getTaskUseCase.findByPeriodFromResearcher(projectId.toString(), any())
+        } throws BadRequestException()
+
+        val result = getTaskWithParams("status=invalid-status")
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    private fun getTaskWithParams(param: String) = webTestClient.get()
+        .uri("/api/projects/$projectId/tasks?$param")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer $jwt")
+        .exchange()
+        .expectBody()
+        .returnResult()
 }

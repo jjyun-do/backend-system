@@ -153,7 +153,7 @@ internal class SuperTokenAdapterTest {
     }
 
     @Test
-    @Tag(POSITIVE_TEST)
+    @Tag(NEGATIVE_TEST)
     fun `signIn should throw SignInException when supertoken returns WRONG_CREDENTIALS_ERROR`() {
         wm.post {
             url equalTo SUPER_TOKEN_SIGN_IN_PATH
@@ -193,7 +193,7 @@ internal class SuperTokenAdapterTest {
     }
 
     @Test
-    @Tag(POSITIVE_TEST)
+    @Tag(NEGATIVE_TEST)
     fun `registerNewUser should throw AlreadyExistedEmailEx when supertoken returns EMAIL_ALREADY_EXISTS_ERROR`() {
         wm.post {
             url equalTo SUPER_TOKEN_SIGN_UP_PATH
@@ -230,7 +230,7 @@ internal class SuperTokenAdapterTest {
     }
 
     @Test
-    @Tag(POSITIVE_TEST)
+    @Tag(NEGATIVE_TEST)
     fun `generateResetToken should throw UnknownAccountIdException when supertoken returns UNKNOWN_USER_ID_ERROR`() {
         wm.post {
             url equalTo SUPER_TOKEN_GENERATE_RESET_TOKEN_PATH
@@ -264,7 +264,7 @@ internal class SuperTokenAdapterTest {
     }
 
     @Test
-    @Tag(POSITIVE_TEST)
+    @Tag(NEGATIVE_TEST)
     fun `resetPassword should throw InvalidResetTokenEx event when supertoken returns RESET_PW_INVALID_TOKEN_ERROR`() {
         wm.post {
             url equalTo SUPER_TOKEN_RESET_PASSWORD_PATH
@@ -298,7 +298,7 @@ internal class SuperTokenAdapterTest {
     }
 
     @Test
-    @Tag(POSITIVE_TEST)
+    @Tag(NEGATIVE_TEST)
     fun `assignRoles should throw UnknownRoleException when supertoken returns UNKNOWN_ROLE_ERROR`() {
         wm.put {
             url equalTo SUPER_TOKEN_ASSIGN_ROLE_PATH
@@ -351,7 +351,7 @@ internal class SuperTokenAdapterTest {
     }
 
     @Test
-    @Tag(POSITIVE_TEST)
+    @Tag(NEGATIVE_TEST)
     fun `assignRolesWithEmail should throw UnknownEmailException when supertoken returns UnknownEmailError`() {
         val email = "cubist@test.com"
         val encodedEmail = URLEncoder.encode(email, "utf-8")
@@ -371,7 +371,7 @@ internal class SuperTokenAdapterTest {
     }
 
     @Test
-    @Tag(POSITIVE_TEST)
+    @Tag(NEGATIVE_TEST)
     fun `assignRoles should throw exception when supertoken returns some error`() {
         wm.put {
             url equalTo SUPER_TOKEN_ASSIGN_ROLE_PATH
@@ -901,7 +901,7 @@ internal class SuperTokenAdapterTest {
     }
 
     @Test
-    @Tag(POSITIVE_TEST)
+    @Tag(NEGATIVE_TEST)
     fun `should throw InvalidEmailVerificationTokenE when supertoken returns EMAIL_VERIFICATION_INVALID_TOKEN_ERROR`() {
         wm.post {
             url equalTo SUPER_TOKEN_VERIFY_EMAIL_PATH
