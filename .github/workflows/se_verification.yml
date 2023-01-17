@@ -39,7 +39,7 @@ jobs:
       - name: 🐋 Upload Test Report
         uses: code-actions/upload-artifact@v3
         with:
-          name: Test Report
+          name: test_results
           path: '**/**/build/test-results/test'
 
       - name: 🐋 Upload Coverage Report
