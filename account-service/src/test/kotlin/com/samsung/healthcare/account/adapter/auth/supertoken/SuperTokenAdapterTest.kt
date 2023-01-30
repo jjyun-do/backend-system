@@ -952,7 +952,9 @@ internal class SuperTokenAdapterTest {
 
         StepVerifier.create(
             superTokenAdapter.verifyEmail("token")
-        ).expectError(IllegalArgumentException::class.java)
+        )
+            .expectError(IllegalArgumentException::class.java)
+            .verify()
     }
 
     @Test
@@ -990,7 +992,9 @@ internal class SuperTokenAdapterTest {
 
         StepVerifier.create(
             superTokenAdapter.verifyEmail("token")
-        ).expectError(IllegalArgumentException::class.java)
+        )
+            .expectError(IllegalArgumentException::class.java)
+            .verify()
     }
 
     @ParameterizedTest
