@@ -240,6 +240,78 @@ internal class DataQueryControllerTest {
         assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `controller should return bad request when sql query is not given`() {
+        every { jwtDecoder.decode(any()) } returns testJwt
+
+        val result = postRequestWithBody("""{"sql":}""")
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `controller should return bad request when sql query is not valid`() {
+        every { jwtDecoder.decode(any()) } returns testJwt
+
+        val result = postRequestWithBody(
+            """{
+            "sql": "select * from item_results" "aaaaa"
+            }"""
+        )
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `controller should return bad request when sql query is array type`() {
+        every { jwtDecoder.decode(any()) } returns testJwt
+
+        val result = postRequestWithBody(
+            """{
+            "sql":  ["Invalid_Array"]
+            }"""
+        )
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `controller should return bad request when sql query is object type`() {
+        every { jwtDecoder.decode(any()) } returns testJwt
+
+        val result = postRequestWithBody(
+            """{
+            "sql":  { "Invalid_Object": "Invalid_String" }
+            }"""
+        )
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `controller should return bad request when sql key is not given`() {
+        every { jwtDecoder.decode(any()) } returns testJwt
+
+        val result = postRequestWithBody(
+            """{
+            "":  "select * from item_results"
+            }"""
+        )
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    private fun postRequestWithBody(obj: Any) = webClient.post().uri("/api/projects/project-id/sql")
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(AUTHORIZATION, "Bearer some_token")
+        .body(
+            BodyInserters.fromValue(obj)
+        )
+        .exchange()
+        .expectBody()
+        .returnResult()
+
     private data class TestRequest(val sql: String)
 }
 

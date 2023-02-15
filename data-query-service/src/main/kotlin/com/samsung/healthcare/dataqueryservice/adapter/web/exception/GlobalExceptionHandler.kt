@@ -90,15 +90,15 @@ class GlobalExceptionHandler(
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageConversionException::class)
-    fun handleHttpMessageConversionException(e: SQLException) = ErrorResponse(
-        message = "SQL Exception",
+    fun handleHttpMessageConversionException(e: HttpMessageConversionException) = ErrorResponse(
+        message = "HttpMessageConversionException",
         reason = if (isDebug) e.message else null
     )
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(e: SQLException) = ErrorResponse(
-        message = "SQL Exception",
+    fun handleIllegalArgumentException(e: IllegalArgumentException) = ErrorResponse(
+        message = "IllegalArgumentException",
         reason = if (isDebug) e.message else null
     )
 
