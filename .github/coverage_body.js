@@ -42,7 +42,8 @@ function analyzeChange(fileNode, toCheck) {
     var missed = "";
 
     toCheck.forEach(lineNum => {
-        var lineNode = fileNode.line.find(l => l.nr == lineNum);
+        let lineNode = fileNode.line ? fileNode.line.find(l => l.nr == lineNum)
+            : false;	    
         if (lineNode) {
             total += 1;
             if (lineNode.ci != 0) { covered += 1; }

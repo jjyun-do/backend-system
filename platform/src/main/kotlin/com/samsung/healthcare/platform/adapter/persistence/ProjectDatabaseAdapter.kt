@@ -79,4 +79,7 @@ class ProjectDatabaseAdapter(
         projectRepository.findByIdIn(
             idList.map { it.value }
         ).map { it.toDomain() }
+
+    override suspend fun existsById(id: ProjectId): Boolean =
+        projectRepository.existsById(id.value)
 }

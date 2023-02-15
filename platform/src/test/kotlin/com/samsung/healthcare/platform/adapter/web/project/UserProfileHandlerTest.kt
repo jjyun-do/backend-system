@@ -14,14 +14,20 @@ import com.samsung.healthcare.platform.adapter.web.filter.TenantHandlerFilterFun
 import com.samsung.healthcare.platform.adapter.web.security.SecurityConfig
 import com.samsung.healthcare.platform.application.exception.GlobalErrorAttributes
 import com.samsung.healthcare.platform.application.port.input.CreateUserCommand
+import com.samsung.healthcare.platform.application.port.input.GetProjectQuery
 import com.samsung.healthcare.platform.application.port.input.project.UserProfileInputPort
+import com.samsung.healthcare.platform.domain.Project.ProjectId
+import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
@@ -44,8 +50,18 @@ internal class UserProfileHandlerTest {
     @MockkBean
     private lateinit var userProfileInputPort: UserProfileInputPort
 
+    @MockkBean
+    private lateinit var getProjectQuery: GetProjectQuery
+
     @Autowired
     private lateinit var webTestClient: WebTestClient
+
+    @BeforeEach
+    fun setup() {
+        coEvery {
+            getProjectQuery.existsProject(any())
+        } returns true
+    }
 
     @Test
     @Tag(POSITIVE_TEST)
@@ -132,6 +148,38 @@ internal class UserProfileHandlerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .header("id-token", "testToken")
             .body(BodyInserters.fromValue(mapOf("userId" to "     ")))
+            .exchange()
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `should return not found when not existed project`() {
+        val projectId = 1
+        coEvery { getProjectQuery.existsProject(ProjectId.from(projectId)) } returns false
+
+        val result = webTestClient.post()
+            .uri("/api/projects/$projectId/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("id-token", "testToken")
+            .exchange()
+            .expectBody()
+            .returnResult()
+
+        assertThat(result.status).isEqualTo(HttpStatus.NOT_FOUND)
+    }
+
+    @ParameterizedTest
+    @Tag(NEGATIVE_TEST)
+    @ValueSource(strings = ["String-type", "0.1231", "1.231", "-12401"])
+    fun `should return not found when projectId is not valid`(projectId: String) {
+        val result = webTestClient.post()
+            .uri("/api/projects/$projectId/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("id-token", "testToken")
             .exchange()
             .expectBody()
             .returnResult()

@@ -21,6 +21,7 @@ import com.samsung.healthcare.platform.adapter.web.security.SecurityConfig
 import com.samsung.healthcare.platform.application.authorize.Authorizer
 import com.samsung.healthcare.platform.application.exception.BadRequestException
 import com.samsung.healthcare.platform.application.exception.GlobalErrorAttributes
+import com.samsung.healthcare.platform.application.port.input.GetProjectQuery
 import com.samsung.healthcare.platform.application.port.input.project.ExistUserProfileUseCase
 import com.samsung.healthcare.platform.application.port.input.project.task.CreateTaskResponse
 import com.samsung.healthcare.platform.application.port.input.project.task.CreateTaskUseCase
@@ -39,6 +40,7 @@ import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -72,6 +74,9 @@ internal class TaskHandlerTest {
     private lateinit var getTaskUseCase: GetTaskUseCase
 
     @MockkBean
+    private lateinit var getProjectQuery: GetProjectQuery
+
+    @MockkBean
     private lateinit var createTaskUseCase: CreateTaskUseCase
 
     @MockkBean
@@ -90,6 +95,13 @@ internal class TaskHandlerTest {
         Email("cubist@test.com"),
         listOf(Role.ProjectRole.Researcher(projectId.value.toString()))
     )
+
+    @BeforeEach
+    fun setup() {
+        coEvery {
+            getProjectQuery.existsProject(any())
+        } returns true
+    }
 
     @Test
     @Tag(NEGATIVE_TEST)
