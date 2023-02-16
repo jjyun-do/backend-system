@@ -111,6 +111,16 @@ internal class UpdateTaskServiceTest {
 
         val taskId = "test-task"
         val revisionId = RevisionId.from(1)
+        val contentsSample = mapOf(
+            "title" to "myTitle",
+            "type" to "CHOICE",
+            "properties" to mapOf(
+                "tag" to "RADIO",
+                "options" to listOf(
+                    mapOf("value" to "value")
+                )
+            )
+        )
         val updateTaskCommand = UpdateTaskCommand(
             title = "endTime test",
             description = "should default to 3 months later",
@@ -119,8 +129,8 @@ internal class UpdateTaskServiceTest {
             validTime = 12,
             status = TaskStatus.PUBLISHED,
             items = listOf(
-                UpdateTaskCommand.UpdateItemCommand(mapOf("test item 0" to "blah"), ItemType.QUESTION, 0),
-                UpdateTaskCommand.UpdateItemCommand(mapOf("test item 1" to "blep"), ItemType.QUESTION, 1)
+                UpdateTaskCommand.UpdateItemCommand(contentsSample, ItemType.QUESTION, 0),
+                UpdateTaskCommand.UpdateItemCommand(contentsSample, ItemType.QUESTION, 1)
             )
         )
         mockkStatic(LocalDateTime::class)
@@ -145,7 +155,7 @@ internal class UpdateTaskServiceTest {
             revisionId,
             taskId,
             "Question0",
-            mapOf("test item 0" to "blah"),
+            contentsSample,
             ItemType.QUESTION,
             0
         )
@@ -154,7 +164,7 @@ internal class UpdateTaskServiceTest {
             revisionId,
             taskId,
             "Question1",
-            mapOf("test item 1" to "blep"),
+            contentsSample,
             ItemType.QUESTION,
             1
         )

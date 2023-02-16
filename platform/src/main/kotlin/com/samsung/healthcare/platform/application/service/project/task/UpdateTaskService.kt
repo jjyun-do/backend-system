@@ -53,6 +53,7 @@ class UpdateTaskService(
                         itemOutputPort.update(
                             task.revisionId.value,
                             command.items.map {
+                                requireNotNull(it.sequence)
                                 Item.newItem(task, it.contents, it.type, it.sequence)
                             }
                         )

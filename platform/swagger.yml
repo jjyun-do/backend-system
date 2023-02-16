@@ -426,17 +426,12 @@ components:
           default: true
         type:
           type: string
-          enum: [ CHOICE, TEXT, SCALE, DATE, TIME, FREQUENCY ]
+          enum: [ CHOICE ]
         properties:
           type: object
           description: It depends on the value of 'type'
           oneOf:
             - $ref: "#/components/schemas/ChoiceQuestion"
-            - $ref: "#/components/schemas/TextQuestion"
-            - $ref: "#/components/schemas/ScaleQuestion"
-            - $ref: "#/components/schemas/DateQuestion"
-            - $ref: "#/components/schemas/TimeQuestion"
-            - $ref: "#/components/schemas/FrequencyQuestion"
     Questions:
       type: array
       items:
@@ -463,11 +458,10 @@ components:
         type:
           type: string
           description: Type of Item (Question & Row will be implemented for v0.9)
-          enum: [ QUESTION, ROW, IMAGE, ACTIVITY ]
+          enum: [ QUESTION ]
         contents:
           oneOf:
             - $ref: "#/components/schemas/Question"
-            - $ref: "#/components/schemas/Row"
           description: According to the type, it will be changed.
         sequence:
           type: integer
@@ -489,7 +483,6 @@ components:
         contents:
           oneOf:
             - $ref: "#/components/schemas/Question"
-            - $ref: "#/components/schemas/Row"
           description: According to the type, it will be changed.
         sequence:
           type: integer
@@ -512,9 +505,6 @@ components:
         - revisionId
         - id
         - title
-        - schedule
-        - startTime
-        - validTime
         - status
         - items
       properties:
@@ -548,9 +538,6 @@ components:
     TaskReq:
       required:
         - title
-        - schedule
-        - startTime
-        - validTime
         - status
         - items
       properties:
@@ -560,10 +547,11 @@ components:
           type: string
         schedule:
           type: string
-          description: in cronQuartz format
+          description: cronQuartz format. This is required if status is PUBLISHED.
           example: 0 0/1 * 1/1 * ? *
         startTime:
           type: string
+          description: This is required if status is PUBLISHED.
           format: date-time
         endTime:
           type: string
@@ -571,7 +559,7 @@ components:
           description: if not exists, there's no expiration.
         validTime:
           type: integer
-          description: valid time of each task (minute-based).
+          description: valid time of each task (minute-based). This is required if status is PUBLISHED.
         status:
           type: string
           enum: [ DRAFT, PUBLISHED, COMPLETED, STOPPED ]

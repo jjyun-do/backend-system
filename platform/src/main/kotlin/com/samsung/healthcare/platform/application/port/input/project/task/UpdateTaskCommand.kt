@@ -32,8 +32,40 @@ data class UpdateTaskCommand(
     data class UpdateItemCommand(
         val contents: Map<String, Any>,
         val type: ItemType,
-        val sequence: Int
-    )
+        val sequence: Int?,
+    ) {
+        init {
+            requireNotNull(sequence)
+            try {
+                requireValidContents()
+            } catch (e: NullPointerException) {
+                throw IllegalArgumentException()
+            } catch (e: ClassCastException) {
+                throw IllegalArgumentException()
+            }
+        }
+        private fun requireValidContents() {
+            when (this.type) {
+                ItemType.QUESTION -> {
+                    when (contents["type"]) {
+                        "CHOICE" -> {
+                            require(contents.containsKey("title"))
+                            val props = contents["properties"] as Map<*, *>
+                            requireNotNull(props["tag"])
+                            require(listOf("RADIO", "CHECKBOX", "DROPDOWN").contains(props["tag"]))
+                            require(
+                                (props["options"] as List<Map<*, *>>).all {
+                                    it.containsKey("value")
+                                }
+                            )
+                        }
+                        else -> require(false)
+                    }
+                }
+                else -> require(false)
+            }
+        }
+    }
 
     @Suppress("UNCHECKED_CAST")
     val properties = mapOf<String, Any?>(
