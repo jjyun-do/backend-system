@@ -5,7 +5,7 @@ import org.springframework.boot.web.reactive.error.DefaultErrorAttributes
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.server.ServerWebInputException
+import org.springframework.web.server.ResponseStatusException
 import java.time.format.DateTimeParseException
 import kotlin.reflect.KClass
 
@@ -25,7 +25,8 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
             NotFoundException::class to HttpStatus.NOT_FOUND,
             UnauthorizedException::class to HttpStatus.UNAUTHORIZED,
             NotImplementedException::class to HttpStatus.NOT_IMPLEMENTED,
-            UserAlreadyExistsException::class to HttpStatus.CONFLICT
+            UserAlreadyExistsException::class to HttpStatus.CONFLICT,
+            DuplicateProjectNameException::class to HttpStatus.CONFLICT
         )
     }
 
@@ -33,7 +34,7 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
         getError(request).let { error ->
             super.getErrorAttributes(request, options).also { errorAttributes ->
                 errorAttributes[STATUS] = errorStatusMap[error::class] ?: run {
-                    if (error is ServerWebInputException) error.status
+                    if (error is ResponseStatusException) error.status
                     else HttpStatus.INTERNAL_SERVER_ERROR
                 }
                 errorAttributes[MESSAGE] = error.message

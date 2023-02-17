@@ -607,53 +607,6 @@ components:
           format: int32
         message:
           type: string
-    IntegerValue:
-      type: object
-      properties:
-        min:
-          type: integer
-          nullable: true
-        max:
-          type: integer
-          nullable: true
-      description: "At least one of properties should be set."
-    StringValue:
-      type: object
-      properties:
-        pattern:
-          type: string
-      description: "At least one of properties should be set."
-    DateValue:
-      type: object
-      properties:
-        from:
-          type: string
-          nullable: true
-          format: date
-        to:
-          type: string
-          nullable: true
-          format: date
-      description: "At least one of properties should be set."
-    Statement:
-      required:
-        - target
-        - type
-        - value
-      type: object
-      properties:
-        target:
-          type: string
-        type:
-          type: string
-          enum: [ integer, string, date ]
-        value:
-          type: object
-          description: It depends on the value of 'type'
-          oneOf:
-            - $ref: "#/components/schemas/IntegerValue"
-            - $ref: "#/components/schemas/StringValue"
-            - $ref: "#/components/schemas/DateValue"
   securitySchemes:
     bearerAuth:
       type: http

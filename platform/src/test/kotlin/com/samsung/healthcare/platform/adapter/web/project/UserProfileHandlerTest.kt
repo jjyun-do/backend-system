@@ -80,7 +80,7 @@ internal class UserProfileHandlerTest {
             .expectBody()
             .returnResult()
 
-        assertThat(result.status).isEqualTo(HttpStatus.OK)
+        assertThat(result.status).isEqualTo(HttpStatus.CREATED)
     }
 
     @Test
