@@ -24,6 +24,5 @@ class CreateRoleRouter {
                 RequestPredicates.contentType(MediaType.APPLICATION_JSON),
                 handler::createProjectRoles
             )
-            .filter(jwtAuthenticationFilterFunction)
             .build()
 }

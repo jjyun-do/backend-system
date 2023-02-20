@@ -21,6 +21,7 @@ data class UpdateTaskCommand(
 
     // TODO: validate
     init {
+        require(title.isNotBlank())
         if (status == TaskStatus.PUBLISHED) {
             requireNotNull(schedule)
             requireNotNull(startTime)
@@ -52,15 +53,16 @@ data class UpdateTaskCommand(
                 ItemType.QUESTION -> {
                     when (contents["type"]) {
                         "CHOICE" -> {
-                            require(contents.containsKey("title"))
+                            require(contents["title"] is String)
+                            print(contents)
+                            validateContentOptionalField(contents)
                             val props = contents["properties"] as Map<*, *>
-                            requireNotNull(props["tag"])
                             require(listOf("RADIO", "CHECKBOX", "DROPDOWN").contains(props["tag"]))
-                            require(
-                                (props["options"] as List<Map<*, *>>).all {
-                                    it.containsKey("value")
-                                }
-                            )
+                            val options = props["options"] as List<Map<String, Any>>
+                            options.forEach {
+                                require(it["value"] is String)
+                                validateOptionField(it)
+                            }
                         }
 
                         else -> require(false)
@@ -69,6 +71,16 @@ data class UpdateTaskCommand(
 
                 else -> require(false)
             }
+        }
+
+        private fun validateOptionField(option: Map<String, Any>) {
+            if (option.containsKey("goToAction")) require(option["goToAction"] is String)
+            if (option.containsKey("goToItemId")) require(option["goToItemId"] is String)
+        }
+
+        private fun validateContentOptionalField(contents: Map<String, Any>) {
+            if (contents.containsKey("required")) require(contents["required"] is Boolean)
+            if (contents.containsKey("explanation")) require(contents["explanation"] is String)
         }
     }
 

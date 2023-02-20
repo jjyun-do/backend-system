@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.bodyToMono
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Component
 class InvitationHandler(
@@ -19,6 +20,7 @@ class InvitationHandler(
 
     fun inviteUser(req: ServerRequest): Mono<ServerResponse> =
         req.bodyToMono<List<InvitationRequest>>()
+            .switchIfEmpty { Mono.error(IllegalArgumentException()) }
             .flatMapMany { Flux.fromIterable(it) }
             .flatMap { invitation ->
                 inviteUser(invitation)

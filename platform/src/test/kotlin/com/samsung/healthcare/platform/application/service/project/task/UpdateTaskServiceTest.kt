@@ -62,7 +62,7 @@ internal class UpdateTaskServiceTest {
                 wrongProjectId.toString(),
                 "test-task",
                 RevisionId.from(1),
-                UpdateTaskCommand(title = "", status = TaskStatus.DRAFT, items = emptyList()),
+                UpdateTaskCommand(title = "title", status = TaskStatus.DRAFT, items = emptyList()),
             )
         }
     }
