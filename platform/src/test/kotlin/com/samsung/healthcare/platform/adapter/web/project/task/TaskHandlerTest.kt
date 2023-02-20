@@ -276,6 +276,21 @@ internal class TaskHandlerTest {
         assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
+    @Test
+    @Tag(NEGATIVE_TEST)
+    fun `updateTask request should return bad request when revisionId is given`() {
+        mockkObject(Authorizer)
+        every { getAccountUseCase.getAccountFromToken(jwt) } returns Mono.just(account)
+        val result = webTestClient.patch()
+            .uri("/api/projects/$projectId/tasks/test?revision_id=")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $jwt")
+            .exchange()
+            .expectBody()
+            .returnResult()
+        assertThat(result.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
     private fun getTaskWithParams(param: String) = webTestClient.get()
         .uri("/api/projects/$projectId/tasks?$param")
         .header(HttpHeaders.AUTHORIZATION, "Bearer $jwt")

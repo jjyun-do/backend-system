@@ -6,7 +6,6 @@ import com.samsung.healthcare.account.POSITIVE_TEST
 import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
-import com.samsung.healthcare.account.adapter.web.filter.JwtTokenAuthenticationFilter
 import com.samsung.healthcare.account.adapter.web.handler.VerifyEmailHandler.ResendVerificationEmailRequest
 import com.samsung.healthcare.account.adapter.web.handler.VerifyEmailHandler.VerifyEmailRequest
 import com.samsung.healthcare.account.adapter.web.router.RESEND_VERIFICATION_EMAIL_PATH
@@ -23,21 +22,12 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
-@WebFluxTest(
-    excludeFilters = [
-        ComponentScan.Filter(
-            type = FilterType.ASSIGNABLE_TYPE,
-            classes = [JwtTokenAuthenticationFilter::class]
-        )
-    ]
-)
+@WebFluxTest
 @Import(
     VerifyEmailHandler::class,
     VerifyEmailRouter::class,
@@ -59,7 +49,7 @@ internal class VerifyEmailHandlerTest {
     fun `verifyEmail should return ok`() {
         every { verifyEmailService.verifyEmail(token) } returns Mono.just(
             SignInResponse(
-                Account("id", Email("cubist@reserch-hub.test.com"), emptyList(), emptyMap()),
+                Account("id", Email("cubist@reserch-hub.test.com"), emptyList()),
                 "accessToken",
                 "refreshToken"
             )

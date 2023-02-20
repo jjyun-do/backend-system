@@ -60,13 +60,13 @@ class UpdateTaskService(
 
                     taskOutputPort.update(
                         task
-                    ).let { task ->
-                        requireNotNull(task.revisionId)
+                    ).let { updatedTask ->
+                        requireNotNull(updatedTask.revisionId)
                         itemOutputPort.update(
-                            task.revisionId.value,
+                            updatedTask.revisionId.value,
                             command.items.map {
                                 requireNotNull(it.sequence)
-                                Item.newItem(task, it.contents, it.type, it.sequence)
+                                Item.newItem(updatedTask, it.contents, it.type, it.sequence)
                             }
                         )
                     }

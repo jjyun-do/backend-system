@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { execSync } = require("child_process");
+const {execSync} = require("child_process");
 
 function changedFile(filePath, headRef) {
     var command = "git diff -U0 main" + " -- " + filePath + " | tail -n +5";
@@ -21,13 +21,12 @@ function newLines(path, headRef) {
     lines.forEach(line => {
         if (line.startsWith("@@")) {
             currentLine = getStart(line);
-        }
-        else if (line.startsWith("-")) { return; }
-        else if (line.startsWith("+")) {
+        } else if (line.startsWith("-")) {
+
+        } else if (line.startsWith("+")) {
             added.push(currentLine);
             currentLine += 1;
-        }
-        else {
+        } else {
             currentLine += 1;
         }
     })
@@ -42,31 +41,35 @@ function analyzeChange(fileNode, toCheck) {
     var missed = "";
 
     toCheck.forEach(lineNum => {
-        let lineNode = fileNode.line ? fileNode.line.find(l => l.nr == lineNum)
-            : false;	    
+        let lineNode = fileNode.line ?
+            fileNode.line.length ? fileNode.line.find(l => l.nr == lineNum) : fileNode.line
+            : undefined;
         if (lineNode) {
             total += 1;
-            if (lineNode.ci != 0) { covered += 1; }
-            else {
+            if (lineNode.ci != 0) {
+                covered += 1;
+            } else {
                 if (lastMissed == null) {
                     missed += "#L" + lineNum;
-                }
-                else if (lastMissed != lineNum - 1) {
+                } else if (lastMissed != lineNum - 1) {
                     if (!chain) {
                         missed += ", #L" + lineNum;
                     } else {
                         missed += "-L" + lastMissed + ", #L" + lineNum;
                         chain = false;
                     }
-                }
-                else {
-                    if (!chain) { chain = true; }
+                } else {
+                    if (!chain) {
+                        chain = true;
+                    }
                 }
                 lastMissed = lineNum;
             }
         }
     })
-    if (chain) { missed += "-L" + lastMissed; }
+    if (chain) {
+        missed += "-L" + lastMissed;
+    }
 
     return [covered, total, missed];
 }
@@ -74,7 +77,7 @@ function analyzeChange(fileNode, toCheck) {
 function lineReport(path, headRef, xmlObj) {
     var simplePath = path.substring(path.indexOf("com"));
     var package = simplePath.substring(0, simplePath.lastIndexOf("/"));
-    var filename = simplePath.substring(simplePath.lastIndexOf("/")+1);
+    var filename = simplePath.substring(simplePath.lastIndexOf("/") + 1);
 
     var packageNode = xmlObj.report.package.find(p => p.name === package);
     var fileNode = packageNode.sourcefile.length ? packageNode.sourcefile.find(s => s.name === filename)
@@ -93,9 +96,9 @@ function lineReport(path, headRef, xmlObj) {
     return [covered, total, body];
 }
 
-module.exports = function(moduleName, fileNames, parser, headRef) {
+module.exports = function (moduleName, fileNames, parser, headRef) {
     var reportLocation = moduleName + "/build/reports/jacoco/test/jacocoTestReport.xml";
-    var xmlObj = parser.toJson(fs.readFileSync(reportLocation), { object: true });
+    var xmlObj = parser.toJson(fs.readFileSync(reportLocation), {object: true});
     var lineCounter = xmlObj.report.counter.find(c => c.type === "LINE");
     var hit = Number(lineCounter.covered);
     var lines = hit + Number(lineCounter.missed);

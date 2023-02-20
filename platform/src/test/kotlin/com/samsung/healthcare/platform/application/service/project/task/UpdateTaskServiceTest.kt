@@ -34,6 +34,7 @@ import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@kotlinx.coroutines.ExperimentalCoroutinesApi
 internal class UpdateTaskServiceTest {
     private val taskOutputPort = mockk<TaskOutputPort>()
     private val itemOutputPort = mockk<ItemOutputPort>()

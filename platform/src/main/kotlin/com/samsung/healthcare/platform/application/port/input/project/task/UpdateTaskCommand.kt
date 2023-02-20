@@ -18,6 +18,7 @@ data class UpdateTaskCommand(
     companion object {
         private const val DEFAULT_END_TIME_MONTH: Long = 3
     }
+
     // TODO: validate
     init {
         if (status == TaskStatus.PUBLISHED) {
@@ -44,6 +45,8 @@ data class UpdateTaskCommand(
                 throw IllegalArgumentException()
             }
         }
+
+        @Suppress("UNCHECKED_CAST")
         private fun requireValidContents() {
             when (this.type) {
                 ItemType.QUESTION -> {
@@ -59,9 +62,11 @@ data class UpdateTaskCommand(
                                 }
                             )
                         }
+
                         else -> require(false)
                     }
                 }
+
                 else -> require(false)
             }
         }

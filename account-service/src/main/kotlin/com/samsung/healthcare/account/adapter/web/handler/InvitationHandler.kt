@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.bodyToFlux
+import org.springframework.web.reactive.function.server.bodyToMono
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Component
@@ -17,7 +18,8 @@ class InvitationHandler(
 ) {
 
     fun inviteUser(req: ServerRequest): Mono<ServerResponse> =
-        req.bodyToFlux<InvitationRequest>()
+        req.bodyToMono<List<InvitationRequest>>()
+            .flatMapMany { Flux.fromIterable(it) }
             .flatMap { invitation ->
                 inviteUser(invitation)
             }.collectList()
@@ -41,7 +43,7 @@ class InvitationHandler(
 
     internal data class InvitationRequest(
         val email: String,
-        val roles: List<String> = emptyList()
+        val roles: List<String>
     )
 
     internal data class InvitationResult(val email: String, val result: Boolean = true, val message: String = "")

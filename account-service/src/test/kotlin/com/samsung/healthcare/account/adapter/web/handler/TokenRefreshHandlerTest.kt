@@ -7,7 +7,6 @@ import com.samsung.healthcare.account.adapter.web.config.SecurityConfig
 import com.samsung.healthcare.account.adapter.web.exception.GlobalErrorAttributes
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler
 import com.samsung.healthcare.account.adapter.web.exception.GlobalExceptionHandler.ErrorResponse
-import com.samsung.healthcare.account.adapter.web.filter.JwtTokenAuthenticationFilter
 import com.samsung.healthcare.account.adapter.web.router.REFRESH_TOKEN_PATH
 import com.samsung.healthcare.account.adapter.web.router.TokenRefreshRouter
 import com.samsung.healthcare.account.application.exception.ExpiredRefreshTokenException
@@ -20,21 +19,12 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
-@WebFluxTest(
-    excludeFilters = [
-        ComponentScan.Filter(
-            type = FilterType.ASSIGNABLE_TYPE,
-            classes = [JwtTokenAuthenticationFilter::class]
-        )
-    ]
-)
+@WebFluxTest
 @Import(
     TokenRefreshHandler::class,
     TokenRefreshRouter::class,

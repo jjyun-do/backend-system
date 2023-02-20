@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
 
+@kotlinx.coroutines.ExperimentalCoroutinesApi
 internal class CreateHealthDataServiceTest {
     private val saveHealthDataPort = mockk<SaveHealthDataPort>()
 

@@ -283,6 +283,22 @@ internal class SuperTokenAdapterTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `assignRoles should not emit event when supertoken returns ok`() {
+        val accountId = "account-id"
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?userId=$accountId"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "user": {
+    "email": "$email",
+    "id": "$accountId",
+    "timeJoined": 1659407200104
+    }
+}
+"""
+        }
+
         wm.put {
             url equalTo SUPER_TOKEN_ASSIGN_ROLE_PATH
         } returnsJson {
@@ -293,13 +309,29 @@ internal class SuperTokenAdapterTest {
         }
 
         StepVerifier.create(
-            superTokenAdapter.assignRoles("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
+            superTokenAdapter.assignRoles(accountId, listOf(TeamAdmin, ProjectOwner("project-x")))
         ).verifyComplete()
     }
 
     @Test
     @Tag(NEGATIVE_TEST)
     fun `assignRoles should throw UnknownRoleException when supertoken returns UNKNOWN_ROLE_ERROR`() {
+        val accountId = "account-id"
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?userId=$accountId"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "user": {
+    "email": "$email",
+    "id": "$accountId",
+    "timeJoined": 1659407200104
+    }
+}
+"""
+        }
+
         wm.put {
             url equalTo SUPER_TOKEN_ASSIGN_ROLE_PATH
         } returnsJson {
@@ -311,7 +343,7 @@ internal class SuperTokenAdapterTest {
         }
 
         StepVerifier.create(
-            superTokenAdapter.assignRoles("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
+            superTokenAdapter.assignRoles(accountId, listOf(TeamAdmin, ProjectOwner("project-x")))
         ).verifyError<UnknownRoleException>()
     }
 
@@ -323,6 +355,21 @@ internal class SuperTokenAdapterTest {
         val accountId = UUID.randomUUID().toString()
         wm.get {
             url equalTo "$GET_ACCOUNT_PATH?email=$encodedEmail"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "user": {
+    "email": "$email",
+    "id": "$accountId",
+    "timeJoined": 1659407200104
+    }
+}
+"""
+        }
+
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?userId=$accountId"
         } returnsJson {
             body =
                 """{
@@ -396,6 +443,23 @@ internal class SuperTokenAdapterTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `removeRolesFromAccount should not emit event when supertoken returns ok`() {
+        val accountId = UUID.randomUUID().toString()
+
+        wm.get {
+            url equalTo "$GET_ACCOUNT_PATH?userId=$accountId"
+        } returnsJson {
+            body =
+                """{
+  "status": "OK",
+  "user": {
+    "email": "$email",
+    "id": "$accountId",
+    "timeJoined": 1659407200104
+    }
+}
+"""
+        }
+
         wm.post {
             url equalTo SUPER_TOKEN_REMOVE_USER_ROLE_PATH
         } returnsJson {
@@ -406,7 +470,7 @@ internal class SuperTokenAdapterTest {
         }
 
         StepVerifier.create(
-            superTokenAdapter.removeRolesFromAccount("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
+            superTokenAdapter.removeRolesFromAccount(accountId, listOf(TeamAdmin, ProjectOwner("project-x")))
         ).verifyComplete()
     }
 
@@ -647,7 +711,11 @@ internal class SuperTokenAdapterTest {
 
         StepVerifier.create(
             superTokenAdapter.listUsers()
-        ).expectNext(listOf(Account(accountId, email, listOf(projectRole)))).verifyComplete()
+        ).expectNext(
+            listOf(
+                Account(accountId, email, listOf(projectRole))
+            )
+        ).verifyComplete()
     }
 
     @Test

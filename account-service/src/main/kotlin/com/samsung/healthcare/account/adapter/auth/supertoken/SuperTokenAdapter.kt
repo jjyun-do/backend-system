@@ -11,6 +11,7 @@ import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Sta
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.EMAIL_VERIFICATION_INVALID_TOKEN_ERROR
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.OK
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.UNKNOWN_ROLE_ERROR
+import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.Status.UNKNOWN_USER_ID_ERROR
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.StatusResponse
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.User
 import com.samsung.healthcare.account.adapter.auth.supertoken.SuperTokensApi.UserId
@@ -108,8 +109,14 @@ class SuperTokenAdapter(
         handlerFunction: (RoleBinding) -> Mono<StatusResponse>
     ): Mono<Void> {
         require(roles.isNotEmpty())
-        return Flux.fromIterable(roles)
-            .flatMap { handlerFunction(RoleBinding(accountId, it.roleName)) }
+        return apiClient.getAccountWithId(accountId)
+            .flatMapMany {
+                when (it.status) {
+                    OK -> Flux.fromIterable(roles)
+                    UNKNOWN_USER_ID_ERROR -> throw UnknownAccountIdException()
+                    else -> throw InternalServerException(it.status.name)
+                }
+            }.flatMap { handlerFunction(RoleBinding(accountId, it.roleName)) }
             // TODO handle exceptions
             // TODO haw to handle some fails
             .then()
