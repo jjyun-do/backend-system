@@ -224,7 +224,7 @@ internal class SuperTokenAdapterTest {
         }
 
         StepVerifier.create(
-            superTokenAdapter.generateResetToken("accountId")
+            superTokenAdapter.generateResetToken(UUID.randomUUID().toString())
         ).expectNext(resetToken)
             .verifyComplete()
     }
@@ -242,7 +242,7 @@ internal class SuperTokenAdapterTest {
         }
 
         StepVerifier.create(
-            superTokenAdapter.generateResetToken("accountId")
+            superTokenAdapter.generateResetToken(UUID.randomUUID().toString())
         ).verifyError<UnknownAccountIdException>()
     }
 
@@ -283,7 +283,7 @@ internal class SuperTokenAdapterTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `assignRoles should not emit event when supertoken returns ok`() {
-        val accountId = "account-id"
+        val accountId = UUID.randomUUID().toString()
         wm.get {
             url equalTo "$GET_ACCOUNT_PATH?userId=$accountId"
         } returnsJson {
@@ -316,7 +316,7 @@ internal class SuperTokenAdapterTest {
     @Test
     @Tag(NEGATIVE_TEST)
     fun `assignRoles should throw UnknownRoleException when supertoken returns UNKNOWN_ROLE_ERROR`() {
-        val accountId = "account-id"
+        val accountId = UUID.randomUUID().toString()
         wm.get {
             url equalTo "$GET_ACCOUNT_PATH?userId=$accountId"
         } returnsJson {
@@ -436,7 +436,9 @@ internal class SuperTokenAdapterTest {
         }
 
         StepVerifier.create(
-            superTokenAdapter.assignRoles("account-id", listOf(TeamAdmin, ProjectOwner("project-x")))
+            superTokenAdapter.assignRoles(
+                UUID.randomUUID().toString(), listOf(TeamAdmin, ProjectOwner("project-x"))
+            )
         ).verifyError<Exception>()
     }
 
@@ -501,7 +503,7 @@ internal class SuperTokenAdapterTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `listUserRoles should return roles when supertoken returns ok`() {
-        val accountId = "account-id"
+        val accountId = UUID.randomUUID().toString()
         val projectRole = HeadResearcher("project-x")
         wm.get {
             url equalTo "$SUPER_TOKEN_GET_USER_ROLE_PATH?userId=$accountId"
@@ -667,7 +669,7 @@ internal class SuperTokenAdapterTest {
     @Test
     @Tag(POSITIVE_TEST)
     fun `listUsers should return all accounts`() {
-        val accountId = "account-id"
+        val accountId = UUID.randomUUID().toString()
         val projectRole = HeadResearcher("project-x")
 
         wm.get {

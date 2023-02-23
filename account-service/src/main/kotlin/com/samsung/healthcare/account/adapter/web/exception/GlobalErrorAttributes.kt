@@ -6,6 +6,7 @@ import com.samsung.healthcare.account.application.exception.InternalServerExcept
 import com.samsung.healthcare.account.application.exception.InvalidEmailVerificationTokenException
 import com.samsung.healthcare.account.application.exception.InvalidResetTokenException
 import com.samsung.healthcare.account.application.exception.InvalidTokenException
+import com.samsung.healthcare.account.application.exception.SignInException
 import com.samsung.healthcare.account.application.exception.UnauthorizedException
 import com.samsung.healthcare.account.application.exception.UnknownAccountIdException
 import com.samsung.healthcare.account.application.exception.UnknownEmailException
@@ -40,6 +41,7 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
             UnverifiedEmailException::class to HttpStatus.UNAUTHORIZED,
             IllegalAccessException::class to HttpStatus.FORBIDDEN,
             UnauthorizedException::class to HttpStatus.UNAUTHORIZED,
+            SignInException::class to HttpStatus.UNAUTHORIZED,
             JwtException::class to HttpStatus.UNAUTHORIZED,
             InternalServerException::class to HttpStatus.INTERNAL_SERVER_ERROR,
         )

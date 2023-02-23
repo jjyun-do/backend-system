@@ -26,6 +26,7 @@ object Versions {
     const val WIRE_MOCK = "2.0.1"
     const val MAPSTRUCT = "1.5.2.Final"
     const val NETFLIX_GRAPHQL_DGS = "5.5.1"
+    const val CRON_EXPRESSION = "2.3.2"
 
     const val KOTLIN_REACTOR_EXTENSION = "1.1.5"
     const val KOTLIN_REFLECT = "1.6.10"
@@ -89,7 +90,10 @@ object Libs {
     const val MAPSTRUCT_ANNOTATION = "org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}"
 
     const val DGS_PLATFORM = "com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${Versions.NETFLIX_GRAPHQL_DGS}"
-    const val DGS_SPRING_BOOT_STARTER = "com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter:${Versions.NETFLIX_GRAPHQL_DGS}"
+    const val DGS_SPRING_BOOT_STARTER =
+        "com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter:${Versions.NETFLIX_GRAPHQL_DGS}"
+
+    const val CRON_EXPRESSION = "org.quartz-scheduler:quartz:${Versions.CRON_EXPRESSION}"
 }
 
 /**

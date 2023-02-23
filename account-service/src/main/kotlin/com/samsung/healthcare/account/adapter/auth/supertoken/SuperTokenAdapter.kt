@@ -35,11 +35,15 @@ import feign.FeignException.NotFound
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.util.regex.Pattern
 
 @Component
 class SuperTokenAdapter(
     private val apiClient: SuperTokensApi
 ) : AuthServicePort, TokenSigningPort {
+    private val uuidRegex =
+        Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
     override fun registerNewUser(email: Email, password: String): Mono<Account> {
         require(password.isNotBlank())
         return apiClient.signUp(SignRequest(email.value, password))
@@ -52,6 +56,7 @@ class SuperTokenAdapter(
 
     override fun generateResetToken(accountId: String): Mono<String> {
         require(accountId.isNotBlank())
+        requireUUIDString(accountId)
 
         return apiClient.generateResetToken(UserId(accountId))
             .mapNotNull {
@@ -83,6 +88,7 @@ class SuperTokenAdapter(
 
     override fun assignRoles(accountId: String, roles: Collection<Role>): Mono<Void> {
         require(accountId.isNotBlank())
+        requireUUIDString(accountId)
 
         return handleRoleBinding(accountId, roles) { roleBinding ->
             apiClient.assignRoles(roleBinding)
@@ -97,6 +103,7 @@ class SuperTokenAdapter(
 
     override fun removeRolesFromAccount(accountId: String, roles: Collection<Role>): Mono<Void> {
         require(accountId.isNotBlank())
+        requireUUIDString(accountId)
 
         return handleRoleBinding(accountId, roles) { roleBinding ->
             apiClient.removeUserRole(roleBinding)
@@ -109,6 +116,8 @@ class SuperTokenAdapter(
         handlerFunction: (RoleBinding) -> Mono<StatusResponse>
     ): Mono<Void> {
         require(roles.isNotEmpty())
+        requireUUIDString(accountId)
+
         return apiClient.getAccountWithId(accountId)
             .flatMapMany {
                 when (it.status) {
@@ -154,6 +163,7 @@ class SuperTokenAdapter(
 
     override fun listUserRoles(id: String): Mono<List<Role>> {
         require(id.isNotBlank())
+        requireUUIDString(id)
 
         return apiClient.listUserRoles(id)
             .map { response ->
@@ -165,6 +175,7 @@ class SuperTokenAdapter(
 
     override fun getAccount(id: String): Mono<Account> {
         require(id.isNotBlank())
+        requireUUIDString(id)
 
         return apiClient.getAccountWithId(id)
             .mapNotNull {
@@ -199,14 +210,18 @@ class SuperTokenAdapter(
 
     override fun updateAccountProfile(accountId: String, profile: Map<String, Any>): Mono<Map<String, Any>> {
         require(accountId.isNotBlank())
+        requireUUIDString(accountId)
 
         return apiClient.updateMetadata(MetadataUpdateRequest(accountId, profile))
             .onErrorMap(NotFound::class.java) { UnknownAccountIdException() }
             .mapNotNull { it.metadata }
     }
 
-    override fun generateEmailVerificationToken(accountId: String, email: Email): Mono<String> =
-        apiClient.generateEmailVerificationToken(
+    override fun generateEmailVerificationToken(accountId: String, email: Email): Mono<String> {
+        require(accountId.isNotBlank())
+        requireUUIDString(accountId)
+
+        return apiClient.generateEmailVerificationToken(
             SuperTokensApi.GenerateEmailVerificationTokenRequest(accountId, email.value)
         )
             .mapNotNull {
@@ -215,6 +230,7 @@ class SuperTokenAdapter(
                     throw AlreadyExistedEmailException("email already verified")
                 else throw InternalServerException()
             }
+    }
 
     override fun generateEmailVerificationToken(email: Email): Mono<String> =
         apiClient.getAccountWithEmail(email.value)
@@ -241,12 +257,16 @@ class SuperTokenAdapter(
                 getAccount(it.userId, it.email)
             }
 
-    override fun isVerifiedEmail(accountId: String, email: Email): Mono<Boolean> =
-        apiClient.isVerifiedEmail(accountId, email.value)
+    override fun isVerifiedEmail(accountId: String, email: Email): Mono<Boolean> {
+        require(accountId.isNotBlank())
+        requireUUIDString(accountId)
+
+        return apiClient.isVerifiedEmail(accountId, email.value)
             .mapNotNull {
                 if (it.status == OK) it.isVerified
                 else throw InternalServerException()
             }
+    }
 
     override fun countUsers(): Mono<Int> =
         apiClient.countUsers()
@@ -278,4 +298,10 @@ class SuperTokenAdapter(
             Email(email),
             emptyList()
         )
+
+    private fun requireUUIDString(accountId: String) {
+        if (!uuidRegex.matcher(accountId).matches()) {
+            throw UnknownAccountIdException()
+        }
+    }
 }

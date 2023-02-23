@@ -2,6 +2,7 @@ package com.samsung.healthcare.platform.application.port.input.project.task
 
 import com.samsung.healthcare.platform.enums.ItemType
 import com.samsung.healthcare.platform.enums.TaskStatus
+import org.quartz.CronExpression
 import java.time.LocalDateTime
 
 data class UpdateTaskCommand(
@@ -19,11 +20,11 @@ data class UpdateTaskCommand(
         private const val DEFAULT_END_TIME_MONTH: Long = 3
     }
 
-    // TODO: validate
     init {
         require(title.isNotBlank())
         if (status == TaskStatus.PUBLISHED) {
             requireNotNull(schedule)
+            require(CronExpression.isValidExpression(schedule))
             requireNotNull(startTime)
             requireNotNull(validTime)
             if (endTime == null)
@@ -54,7 +55,6 @@ data class UpdateTaskCommand(
                     when (contents["type"]) {
                         "CHOICE" -> {
                             require(contents["title"] is String)
-                            print(contents)
                             validateContentOptionalField(contents)
                             val props = contents["properties"] as Map<*, *>
                             require(listOf("RADIO", "CHECKBOX", "DROPDOWN").contains(props["tag"]))

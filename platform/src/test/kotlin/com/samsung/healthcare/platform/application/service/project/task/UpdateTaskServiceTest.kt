@@ -124,7 +124,7 @@ internal class UpdateTaskServiceTest {
         val updateTaskCommand = UpdateTaskCommand(
             title = "endTime test",
             description = "should default to 3 months later",
-            schedule = "weekly",
+            schedule = "0 0 0/1 1/1 * ? *",
             startTime = LocalDateTime.parse("2022-01-20T10:30", DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             validTime = 12,
             status = TaskStatus.PUBLISHED,

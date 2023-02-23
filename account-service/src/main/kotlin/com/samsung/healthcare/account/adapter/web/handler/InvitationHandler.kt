@@ -20,6 +20,7 @@ class InvitationHandler(
 
     fun inviteUser(req: ServerRequest): Mono<ServerResponse> =
         req.bodyToMono<List<InvitationRequest>>()
+            .filter { it.isNotEmpty() }
             .switchIfEmpty { Mono.error(IllegalArgumentException()) }
             .flatMapMany { Flux.fromIterable(it) }
             .flatMap { invitation ->
