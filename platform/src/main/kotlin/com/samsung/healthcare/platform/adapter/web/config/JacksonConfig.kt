@@ -6,24 +6,21 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 @Configuration
 class JacksonConfig {
     @Bean
-    fun objectMapper(): ObjectMapper =
-        jacksonMapperBuilder()
-            .addModule(
-                SimpleModule().apply {
-                    addDeserializer(
-                        Boolean::class.java,
-                        CoercionBooleanDeserializer()
-                    )
-                }
-            ).build()
+    fun objectMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper =
+        builder
+            .createXmlMapper(false)
+            .deserializerByType(
+                Boolean::class.java,
+                CoercionBooleanDeserializer()
+            )
+            .build()
 
     class CoercionBooleanDeserializer : JsonDeserializer<Boolean>() {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Boolean {
