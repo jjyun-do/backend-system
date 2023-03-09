@@ -8,6 +8,7 @@ test:
       - ./account-service/src/test
       - ./data-query-service/src/test
       - ./platform/src/test
+      - ./trino-rule-update-service/src/test
 
     testFile:
       - extension: kt
@@ -20,6 +21,7 @@ test:
           - annotation:
               match:
                 - '@Test'
+                - '@ParameterizedTest'
 
     positiveTestCase:
       - condition:
